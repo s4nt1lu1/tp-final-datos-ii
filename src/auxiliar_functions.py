@@ -12,6 +12,11 @@ MODELS_DIR = PROJECT_ROOT / "models"
 RESULTS_DIR = PROJECT_ROOT / "results"
 
 SEMILLA = 42
+ARCHIVOS_CRUDOS = [
+    "Totalizadores Planta 2020_2022.xlsx",
+    "Totalizadores Planta - 2021_2023.xlsx",
+    "Totalizadores Planta 2022_2023.xlsx",
+]
 
 def huella(ruta: Path, algoritmo: str = "sha256", bloque: int = 1 << 20) -> str:
     """Devuelve el resumen hexadecimal del archivo, leyéndolo de a 1 MiB."""
@@ -23,13 +28,9 @@ def huella(ruta: Path, algoritmo: str = "sha256", bloque: int = 1 << 20) -> str:
 
 def generar_checksums_crudos() -> None:
     """Calcula y persiste en data/checksums.json las huellas de los datos crudos."""
-    archivos_crudos = [
-        "Totalizadores Planta 2020_2022.xlsx",
-        "Totalizadores Planta - 2021_2023.xlsx",
-        "Totalizadores Planta 2022_2023.xlsx",
-    ]
+
     registro: Dict[str, str] = {}
-    for nombre in archivos_crudos:
+    for nombre in ARCHIVOS_CRUDOS:
         ruta = RAW_DATA_DIR / nombre
         if not ruta.exists():
             raise FileNotFoundError(f"Falta el archivo requerido en data/raw/: {nombre}")
@@ -40,7 +41,7 @@ def generar_checksums_crudos() -> None:
         json.dump(registro, f, indent=4)
     print(f"Checksums generados exitosamente en: {ruta_salida}")
 
-def verificar_checksums(archivo_referencia: Path = DATA_DIR / "checksums.json") -> bool:
+def verificar_checksums(archivo_referencia: Path = DATA_DIR / "checksums.json", archivos=None) -> bool:
     """Valida la integridad de data/raw/ contra data/checksums.json."""
     if not archivo_referencia.exists():
         raise FileNotFoundError(f"No existe el archivo de sumas: {archivo_referencia}")
@@ -48,17 +49,28 @@ def verificar_checksums(archivo_referencia: Path = DATA_DIR / "checksums.json") 
     with open(archivo_referencia, "r", encoding="utf-8") as f:
         referencias = json.load(f)
 
-    for nombre, hash_esperado in referencias.items():
+    if archivos is None:
+        archivos = ARCHIVOS_CRUDOS
+
+    for nombre in archivos:
+        # Error claro si piden un archivo que no tiene hash registrado
+        if nombre not in referencias:
+            raise KeyError(f"'{nombre}' no tiene hash registrado en {archivo_referencia.name}")
+
         ruta = RAW_DATA_DIR / nombre
         if not ruta.exists():
             raise FileNotFoundError(f"Archivo faltante en data/raw/: {nombre}")
+
         hash_actual = huella(ruta, algoritmo="sha256")
+        hash_esperado = referencias[nombre]
         if hash_actual != hash_esperado:
             raise ValueError(
                 f"Discrepancia en {nombre}.\nLocal:    {hash_actual}\nEsperado: {hash_esperado}"
             )
-    print("Verificación de integridad completada: todos los archivos coinciden.")
+
+    print(f"Verificación de integridad completada: {len(archivos)} archivo(s) coinciden.")
     return True
+
 
 if __name__ == "__main__":
     generar_checksums_crudos()
