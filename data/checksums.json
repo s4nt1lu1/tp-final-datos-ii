@@ -2,5 +2,8 @@
     "Totalizadores Planta 2020_2022.xlsx": "7bb3474c1686712eed9634b1afc757540766dad56c15580a866a3145ad9c53d7",
     "Totalizadores Planta - 2021_2023.xlsx": "b4dbfacd0fd8d7720ec6dfc09dc593fac479d78a7c17ea671692590dc85f90fb",
     "Totalizadores Planta 2022_2023.xlsx": "aba9f9ff11e6fa477af282f14a88354f8a55c782941d5a4eb403e4c742e6df98",
-    "dataset_unificado_inicial.csv": "41e1d971dbb16c5d5a8068e63937c116d2975582794c8dd2e5a0ee3cacfcc9a4"
+    "dataset_unificado_inicial.csv": "41e1d971dbb16c5d5a8068e63937c116d2975582794c8dd2e5a0ee3cacfcc9a4",
+    "../data/raw/dataset_todas_tablas.csv": "ae0eccf813e4758bc487cb0bd962358e1c1f6eb0d7b0f5a3687e2243f47e3121",
+    "../data/processed/dataset_unificado_simple.csv": "8cd574fc8a3e15984bc39665f6282517dcfeeb13ccf7f5adae8d7c7d37e96d42",
+    "dataset_unificado_limpio.csv": "452e1f5041e52312f6189dbbfa9a43425e0c9846492c0979f5db0a61f5e89074"
 }
