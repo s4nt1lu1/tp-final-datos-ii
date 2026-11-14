@@ -198,3 +198,101 @@ A partir de los resultados obtenidos hoy en `df_diario_eda` (`1.179` días váli
 3. **Patrón diario:** perfil del consumo por hora del día a partir de los incrementos horarios.
 4. **Distribución del target:** histograma con KDE y QQ-plot.
 5. Revisar los 4 días con bajadas sin subida previa y el `2021-01-08`.
+
+---
+
+## Sesión 3 — 2026-11-13: Pipeline de Unificación Multi-Hoja y Auditoría Estructural/Física (`exploracion_santi.ipynb`)
+
+* **Autor/es:** Santino Lui
+* **Rama:** `dev/feature/eda`
+* **Fase / Sección:** Fase 1 / Prototipo de Fase 2.1 — Unificación completa de todas las hojas de los Excel y auditoría estructural y física sobre el target (`Frio (Kw)_Consolidado EE`).
+* **Archivos creados / modificados:**
+  * `notebooks/exploracion_santi.ipynb` *(creado — Celdas 1 a 8)*
+  * `docs/bitacora_sesiones.md` *(actualizado con la Sesión 3)*
+
+---
+
+### 1. Objetivo de la Sesión
+1. Extender la carga y unificación de datos más allá de `Consolidado EE`, integrando **todas las hojas** de los tres archivos Excel crudos en una única tabla indexada por `(DIA, HORA)` con sufijos por hoja.
+2. Diseñar y ejecutar un pipeline reproducible de normalización horaria, eliminación de registros duplicados/clonados y reparación de errores tipográficos en `HORA` (`limpiar_y_auditar_hoja`), registrando cada acción en contenedores de trazabilidad.
+3. Aplicar una auditoría en dos instancias (estructural sobre `HORA` y física sobre `Frio (Kw)_Consolidado EE`) para cuantificar exactamente qué días se eliminan, qué filas se descartan y qué anomalías subsanables se conservan.
+
+---
+
+### 2. Razonamiento Metodológico (El "Por Qué")
+
+1. **Integración de todas las hojas por `(DIA, HORA)` en lugar de trabajar solo con `Consolidado EE`:**
+   * En las sesiones previas únicamente se había consolidado `Consolidado EE`, dejando fuera variables de producción, energía, agua, gas/vapor, aire, $\text{CO}_2$, efluentes, glicol y KPIs que serán necesarias como *features* exógenas.
+   * **Decisión aplicada:** En cada archivo Excel se recorren todas sus hojas (por nombre, considerando que `2021_2023` incluye `'Seguimiento Dia'`), se exige la presencia de `DIA` y `HORA`, se renombran las columnas como `{col}_{hoja}` y se realiza un `pd.concat(..., axis=1, join="outer")` sobre `(DIA, HORA)`. Luego se apilan los tres archivos en orden de prioridad (`2022_2023` > `2021_2023` > `2020_2022`) con `drop_duplicates(subset=["DIA", "HORA"], keep="first")` y se coerciona toda columna numérica con `pd.to_numeric(..., errors="coerce")` para convertir errores de Excel (`#VALUE!`, `#DIV/0!`) en `NaN`.
+2. **Clasificación de hojas según naturaleza física y definición de grilla horaria canónica:**
+   * Se separaron explícitamente las hojas no acumulativas (`HOJAS_NO_ACUMULATIVAS = {"Consolidado KPI", "Auxiliar", "Seguimiento Dia"}`) del resto de hojas totalizadoras (`cols_acumulativas`), y se fijó `HORAS_CANONICAS` con los **25 tramos horarios esperados** (`00:00` a `23:00` más el cierre `23:59`).
+3. **Limpieza y normalización de `HORA` dentro de cada hoja antes de unir (`limpiar_y_auditar_hoja`):**
+   * **Prefijos de fecha anómalos:** Se detectan cadenas con fecha antepuesta distinta de `1899-12-30` (como `1900-01-01`), se registra la reparación y se recorta el prefijo conservando la hora, además de rellenar ceros a la izquierda (`^(\d):` $\rightarrow$ `0\1:`) y truncar segundos residuales.
+   * **Registros `'23:59:59'`:** Se eliminan explícitamente antes de truncar segundos para no colisionar ni sobrescribir el cierre real de las `23:59`.
+   * **Bloques horarios clonados (meses de `< 31` días):** En lugar de cortar ciegamente con `.head(25)`, se detecta el reinicio de jornada dentro de una misma fecha mediante `(HORA == "00:00") & (DIA == DIA.shift(1))` y se descarta todo bloque con `id_bloque > 0`.
+   * **Reparación posicional de typos humanos en `HORA`:** Si un día completo de 25 registros inicia en `00:00` y cierra en `23:59` pero difiere de `HORAS_CANONICAS`, se realinea contra `HORAS_CANONICAS`; si la jornada tiene otra longitud, se corrige cualquier salto unitario rodeado de horas válidas (`idx_n - idx_p == 2`).
+4. **Auditoría diaria en dos instancias y criterio para el pico aislado a la `01:00`:**
+   * **Instancia 1 (Estructural sobre `HORA`):** Exige inicio en `00:00`, cierre en `23:59` y al menos `24` registros por día para descartar jornadas truncadas antes de evaluar valores físicos.
+   * **Instancia 2 (Física sobre `Frio (Kw)_Consolidado EE` con tolerancia `TOL = 1e-3`):** Exige datos numéricos no vacíos, ausencia de negativos (`< 0`), cierre `23:59` positivo y $\le 100.000\text{ kW}$, reinicio a las `00:00` (`val_00 <= 5000` y `val_00 <= val_01 + TOL`) y monotonía creciente (`diffs >= -TOL`).
+   * **Excepción controlada para pico a la `01:00`:** Si `val_01 > val_02 + TOL` pero desde las `02:00` hasta las `23:59` la serie crece monótonamente, el día se conserva y se registra en `log_reparaciones` (caso `2021-06-12`), evitando perder una jornada cuyo cierre diario es físicamente consistente.
+
+---
+
+### 3. Hallazgos Cuantitativos y Resultados Clave
+
+* **Verificación inicial e inspección de hojas:**
+  * `verificar_checksums()` validó los **3 archivos Excel crudos** (`True`).
+  * Se confirmaron **15 hojas** en `2020_2022` y `2022_2023`, y **16 hojas** en `2021_2023` (hoja adicional: `Seguimiento Dia`).
+* **Dimensiones del dataset unificado y resultado global del filtrado:**
+  * **Pre-filtrado de días (`df_unificado`):** **`29.700` filas** | **`1.190` fechas únicas**.
+  * **Días eliminados en total (`df_bajas_dias`):** **`31` días** (**`729` filas** descartadas).
+  * **Dataset limpio conservado (`df_limpio`):** **`1.159` días válidos** (**`28.971` filas**).
+* **Desglose de los `31` días eliminados (`log_dias_eliminados`):**
+  * **Por archivo de origen:** `13` días de `2020_2022`, `10` días de `2021_2023` y `8` días de `2022_2023`.
+  * **Instancia `1. Estructural (Horas)` — `8` días (`154` filas):**
+    * `2021-07-13` (`2021_2023`, 23 filas: sin cierre `23:59`, última hora `23:00` | `23/25`), `2021-11-01` (`2021_2023`, 23 filas: `23/25`), `2022-03-02` (`2021_2023`, 24 filas: sin cierre `23:59`, última hora `23:00`), `2023-01-17` (`2022_2023`, 16 filas: `16/25`), `2023-04-13` (`2022_2023`, 20 filas: sin cierre `23:59`, última hora `19:00` | `20/25`), `2023-04-19` (`2022_2023`, 17 filas: sin cierre `23:59`, última hora `16:00` | `17/25`), `2023-07-01` (`2022_2023`, 23 filas: primera hora `02:00` | `23/25`) y `2023-10-26` (`2022_2023`, 8 filas: sin cierre `23:59`, última hora `07:00` | `8/25`).
+  * **Instancia `2. Física (Target Acumulativo)` sobre `Frio (Kw)_Consolidado EE` — `23` días (`575` filas):**
+    * **Sin reinicio a las `00:00` + caída:** `2020-07-11` (`2020_2022`: `00:00 = 29.113,0 kW`, cae `-29.113,0 kW` a las `01:00`).
+    * **Cierre `23:59` nulo:** `2023-02-28` (`2022_2023`: cierre `NaN`).
+    * **Violaciones de monotonía con magnitudes extremas ($\sim 3{,}28 \times 10^{16}\text{ kW}$):** `2021-01-31` (`-32.771.277.123.571.584,0 kW` a las `12:00`) y `2021-04-22` (`-32.771.276.799.998.576,0 kW` a las `17:00`), ambos en `2020_2022`.
+    * **Caídas menores (ruido de medición):** `2021-01-03` (`-10,0 kW` a las `18:00`), `2021-01-21` (`-13,0 kW` a las `06:00`) y `2021-07-14` (`-40,0 kW` a las `15:00`).
+    * **Otras `16` violaciones de monotonía (`-2.128,0 kW` a `-31.131,0 kW`):** `2020-09-11` (`-28.674,0`), `2021-03-18` (`-27.138,0`), `2021-03-19` (`-26.003,0`), `2021-04-04` (`-31.131,0`), `2021-04-21` (`-5.405,0`), `2021-04-25` (`-8.660,0`), `2021-04-30` (`-8.446,0`), `2021-06-27` (`-2.128,0`), `2021-07-11` (`-8.790,0`), `2021-07-27` (`-8.868,0`), `2021-08-03` (`-6.726,0`), `2021-10-01` (`-5.474,0`), `2022-04-16` (`-6.796,0`), `2022-04-18` (`-5.676,0`), `2022-07-03` (`-5.418,0`) y `2023-05-20` (`-27.999,0` a las `23:59`).
+* **Filas extra eliminadas por hoja en `limpiar_y_auditar_hoja` (`df_bajas_filas`):**
+
+  | Archivo | Motivo | Días únicos afectados | Total filas borradas (suma entre hojas) |
+  |---|---|---|---|
+  | `2020_2022` | `Jornada apilada/clonada (mes < 31 días)` | `610` | `13.320` |
+  | `2020_2022` | `Registro extra '23:59:59'` | `2` | `15` |
+  | `2021_2023` | `Jornada apilada/clonada (mes < 31 días)` | `8` | `4.800` |
+  | `2021_2023` | `Registro extra '23:59:59'` | `1` | `16` |
+  | `2022_2023` | `Jornada apilada/clonada (mes < 31 días)` | `6` | `3.000` |
+  | `2022_2023` | `Registro extra '23:59:59'` | `1` | `15` |
+
+* **Días reparados / conservados con anomalías subsanables (`6` registros en `resumen_rep`):**
+  * `2021-06-12` (`2020_2022`, `Consolidado EE`): `Pico 01:00 aislado (Día conservado)` — `00:00 = 0.0`, `01:00 = 4.111.695,0`, `02:00 = 3.558,0`; retoma desde `02:00` y cierra en `23:59` con `37.992,0 kW`.
+  * `2021-07-21` (`2021_2023`, `Consolidado Agua`): `Prefijo de fecha en HORA` — se eliminó el prefijo `'1900-01-01'` conservando la hora.
+  * `2020-07-20` (`2020_2022`, `Totalizadores CO2`): `Typo de secuencia horaria` (`23:00->11:00`).
+  * `2020-09-05` (`2020_2022`, `Consolidado KPI`): `Typo de secuencia horaria` (`15:00->16:00`).
+  * `2021-09-16` (`2021_2023`, `Seguimiento Dia`): `Typo de secuencia horaria` (`09:00->08:00, 08:00->09:00`).
+  * `2022-12-10` (`2022_2023`, `Consolidado KPI`): `Typo de secuencia horaria` (`16:00->14:00`).
+
+---
+
+### 4. Problemas Técnicos Encontrados y Solución Aplicada
+
+* **Desalineación de `HORA` por prefijos de fecha (`1900-01-01`), segundos sueltos (`23:59:59`) y errores de tipeo en hojas secundarias:** al unificar las 15/16 hojas por `(DIA, HORA)`, un solo typo horario en una hoja (ej. `23:00` en lugar de `11:00` en `Totalizadores CO2`) generaba filas huérfanas tras el `outer` join. Se resolvió normalizando el formato de texto, purgando `'23:59:59'` antes del truncado de segundos y aplicando reparación posicional por día en `limpiar_y_auditar_hoja`.
+* **Discrepancia de criterio entre la regla de monotonía estricta y los hallazgos de la Sesión 2:**
+  * La regla de `exploracion_santi.ipynb` descarta días cuyo cierre `23:59` es correcto pero tuvieron un pico intermedio aislado luego compensado (ej. `2020-09-11`, `2021-01-31`, `2021-03-18`, `2021-04-22`) o ruido mínimo de medición (`-10` a `-40 kW`), mientras que no filtra los días con saltos horarios positivos sin caída posterior mayores al P99,9 (`5.153 kW`) que inflan el cierre (como `2021-08-01`, `2021-07-21`, `2021-08-24` y `2021-07-12`). Queda pendiente unificar ambos criterios junto con el equipo.
+* **Conteo de bloques clonados en `2020_2022` (`610` días / `13.320` filas):** mientras `2021_2023` (`8` días) y `2022_2023` (`6` días) coinciden con los cierres de meses `< 31` días, en `2020_2022` la condición `(HORA == "00:00") & (DIA == DIA.shift(1))` se disparó en `610` fechas únicas al aplicarse sobre hojas auxiliares/secundarias; conviene auditar qué hoja específica de `2020_2022` dispara esa regla.
+* **Alcance parcial de la auditoría física y persistencia:** se definió `cols_acumulativas` excluyendo `HOJAS_NO_ACUMULATIVAS`, pero la validación física solo evalúa `Frio (Kw)_Consolidado EE` y `df_limpio` aún no se exporta a `data/processed/` ni registra su `SHA-256` en `data/checksums.json`.
+
+---
+
+### 5. Estado al Cierre y Próximos Pasos (Hoja de Ruta)
+
+Quedó operativo el prototipo de unificación multi-hoja y auditoría en `notebooks/exploracion_santi.ipynb` (`1.159` días / `28.971` filas limpias en memoria). Tareas inmediatas para el siguiente avance:
+
+1. **Inspeccionar qué hojas de `2020_2022` generan los `610` días marcados como bloques clonados** en `log_filas_eliminadas`, para confirmar que no se estén descartando filas válidas en hojas distintas de `Consolidado EE`.
+2. **Conciliar el criterio de días inválidos con la Sesión 2:** decidir si se conserva el filtro estricto de monotonía o si se recuperan los días con error intermedio compensado, e incorporar la detección de saltos positivos sin compensación (`> P99,9`) y de contador congelado (`2021-01-03` ya eliminado por `-10 kW`, pero útil generalizarlo).
+3. **Extender la auditoría física al resto de variables de `cols_acumulativas`** (energía, agua, gas/vapor, aire, $\text{CO}_2$, efluentes, glicol, producción) que se usarán como *features* en las fases siguientes.
+4. **Exportar `df_limpio` y las tablas de auditoría a `data/processed/`** (con `lineterminator="\n"`) y registrar su `SHA-256` en `data/checksums.json`, además de completar los ítems pendientes de la **Sección 1.2** (`boxplots` mensuales, efecto del día de la semana con ANOVA/Kruskal-Wallis + $\eta^2$, patrón horario y distribución/QQ-plot del target).
