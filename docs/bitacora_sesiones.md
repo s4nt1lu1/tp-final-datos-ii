@@ -198,3 +198,53 @@ A partir de los resultados obtenidos hoy en `df_diario_eda` (`1.179` días váli
 3. **Patrón diario:** perfil del consumo por hora del día a partir de los incrementos horarios.
 4. **Distribución del target:** histograma con KDE y QQ-plot.
 5. Revisar los 4 días con bajadas sin subida previa y el `2021-01-08`.
+
+---
+
+## Sesión 4 — 2026-11-14
+
+* **Rama:** `feature/eda`
+* **Notebook:** `notebooks/eda.ipynb` (celdas 56–74)
+* **Objetivo:** Auditoría de cierres diarios pendientes, cierre completo de la Sección 1.2 (estacionalidad mensual, efecto semanal, perfil horario) y desarrollo de la Sección 1.4 (distribución del target y desglose de consumo por áreas de planta).
+
+### 1. Qué se Hizo y Resultados Clave
+
+1. **Auditoría de fechas en revisión y consolidación de la base limpia (`1.173` días):**
+   * Se verificaron `2021-01-08` (`5.578 kW`), `2021-06-27`, `2021-08-03`, `2022-04-16`, `2022-07-03` y `2023-05-20`: corresponden a saltos intermedios compensados dentro del acumulado horario o a paradas válidas de baja carga invernal.
+   * **Regla consensuada del equipo:** 17 días inválidos totales (11 descartados en `df_diario_eda` + 6 errores de medidor: `2021-01-03`, `2021-07-12`, `2021-07-21`, `2021-07-27`, `2021-08-01`, `2021-08-24`), quedando `df_diario_limpio` con **`1.173` días válidos**.
+
+2. **Estacionalidad mensual (`Frio (Kw)`):**
+   * **Valle invernal:** diciembre (`12.699,2 kW` media; mediana `12.749,0`; mín `2.706,0`) y enero (`13.856,8 kW` media; mediana `14.793,0`; mín `2.310,0`; `n = 91` días).
+   * **Pico de verano:** julio (`30.650,5 kW` media; mediana `30.534,0`; máx `41.206,0`; `n = 117`), junio (`30.451,5 kW` media; mediana `31.116,0`; máx `48.046,0`; IQR `9.455,6`; `n = 90`) y agosto (`28.970,1 kW` media; `n = 111`). El aumento promedio invierno–verano supera el **`+141%`** (~2,4×).
+   * ANOVA por `mes_numero`: $F = 152,35$, $p = 2,92 \times 10^{-216}$, **$\eta^2 = 59,07\%$** de la varianza diaria explicada por el mes.
+
+3. **Efecto del día de la semana (ANOVA de un factor y $\eta^2$):**
+   * Lunes–viernes (`23.752,5 kW`) vs. fin de semana (`23.293,8 kW`): diferencia de **`-458,7 kW` (`-1,93%`)**.
+   * Serie cruda: $F = 1,0839$, $p = 0,3700$ ($> 0,05$), $\eta^2 = 0,55\%$.
+   * Serie desestacionalizada (restando media propia mes-año): $F = 4,1915$, $p = 0,0004$ (miércoles `+984,5 kW`, jueves `+512,7 kW` vs. viernes `-740,3 kW`, sábado `-436,7 kW`), $\eta^2 = 2,11\%$.
+
+4. **Perfil horario (`01:00`–`23:59`, incrementos filtrados en `[0, 5.153]` kW):**
+   * Carga base continua 24/7: mínimo promedio a las `07:00` (`921,1 kW/h`, mediana `906,0`) y máximo a las `14:00` (`1.038,6 kW/h`, mediana `1.023,0`), con meseta alta entre `13:00` y `21:00` (`1.007,6–1.038,6 kW/h`). Amplitud intradiaria de solo `117,5 kW/h` (`+12,8%`; la hora valle es el `88,7%` de la hora pico). El cierre `23:59` suma en promedio `954,0 kW` (mediana `949,0`).
+   * Por estación, la tasa horaria de verano (`~1.170–1.330 kW/h`) casi duplica la de invierno (`~585–675 kW/h`).
+
+5. **Distribución del target `Frio (Kw)` (`N = 1.173`):**
+   * Media `23.621,1 kW` | Mediana `23.701,0 kW` | Desvío `7.543,0 kW` (`CV = 31,9%`) | Mín/Máx `2.310,0 / 48.046,0 kW`.
+   * Asimetría `-0,066` y curtosis en exceso `-0,435` (distribución platicúrtica con meseta `17.000–31.000 kW` por superposición de regímenes estacionales).
+   * Shapiro-Wilk $W = 0,9957$ ($p = 2,27 \times 10^{-3}$) y D'Agostino $K^2 = 15,8620$ ($p = 3,59 \times 10^{-4}$): el cuerpo central se alinea bien con la normal en el QQ-plot, con desvíos esperables en las colas acotadas (`0 kW` y capacidad máxima instalada).
+
+6. **Consumo por áreas de planta (`Consolidado EE` a las `23:59`, filtro exploratorio `[0, 150.000]` kW):**
+   * Total `Planta (Kw)`: media `63.748,8 kW` | mediana `66.802,6 kW`.
+   * Macro-áreas: `Servicios` `38.706,2 kW` (`60,7%`, $r = 0,947$), `Envasado` `14.152,9 kW` (`22,2%`, $r = 0,543$), `Elaboracion` `6.973,0 kW` (`10,9%`, $r = 0,729$), `Restos Planta` `4.038,1 kW` (`6,3%`, $r = 0,115`).
+   * Sub-áreas principales: **`Frio` `23.621,1 kW` (`37,1%`, mayor consumidor individual)**, `Aire` `6.402,2 kW` (`10,0%`, $r = 0,605$), `Bodega` `6.008,3 kW` (`9,4%`, $r = 0,651$), `Linea 4` `6.379,2 kW` (`10,0%`, $r = 0,479`), `Linea 3` `5.388,1 kW` (`8,5%`, $r = 0,418`), `Linea 2` `4.423,9 kW` (`6,9%`, $r = 0,370`), `Cocina` `1.725,4 kW` (`2,7%`, $r = 0,448`). El resto de sub-áreas (`Pta Agua / Eflu`, `Efluentes`, `Calderas`, `Prod Agua`) suman entre `0,9%` y `2,5%` cada una.
+   * La correlación `r = 0,947` con `Servicios` es estructural (`Frio` está contenido dentro de `Servicios`), mientras que los vínculos operativos reales más claros aparecen con `Elaboracion`/`Bodega` ($r = 0,651$) y `Aire` ($r = 0,605$).
+
+### 2. Decisiones Metodológicas Tomadas
+
+* **Descarte de variables calendario semanales:** Se descartan `dia_semana` y `es_fin_de_semana` para el modelado principal; en una planta 24/7 con carga térmica continua, la varianza semanal es marginal (`0,55%` cruda, `2,11%` desestacionalizada) frente al `59,07%` explicado por el mes.
+* **Mantener `Frio (Kw)` en escala original (`kW`):** Sin transformaciones logarítmicas ni Box-Cox dada la simetría prácticamente nula (`-0,066`) y para preservar la interpretabilidad directa de la métrica objetivo (`MAE < 3.000 kW`).
+* **Uso de ANOVA paramétrico unificado:** Dado `N ≈ 167` observaciones por día de la semana (TLC), se mantuvo ANOVA de un factor + $\eta^2$ en el notebook para mantener la presentación clara y defendible.
+
+### 3. Próximos Pasos
+
+1. Integrar el análisis multivariado/producción (Sección 1.3) y consolidar el dataset unificado multi-hoja aplicando el criterio consensuado de `1.173` días válidos.
+2. Avanzar a la Fase 2 (Preprocesamiento y feature engineering temporal/climático) en la rama `feature/preprocessing`.
