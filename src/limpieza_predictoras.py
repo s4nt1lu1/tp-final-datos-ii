@@ -61,8 +61,8 @@ class LimpiadorExtremos(BaseEstimator, TransformerMixin):
 class ImputadorTemporal(BaseEstimator, TransformerMixin):
     """Completa los NaN sin usar información futura.
 
-    1. Forward fill limitado a `limite` filas: el valor faltante de un día se toma
-       del último día anterior con dato (nunca de un día posterior).
+    1. Con un índice de fechas se rellena hacia adelante hasta `limite` días calendario.
+       Con un índice común, el límite se cuenta en filas.
     2. Lo que quede (por ejemplo, al comienzo de la serie o huecos largos) se
        completa con la mediana de train.
     Supone que las filas están en orden cronológico.
@@ -80,7 +80,14 @@ class ImputadorTemporal(BaseEstimator, TransformerMixin):
     def transform(self, X):
         X = _como_dataframe(X, self.columnas_)
         nulos_antes = X.isna().sum()
-        X_ffill = X.ffill(limit=self.limite)
+        if isinstance(X.index, pd.DatetimeIndex) and not X.empty:
+            if not X.index.is_monotonic_increasing or X.index.has_duplicates:
+                raise ValueError("El índice diario tiene que estar ordenado y sin fechas repetidas.")
+            # Los días sin fila también cuentan dentro de los tres días de arrastre.
+            calendario = pd.date_range(X.index.min(), X.index.max(), freq="D")
+            X_ffill = X.reindex(calendario).ffill(limit=self.limite).reindex(X.index)
+        else:
+            X_ffill = X.ffill(limit=self.limite)
         self.imputados_ffill_ = nulos_antes - X_ffill.isna().sum()
         self.imputados_mediana_ = X_ffill.isna().sum()
         return X_ffill.fillna(self.medianas_)

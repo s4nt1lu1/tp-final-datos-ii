@@ -1,7 +1,6 @@
 """
 Pipeline modular de auditoría, limpieza horaria y construcción de `dataset_trabajo.csv`.
 
-Conversión a script reproducible del notebook `correccion_fechas.ipynb`.
 Procesa todas las hojas de los tres archivos Excel crudos en `data/raw/`
 (`2022_2023 > 2021_2023 > 2020_2022`), repara errores de formato y secuencia
 horaria, aplica control de reinicio y validación MAD en casos anómalos, y
@@ -9,8 +8,8 @@ exporta `data/processed/dataset_trabajo.csv` junto con la actualización de
 `data/checksums.json`.
 
 Uso recomendado desde la raíz del proyecto:
-    python src/correccion_fechas.py
-    python src/preprocessing_pipeline.py
+    python -m src.correccion_fechas
+    python -m src.preprocessing_pipeline
 """
 
 from __future__ import annotations
@@ -62,6 +61,8 @@ MIN_HORAS_DIA = 24
 MAX_FRIO_00HS = 100.0
 UMBRAL_SALTO_P999 = 5153.0
 EXIGIR_AL_MENOS_UN_CERO_FRIO = True
+# Primer año de la serie. La calibración termina antes del corte de Train.
+FIN_CALIBRACION = "2021-06-30"
 
 
 def get_default_excel_sources(raw_dir: Path = RAW_DATA_DIR) -> List[Tuple[str, Path]]:
@@ -586,6 +587,7 @@ def filtrar_dias_invalidos(
     df_mad_ee: pd.DataFrame,
     df_casos_especiales_mad: pd.DataFrame,
     target_col: str = COL_TARGET,
+    umbral_salto: float = UMBRAL_SALTO_P999,
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Etapa 5: Aplica filtros estructurales, de reinicio, fallas de medidor y MAD selectivo."""
     dias_borrados: List[Dict[str, Any]] = []
@@ -695,17 +697,17 @@ def filtrar_dias_invalidos(
             )
             continue
 
-        if val_2359 > 40_000 and len(diffs_frio) > 0 and diffs_frio.max() > UMBRAL_SALTO_P999:
+        if val_2359 > 40_000 and len(diffs_frio) > 0 and diffs_frio.max() > umbral_salto:
             z_mad, _, _ = evaluar_valor_mad(val_2359, ref_mad_frio)
             dias_borrados.append(
                 {
                     "DIA": dia_str,
                     "Archivo_Origen": archivo_origen,
-                    "Etapa_Filtro": "3. Falla de medidor (salto horario > P99.9 que infla cierre > 40.000 kW)",
+                    "Etapa_Filtro": "3. Falla de medidor (salto horario alto y cierre > 40.000 kW)",
                     "Filas_Dia": n_horas,
                     "Frio_2359_kW": val_2359,
                     "Z_Score_MAD_2359": z_mad,
-                    "Motivo_Detallado": f"Salto en una hora de {diffs_frio.max():,.1f} kW (> P99.9={UMBRAL_SALTO_P999:,.0f} kW) sin compensar (23:59={val_2359:,.1f} kW)",
+                    "Motivo_Detallado": f"Salto de {diffs_frio.max():,.1f} kW (> P99,9={umbral_salto:,.0f} kW) y cierre de {val_2359:,.1f} kW",
                 }
             )
             continue
@@ -823,6 +825,9 @@ def exportar_y_versionar(
         )
 
     checksum_csv = calcular_sha256_archivo(ruta_salida_csv)
+    checksum_borrados = None
+    if not df_dias_borrados.empty:
+        checksum_borrados = calcular_sha256_archivo(ruta_borrados_csv)
     checksum_previo_json: Optional[str] = None
     clave_rel = ruta_salida_csv.resolve().relative_to(project_root.resolve()).as_posix()
 
@@ -840,10 +845,15 @@ def exportar_y_versionar(
             if update_checksums_file:
                 if isinstance(datos_chk.get("datasets_procesados"), dict):
                     datos_chk["datasets_procesados"]["dataset_trabajo.csv"] = checksum_csv
+                    if checksum_borrados is not None:
+                        datos_chk["datasets_procesados"]["tabla_dias_borrados.csv"] = checksum_borrados
                 else:
                     datos_chk[clave_rel] = checksum_csv
-                with open(ruta_chk, "w", encoding="utf-8") as f:
+                    if checksum_borrados is not None:
+                        datos_chk["tabla_dias_borrados.csv"] = checksum_borrados
+                with open(ruta_chk, "w", encoding="utf-8", newline="\n") as f:
                     json.dump(datos_chk, f, indent=2, ensure_ascii=False)
+                    f.write("\n")
 
     referencia = expected_checksum.strip().lower() if expected_checksum else (
         checksum_previo_json.strip().lower() if checksum_previo_json else None
@@ -885,12 +895,24 @@ def run_cleaning_pipeline(
     cols_datos = [c for c in df_unificado.columns if c not in ("DIA", "HORA", "_archivo_origen")]
     cols_ee = [c for c in cols_datos if c.endswith("_Consolidado EE")]
 
-    df_mad_ee = calcular_parametros_mad_2359(df_unificado, cols_ee, umbral_z=UMBRAL_MAD)
+    # Los parámetros de control se estiman en el primer año. Los cierres
+    # de Validation y Test solo se inspeccionan con esas reglas ya fijadas.
+    calibracion = df_unificado[df_unificado["DIA"] <= FIN_CALIBRACION]
+    df_mad_ee = calcular_parametros_mad_2359(calibracion, cols_ee, umbral_z=UMBRAL_MAD)
+    saltos = calibracion.groupby("DIA")[COL_TARGET].diff()
+    # El percentil excluye retrocesos y los errores del orden de los millones.
+    saltos_validos = saltos[saltos.between(0, 1_000_000, inclusive="left")]
+    if saltos_validos.empty:
+        raise ValueError(f"Faltan incrementos horarios para calibrar hasta {FIN_CALIBRACION}.")
+    percentil_salto = float(saltos_validos.quantile(0.999))
+    # La centena superior evita tratar diferencias de pocos kW como evidencia
+    # de falla cuando el percentil se estima con un solo año de observaciones.
+    umbral_salto = float(np.ceil(percentil_salto / 100) * 100)
     df_trabajo, df_casos_especiales = evaluar_casos_especiales_y_reparar_pico_01(
         df_unificado, df_mad_ee, target_col=COL_TARGET
     )
     df_dataset_final, df_dias_borrados, df_anomalos_conservados = filtrar_dias_invalidos(
-        df_trabajo, df_mad_ee, df_casos_especiales, target_col=COL_TARGET
+        df_trabajo, df_mad_ee, df_casos_especiales, target_col=COL_TARGET, umbral_salto=umbral_salto
     )
 
     export_info = exportar_y_versionar(
@@ -922,6 +944,8 @@ def run_cleaning_pipeline(
         f"({export_info['fecha_min']} a {export_info['fecha_max']})"
     )
     print(f"Días borrados         : {export_info['n_dias_borrados']}")
+    print(f"Calibración hasta     : {FIN_CALIBRACION} | P99,9 saltos = {percentil_salto:.2f} kW")
+    print(f"Umbral de salto       : {umbral_salto:.0f} kW (centena superior)")
     print(f"Anómalos OK MAD       : {len(df_anomalos_conservados)}")
     print(f"Reparaciones horarias : {len(df_rep)} | Solapados: {len(df_solap)} | Extra: {len(df_extra)}")
     print(f"SHA-256 generado      : {export_info['checksum_sha256']}")
@@ -1052,7 +1076,7 @@ def main() -> None:
         "--expected-checksum",
         type=str,
         default=None,
-        help="Hash SHA-256 esperado (ej. el generado por correccion_fechas.ipynb) para comparar.",
+        help="Hash SHA-256 de referencia para comparar con el CSV horario generado.",
     )
     parser.add_argument(
         "--no-update-checksums",

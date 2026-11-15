@@ -1,33 +1,17 @@
-"""
-Pipeline modular de preparación, alineación temporal, partición cronológica
-y versionado de datos procesados (Sección 2.4).
+"""Pipeline reproducible de la Fase 2.
 
-Este script toma como entrada el dataset horario limpio generado en
-`correccion_fechas.ipynb` (`data/processed/dataset_trabajo.csv`) y prepara
-la estructura base para el modelado de consumo diario de frío (D+1):
-1. Extracción del cierre diario a las 23:59.
-2. Alineación temporal por fecha calendario y construcción del target (D+1).
-3. Partición cronológica estricta Train (70 %) / Validation (15 %) / Test (15 %).
-4. Exportación de datasets sin escalar en `data/processed/`.
-5. Actualización de checksums SHA-256 en `data/checksums.json`.
-6. Construcción del Pipeline de escalado (`StandardScaler`) ajustado solo con `X_train`.
-7. Generación automática de `data/processed/data_lineage.json`.
-
-Nota de integración futura:
-- La limpieza horaria previa reside en `correccion_fechas.ipynb`.
-- Las etapas de Feature Engineering y selección definitiva de variables se
-  pueden acoplar mediante los parámetros opcionales `feature_engineering_fn` y
-  `selected_features` de `run_pipeline()` sin modificar la arquitectura base.
+Parte del CSV horario limpio de `src/correccion_fechas.py`. Alinea D+1, fija
+la división cronológica, ajusta la preparación en Train y compara los
+subconjuntos en Validation antes de aplicar el resultado al resto de la serie.
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -42,12 +26,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
 
-try:
-    from src.auxiliar_functions import DATA_DIR, SEMILLA, huella  # type: ignore
-except Exception:
-    DATA_DIR = PROJECT_ROOT / "data"
-    SEMILLA = 42
-    huella = None
+from src.auxiliar_functions import DATA_DIR, SEMILLA, huella
+from src.correccion_fechas import FIN_CALIBRACION, MIN_HORAS_DIA, UMBRAL_MAD
+from src.feature_engineering import CLIMA_CSV, PreparadorFeatures
+from src.seleccion_variables import ALPHA_LASSO, ALPHA_RIDGE, TOPE_BOSQUE, seleccionar_variables
 
 PROCESSED_DIR = DATA_DIR / "processed"
 DEFAULT_INPUT_CSV = PROCESSED_DIR / "dataset_trabajo.csv"
@@ -85,10 +67,11 @@ def load_cleaned_data(
     path = Path(filepath)
     if not path.exists():
         raise FileNotFoundError(
-            f"No se encontró el dataset horario limpio en: {path}"
+            f"No se encontró el dataset horario limpio en {path}. "
+            "Generalo con python -m src.correccion_fechas."
         )
 
-    df = pd.read_csv(path, encoding="utf-8")
+    df = pd.read_csv(path, encoding="utf-8", low_memory=False)
     if df.empty:
         raise ValueError(f"El archivo de entrada está vacío: {path}")
 
@@ -110,7 +93,7 @@ def load_cleaned_data(
     df[time_col] = df[time_col].astype(str).str.strip()
 
     info: Dict[str, Any] = {
-        "input_file": str(path),
+        "input_file": path.name,
         "initial_rows": int(len(df)),
         "initial_columns": int(df.shape[1]),
         "initial_unique_days": int(df[date_col].nunique()),
@@ -231,6 +214,8 @@ def prepare_target(
 
     df_work = df_daily.copy()
     df_work[date_col] = pd.to_datetime(df_work[date_col]).dt.normalize()
+    if df_work[date_col].isna().any():
+        raise ValueError("El DataFrame diario contiene fechas sin valor.")
     df_work = df_work.sort_values(date_col).reset_index(drop=True)
 
     if df_work[date_col].duplicated().any():
@@ -238,9 +223,13 @@ def prepare_target(
 
     # Alineación estricta por fecha calendario D -> D+1:
     # Creamos una serie indexada por fecha y consultamos D + 1 día.
+    cierre = pd.to_numeric(df_work[target_col], errors="coerce")
+    cierre_valido = np.isfinite(cierre) & (cierre >= 0)
+    df_work[target_col] = cierre.where(cierre_valido)
     target_series = df_work.set_index(date_col)[target_col]
     next_calendar_dates = df_work[date_col] + pd.Timedelta(days=1)
-    df_work[target_name] = next_calendar_dates.map(target_series).to_numpy()
+    cierre_manana = next_calendar_dates.map(target_series)
+    df_work[target_name] = cierre_manana.where(cierre_valido)
 
     # Auditoría de discontinuidades y targets faltantes
     is_next_day_present = next_calendar_dates.isin(target_series.index)
@@ -250,13 +239,15 @@ def prepare_target(
         df_work.loc[~is_next_day_present, date_col].dt.strftime("%Y-%m-%d").tolist()
     )
     missing_value_only_dates = (
-        df_work.loc[is_next_day_present & ~is_target_valid, date_col]
+        df_work.loc[is_next_day_present & cierre_manana.isna(), date_col]
         .dt.strftime("%Y-%m-%d")
         .tolist()
     )
     discarded_dates = (
         df_work.loc[~is_target_valid, date_col].dt.strftime("%Y-%m-%d").tolist()
     )
+    # Si mañana tiene cierre pero hoy es inválido, la fila tampoco sirve de ejemplo.
+    invalid_origin_only = int((cierre_manana.notna() & ~cierre_valido).sum())
 
     n_before = int(len(df_work))
     if drop_invalid_target:
@@ -273,10 +264,11 @@ def prepare_target(
         "target_column_output": target_name,
         "alignment_method": "calendar_date_D_plus_1_exact_lookup",
         "observations_before_target_filter": n_before,
-        "valid_target_observations": n_after,
-        "discarded_observations": n_before - n_after,
+        "valid_target_observations": int(is_target_valid.sum()),
+        "discarded_observations": len(discarded_dates),
         "discarded_due_to_missing_next_day_or_last_day": len(discontinuity_dates),
         "discarded_due_to_nan_in_next_day_target": len(missing_value_only_dates),
+        "discarded_due_to_invalid_origin_only": invalid_origin_only,
         "discarded_dates": discarded_dates,
         "date_min": df_out[date_col].min().strftime("%Y-%m-%d"),
         "date_max": df_out[date_col].max().strftime("%Y-%m-%d"),
@@ -336,6 +328,10 @@ def temporal_split(
 
     df_sorted = df.copy()
     df_sorted[date_col] = pd.to_datetime(df_sorted[date_col]).dt.normalize()
+    if df_sorted[date_col].isna().any() or df_sorted[date_col].duplicated().any():
+        raise ValueError("La división necesita fechas válidas y únicas.")
+    if not np.isfinite(pd.to_numeric(df_sorted[target_col], errors="coerce")).all():
+        raise ValueError("Antes de dividir, descartá las filas sin etiqueta válida de D+1.")
     df_sorted = df_sorted.sort_values(date_col).reset_index(drop=True)
 
     n_total = len(df_sorted)
@@ -463,24 +459,7 @@ def generate_checksum(filepath: Path | str, block_size: int = 1048576) -> str:
     Raises:
         FileNotFoundError: Si el archivo no existe.
     """
-    path = Path(filepath)
-    if not path.exists():
-        raise FileNotFoundError(f"No existe el archivo para calcular checksum: {path}")
-
-    if huella is not None and block_size == 1048576:
-        try:
-            return str(huella(path))
-        except Exception:
-            pass
-
-    hasher = hashlib.sha256()
-    with open(path, "rb") as f:
-        while True:
-            chunk = f.read(block_size)
-            if not chunk:
-                break
-            hasher.update(chunk)
-    return hasher.hexdigest()
+    return huella(Path(filepath), bloque=block_size)
 
 
 def update_checksums(
@@ -490,7 +469,7 @@ def update_checksums(
 ) -> Dict[str, str]:
     """Actualiza `data/checksums.json` preservando las entradas existentes.
 
-    Compatible tanto con el esquema plano usado en `correccion_fechas.ipynb`
+    Compatible tanto con el esquema plano usado en `data/checksums.json`
     (claves relativas tipo `"data/processed/..."`) como con un esquema agrupado
     `{"archivos_originales": ..., "datasets_procesados": ...}` si ya existiera.
 
@@ -532,8 +511,9 @@ def update_checksums(
                 rel_key = filename
             existing_data[rel_key] = digest
 
-    with open(chk_path, "w", encoding="utf-8") as f:
+    with open(chk_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(existing_data, f, indent=2, ensure_ascii=False)
+        f.write("\n")
 
     return generated
 
@@ -577,8 +557,7 @@ def generate_data_lineage(
     df_daily_base: pd.DataFrame,
     df_final: pd.DataFrame,
     checksums: Dict[str, str],
-    feature_engineering_applied: bool = False,
-    feature_selection_applied: bool = False,
+    preparation_report: Dict[str, Any],
 ) -> Path:
     """Genera `data/processed/data_lineage.json` con trazabilidad completa calculada.
 
@@ -591,8 +570,7 @@ def generate_data_lineage(
         df_daily_base: DataFrame diario base.
         df_final: DataFrame final exportado.
         checksums: Hashes SHA-256 de los archivos generados.
-        feature_engineering_applied: Indica si se aplicó Feature Engineering.
-        feature_selection_applied: Indica si se aplicó selección de variables.
+        preparation_report: Reglas de preparación y evidencia de la selección.
 
     Returns:
         Ruta del archivo `data_lineage.json` generado.
@@ -601,22 +579,14 @@ def generate_data_lineage(
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     lineage_payload: Dict[str, Any] = {
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "generated_at_utc": datetime.now(timezone.utc).date().isoformat(),
         "script": "src/preprocessing_pipeline.py",
         "seed": SEMILLA,
         "pipeline_status": {
-            "stage": "2.4_skeleton_preliminar",
-            "feature_engineering_applied": feature_engineering_applied,
-            "feature_selection_applied": feature_selection_applied,
-            "dataset_final_es_definitivo": bool(
-                feature_engineering_applied and feature_selection_applied
-            ),
-            "nota": (
-                "Resultados preliminares: pendientes Feature Engineering, "
-                "integración de clima y selección definitiva de variables."
-                if not (feature_engineering_applied and feature_selection_applied)
-                else "Dataset definitivo con Feature Engineering y selección aplicados."
-            ),
+            "stage": "2.4_final",
+            "feature_engineering_applied": True,
+            "feature_selection_applied": True,
+            "dataset_final_es_definitivo": True,
         },
         "input": input_info,
         "daily_extraction": {
@@ -624,11 +594,13 @@ def generate_data_lineage(
             "initial_days": daily_report["initial_days"],
             "filtered_days_without_2359": daily_report["days_without_2359"],
             "missing_2359_dates": daily_report["missing_2359_dates"],
+            "days_with_null_target_at_2359": daily_report["days_with_null_target_at_2359"],
             "final_daily_days": daily_report["days_with_2359"],
             "date_min": daily_report["date_min"],
             "date_max": daily_report["date_max"],
         },
         "target_alignment": target_report,
+        "preparation": preparation_report,
         "splits": {
             "train": split_info["train"],
             "validation": split_info["validation"],
@@ -642,8 +614,9 @@ def generate_data_lineage(
         "checksums_sha256": checksums,
     }
 
-    with open(out_path, "w", encoding="utf-8") as f:
+    with open(out_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(lineage_payload, f, indent=2, ensure_ascii=False)
+        f.write("\n")
 
     return out_path
 
@@ -653,65 +626,64 @@ def run_pipeline(
     output_dir: Path | str = PROCESSED_DIR,
     checksums_path: Path | str = DEFAULT_CHECKSUMS_JSON,
     lineage_path: Path | str = DEFAULT_LINEAGE_JSON,
-    target_col: str = DEFAULT_TARGET_COL,
-    train_size: float = 0.70,
-    val_size: float = 0.15,
-    test_size: float = 0.15,
-    feature_engineering_fn: Optional[Callable[[pd.DataFrame], pd.DataFrame]] = None,
-    selected_features: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
-    """Coordina la ejecución completa de la Sección 2.4 en orden reproducible.
+    """Ejecuta las secciones 2.1 a 2.4 a partir de los archivos verificados."""
+    if not Path(input_csv).exists():
+        raise FileNotFoundError("Generá dataset_trabajo.csv con python -m src.correccion_fechas.")
+    with open(checksums_path, encoding="utf-8") as archivo:
+        registro = json.load(archivo)
+    entrada_sha256 = generate_checksum(input_csv)
+    clima_sha256 = generate_checksum(CLIMA_CSV)
+    if entrada_sha256 != registro["data/processed/dataset_trabajo.csv"]:
+        raise ValueError("El SHA-256 de dataset_trabajo.csv difiere del registrado.")
+    if clima_sha256 != registro["data/reference/clima_tecate_openmeteo.csv"]:
+        raise ValueError("El SHA-256 del clima de Tecate difiere del registrado.")
 
-    Args:
-        input_csv: Ruta a `dataset_trabajo.csv`.
-        output_dir: Carpeta de salida (`data/processed`).
-        checksums_path: Ruta a `data/checksums.json`.
-        lineage_path: Ruta a `data/processed/data_lineage.json`.
-        target_col: Nombre de la columna de consumo de frío.
-        train_size: Proporción Train.
-        val_size: Proporción Validation.
-        test_size: Proporción Test.
-        feature_engineering_fn: Hook opcional para incorporar Feature Engineering
-            sobre el DataFrame diario antes del split.
-        selected_features: Lista opcional de columnas predictoras finales.
+    # 1. Fijamos una sola población supervisada y un solo corte por fechas.
+    df_hourly, input_info = load_cleaned_data(input_csv)
+    input_info["sha256"] = entrada_sha256
+    df_daily_base, daily_report = aggregate_daily_data(df_hourly)
+    etiquetadas, target_report = prepare_target(df_daily_base)
+    columnas_base = [DEFAULT_DATE_COL, DEFAULT_TARGET_COL, DEFAULT_TARGET_NAME]
+    division_inicial = temporal_split(etiquetadas[columnas_base])
+    cortes = division_inicial[-1]["dataframes"]
+    train = cortes["train_df"].set_index(DEFAULT_DATE_COL)
+    validation = cortes["val_df"].set_index(DEFAULT_DATE_COL)
+    y_train = train[DEFAULT_TARGET_NAME]
+    y_val = validation[DEFAULT_TARGET_NAME]
 
-    Returns:
-        Diccionario con DataFrames, splits, pipeline de escalado, checksums y reportes.
-    """
-    # 1. Cargar dataset horario limpio
-    df_hourly, input_info = load_cleaned_data(
-        filepath=input_csv,
-        target_col=target_col,
+    # 2. Fit con fechas de Train. El historial incluye cierres sin y porque
+    # contribuyen a ventanas posteriores, pero esos días no estiman parámetros.
+    hasta_train = df_daily_base[DEFAULT_DATE_COL] <= train.index.max()
+    hasta_val = df_daily_base[DEFAULT_DATE_COL] <= validation.index.max()
+    preparador = PreparadorFeatures().fit(df_daily_base.loc[hasta_train], y_train)
+    candidatas = preparador.transform(df_daily_base.loc[hasta_val])
+    X_train_candidatas = candidatas.loc[train.index]
+    X_val_candidatas = candidatas.loc[validation.index]
+    for nombre, X in [("Train", X_train_candidatas), ("Validation", X_val_candidatas)]:
+        columnas_invalidas = X.columns[~np.isfinite(X).all()].tolist()
+        if columnas_invalidas:
+            raise ValueError(f"Predictoras sin valor finito en {nombre}: {columnas_invalidas}")
+
+    # 3. Los dos selectores se ajustan con Train. Validation elige el subconjunto.
+    columnas, metodos, comparacion = seleccionar_variables(
+        X_train_candidatas, y_train, X_val_candidatas, y_val,
     )
 
-    # 2. Extraer cierre diario de las 23:59
-    df_daily_base, daily_report = aggregate_daily_data(
-        df=df_hourly,
-        target_col=target_col,
-    )
+    # 4. Con la lista cerrada transformamos el historial completo. Asociamos
+    # las features con las etiquetas ya construidas, por fecha de origen D.
+    X_completo = preparador.transform(df_daily_base)
+    etiquetas = etiquetadas.set_index(DEFAULT_DATE_COL)[DEFAULT_TARGET_NAME]
+    df_final = X_completo.loc[etiquetas.index, columnas].copy()
+    if not np.isfinite(df_final).all().all():
+        faltantes = df_final.columns[~np.isfinite(df_final).all()].tolist()
+        raise ValueError(f"Predictoras finales sin valor finito: {faltantes}")
+    df_final[DEFAULT_TARGET_NAME] = etiquetas
+    df_final = df_final.reset_index()
+    X_train, y_train, X_val, y_val, X_test, y_test, split_info = temporal_split(df_final)
 
-    # 3. Hook futuro de Feature Engineering (sin inventar features en esta etapa)
-    fe_applied = feature_engineering_fn is not None
-    df_features = feature_engineering_fn(df_daily_base.copy()) if fe_applied else df_daily_base.copy()
-
-    # 4. Alineación temporal y construcción del target D+1
-    df_final, target_report = prepare_target(
-        df_daily=df_features,
-        target_col=target_col,
-        target_name=DEFAULT_TARGET_NAME,
-    )
-
-    # 5. Partición cronológica Train / Validation / Test
-    fs_applied = selected_features is not None
-    X_train, y_train, X_val, y_val, X_test, y_test, split_info = temporal_split(
-        df=df_final,
-        train_size=train_size,
-        val_size=val_size,
-        test_size=test_size,
-        feature_cols=selected_features,
-    )
-
-    # 6. Exportación de datasets sin escalar
+    # 5. El escalador aprende de Train. Exportamos los datos originales sin escalar.
+    scaler_pipeline = build_scaler_pipeline(X_train)
     split_dfs = split_info["dataframes"]
     exported_paths = save_processed_datasets(
         df_daily_base=df_daily_base,
@@ -721,18 +693,52 @@ def run_pipeline(
         test_df=split_dfs["test_df"],
         output_dir=output_dir,
     )
+    checksums = update_checksums(exported_paths, checksums_path)
 
-    # 7. Actualización de checksums SHA-256
-    checksums = update_checksums(
-        exported_paths=exported_paths,
-        checksums_path=checksums_path,
-        project_root=PROJECT_ROOT,
-    )
-
-    # 8. Preparación del Pipeline de escalado (fit solo con X_train)
-    scaler_pipeline = build_scaler_pipeline(X_train)
-
-    # 9. Generación de data_lineage.json
+    preparation_report = {
+        "hourly_cleaning": {
+            "script": "src/correccion_fechas.py",
+            "calibration_through": FIN_CALIBRACION,
+            "min_hourly_readings": MIN_HORAS_DIA,
+            "mad_threshold": UMBRAL_MAD,
+            "increment_threshold": "P99,9 de incrementos de calibración en [0, 1.000.000), redondeado a la centena superior",
+            "handoff_sha256": entrada_sha256,
+        },
+        "fit_cutoff_D": split_info["train"]["date_end"],
+        "first_validation_D": split_info["validation"]["date_start"],
+        "forecast_time": "Cierre de D. El último y de Train ya está disponible al emitir el primer pronóstico de Validation.",
+        "predictor_cleaning": {
+            "script": "src/limpieza_predictoras.py",
+            "max_missing_train": 0.20,
+            "min_abs_spearman_y_train": 0.40,
+            "redundancy_abs_spearman": 0.90,
+            "same_day_frio_proxy_abs_spearman": 0.98,
+            "outliers": "Negativos o mayores a 5 × P99 de Train",
+            "imputation": "Hasta tres días calendario hacia adelante y mediana de Train",
+            "operativas": preparador.operativas_,
+        },
+        "feature_engineering": {
+            "scripts": ["src/feature_engineering.py", "src/features_planta.py"],
+            "rolling_days_and_min_obs": {"mean_3": 2, "mean_7": 4, "mean_14": 7, "std_7": 4},
+            "lags_D": [1, 2, 7],
+            "ratio_frio_servicios": "Intervalo [0, 1], imputación usando Train si es inválido",
+            "missing_meta": "Mediana de metas positivas del mismo mes en Train",
+            "weather_snapshot_sha256": clima_sha256,
+            "weather_use": "Diagnóstico 2.2. Su disponibilidad al cierre de D no está documentada.",
+            "candidatas": candidatas.columns.tolist(),
+        },
+        "selection": {
+            "script": "src/seleccion_variables.py",
+            "fit_partition": "Train",
+            "scoring_partition": "Validation",
+            "lasso_alpha": ALPHA_LASSO,
+            "rf_top": TOPE_BOSQUE,
+            "ridge_alpha": ALPHA_RIDGE,
+            "comparison": "MAE de Ridge en Validation con desempate por menos columnas",
+            "validation_results": comparacion.to_dict(orient="records"),
+        },
+        "scaling": "StandardScaler ajustado en X_train. CSV exportados sin escalar.",
+    }
     lineage_file = generate_data_lineage(
         lineage_path=lineage_path,
         input_info=input_info,
@@ -742,8 +748,7 @@ def run_pipeline(
         df_daily_base=df_daily_base,
         df_final=df_final,
         checksums=checksums,
-        feature_engineering_applied=fe_applied,
-        feature_selection_applied=fs_applied,
+        preparation_report=preparation_report,
     )
 
     summary = {
@@ -755,9 +760,7 @@ def run_pipeline(
         "checksums": checksums,
         "lineage_file": str(lineage_file),
     }
-
     _print_execution_summary(summary)
-
     return {
         "df_daily_base": df_daily_base,
         "df_final": df_final,
@@ -768,6 +771,11 @@ def run_pipeline(
         "X_test": X_test,
         "y_test": y_test,
         "scaler_pipeline": scaler_pipeline,
+        "preparador": preparador,
+        "X_train_candidatas": X_train_candidatas,
+        "y_train_por_fecha": train[DEFAULT_TARGET_NAME],
+        "evidencia_selectores": metodos,
+        "comparacion_subconjuntos": comparacion,
         "summary": summary,
     }
 
@@ -788,7 +796,8 @@ def _print_execution_summary(summary: Dict[str, Any]) -> None:
     print(
         f"Observaciones descartadas (D+1) : {target['discarded_observations']} "
         f"(discontinuidad/último día={target['discarded_due_to_missing_next_day_or_last_day']}, "
-        f"NaN={target['discarded_due_to_nan_in_next_day_target']})"
+        f"cierre inválido D+1={target['discarded_due_to_nan_in_next_day_target']}, "
+        f"solo cierre D inválido={target['discarded_due_to_invalid_origin_only']})"
     )
     print(f"Observaciones con target válido : {target['valid_target_observations']}")
     print("-" * 80)
@@ -803,7 +812,7 @@ def _print_execution_summary(summary: Dict[str, Any]) -> None:
     print("Checksums SHA-256 generados:")
     for fname, digest in checksums.items():
         print(f"  {fname:<25}: {digest}")
-    print(f"Data lineage: {summary['lineage_file']}")
+    print(f"Linaje guardado en {Path(summary['lineage_file']).name}")
     print("=" * 80)
 
 
