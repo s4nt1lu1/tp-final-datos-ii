@@ -1,0 +1,25 @@
+{
+  "version": "v1.0.0",
+  "modelo": "Ridge",
+  "variante": "Fase 2 completa",
+  "desde_D": "2023-04-30",
+  "hasta_D": "2023-10-24",
+  "filas_test": 171,
+  "metricas": {
+    "Persistencia": {
+      "mae": 3367.842105,
+      "rmse": 4412.381048,
+      "r2": 0.397084
+    },
+    "Media móvil de 7 días": {
+      "mae": 3042.608939,
+      "rmse": 3923.801211,
+      "r2": 0.523213
+    },
+    "Modelo final": {
+      "mae": 2824.115629,
+      "rmse": 3714.607292,
+      "r2": 0.572697
+    }
+  }
+}
