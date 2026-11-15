@@ -18,7 +18,7 @@ from sklearn.preprocessing import StandardScaler  # Centra y escala cada columna
 from xgboost import XGBRegressor  # Segundo método de boosting con árboles.
 
 from src.auxiliar_functions import PROJECT_ROOT, SEMILLA, huella  # Rutas, semilla y SHA-256 compartidos.
-from src.feature_engineering import PreparadorFeatures, features_temporales, ordenar_diario  # Ingeniería de Fase 2.
+from src.preprocessing_pipeline import PreparadorFeatures, features_temporales, ordenar_diario  # Ingeniería de Fase 2.
 
 
 VERSION = "v1.0.0"  # Versión del primer modelo que se registra.
@@ -155,10 +155,12 @@ def comparar_modelos(salida):
         tabla_baselines.append({"modelo": nombre, **metricas})  # Agrega una fila para la tabla.
 
     # Partimos de las 12 columnas de Fase 2 y probamos dos formas de reducir las medias.
+    excluir_ruido = ["ratio_frio_servicios", "KW Trafo 12_Totalizadores Energia"]
     variantes = {
         "Fase 2 completa": columnas,
         "Medias 3 y 14": [c for c in columnas if c != "frio_roll_mean_7"],
         "Solo media 14": [c for c in columnas if c not in ["frio_roll_mean_3", "frio_roll_mean_7"]],
+        "Sin variables negativas (10 vars)": [c for c in columnas if c not in excluir_ruido],
     }
     pruebas = []  # Contendrá una fila por combinación de modelo, parámetros y columnas.
     mejor_ajuste = None  # Conserva el modelo ya entrenado para los gráficos de diagnóstico.
