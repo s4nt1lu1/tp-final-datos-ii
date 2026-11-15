@@ -4,5 +4,10 @@
   "Totalizadores Planta 2022_2023.xlsx": "aba9f9ff11e6fa477af282f14a88354f8a55c782941d5a4eb403e4c742e6df98",
   "dataset_unificado_inicial.csv": "41e1d971dbb16c5d5a8068e63937c116d2975582794c8dd2e5a0ee3cacfcc9a4",
   "tabla_dias_borrados.csv": "98fb7e0fbfd980c76d85f122d6cc49ed9d991a45a1382233a325c1f20612052e",
-  "data/processed/dataset_trabajo.csv": "bd015abb722ba2151d64ae9f229364cd61861b8682ffe846084d215aa083ae78"
+  "data/processed/dataset_trabajo.csv": "bd015abb722ba2151d64ae9f229364cd61861b8682ffe846084d215aa083ae78",
+  "data/processed/dataset_diario_base.csv": "dc8b215bb583e9c082512a2d7488b57616382e28ca7b7e9a170f364df1c00a3b",
+  "data/processed/dataset_final.csv": "887aa3c3e1694978629833e95d4137c1e38952a32095c75afd56f89312e7de6e",
+  "data/processed/train.csv": "c5fb60afcfdea9d3dd00afb9e277ccc6fed5484554fd0029607dcd43e4bb9417",
+  "data/processed/validation.csv": "63fd033365c8e91800ca513ce7723793773ab832c4a31fa33b91c34b69fc9cbd",
+  "data/processed/test.csv": "eab7402e885c9c2b0af11722c983beeb852e42a827cf8c633171ea1223c01438"
 }
