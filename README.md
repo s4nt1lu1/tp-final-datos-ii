@@ -6,12 +6,12 @@ cervecera para el día calendario siguiente.
 
 ## Entorno
 
-Cloná el repositorio y ubicate en la rama de preprocesamiento.
+Cloná el repositorio y ubicate en la rama de modelado.
 
 ```bash
 git clone https://github.com/s4nt1lu1/tp-final-datos-ii.git
 cd tp-final-datos-ii
-git switch feature/preprocessing
+git switch feature/modeling
 ```
 
 Creá un entorno aislado de Python 3.12 e instalá las versiones fijadas.
@@ -75,3 +75,35 @@ la ventana de 14 días y el arrastre de hasta tres días, incluir al menos
 16 días calendario de contexto previo al primer día que se quiera transformar.
 Las columnas finales y su orden figuran en el linaje. Se puede transformar el
 último cierre del historial aunque todavía no se conozca su etiqueta D+1.
+
+## Ejecutar la Fase 3
+
+Después de generar los CSV de Fase 2, ejecutá el modelado desde la raíz.
+
+```bash
+python -m src.train_model
+```
+
+El script calcula los dos baselines y ajusta Ridge, Random Forest, XGBoost y
+LightGBM con Train. Agrega cada prueba a `results/experiment_logs.csv` y
+registra la elección por MAE de Validation en `results/seleccion_modelado.json`.
+`notebooks/modelado.ipynb` explica el espacio de búsqueda y reproduce las
+comparaciones, el análisis de residuos y la importancia de variables.
+
+Para trabajar con un registro de experimentos separado, agregá
+`--salida resultados_locales`. Usá la misma carpeta de salida para los pasos
+de una corrida.
+
+Cuando la selección esté cerrada, la evaluación final se ejecuta con el
+siguiente comando.
+
+```bash
+python -m src.train_model --evaluar-test
+```
+
+Ese paso reentrena el estimador con Train + Validation y guarda las métricas
+agregadas de Test en `results/evaluacion_final.json`. El comando evita repetir
+la evaluación en una salida que ya tenga ese archivo. La notebook muestra la
+tabla guardada. `models/modelo_v1.0.0.pkl` contiene el estimador, el preparador
+de Fase 2 y el orden de las columnas. La versión, el commit de entrenamiento
+y el hash del artefacto quedan en `models/model_registry.json`.

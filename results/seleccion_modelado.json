@@ -1,0 +1,30 @@
+{
+  "modelo": "Ridge",
+  "variante": "Fase 2 completa",
+  "n_columnas": 12,
+  "columnas": [
+    "ET Servicios (Mj)_Consolidado GasVapor",
+    "KW Secador Kaeser_Totalizadores Energia",
+    "KW Linea 3_Totalizadores Energia",
+    "Red Paste L4_Consolidado Agua",
+    "KW Trafo 12_Totalizadores Energia",
+    "frio_hoy_d",
+    "frio_roll_mean_3",
+    "frio_roll_mean_7",
+    "frio_roll_mean_14",
+    "frio_diff_1",
+    "ratio_frio_servicios",
+    "bodega_x_calor_estacional"
+  ],
+  "hiperparametros": {
+    "alpha": 10
+  },
+  "mae": 2149.428252,
+  "rmse": 2790.707489,
+  "r2": 0.460502,
+  "sha256_entradas": {
+    "data/processed/train.csv": "b0f285a1fce335b4762f51ac196ad079a175162440f178070d5dbb617e62dd19",
+    "data/processed/validation.csv": "bf6ad117034f113c8910e090bfca5cc31c5b29c860db786b4e29e77443ed0e3a",
+    "data/processed/dataset_diario_base.csv": "dc8b215bb583e9c082512a2d7488b57616382e28ca7b7e9a170f364df1c00a3b"
+  }
+}
