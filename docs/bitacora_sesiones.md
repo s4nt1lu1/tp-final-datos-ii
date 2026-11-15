@@ -395,3 +395,32 @@ El modelo mejoró **218,49 kW (7,18 %)** respecto del mejor baseline y **543,73 
 ### Próximos pasos
 
 Revisar los PR por fase en orden EDA, preprocesamiento y modelado. En Fase 4 se implementa `predict.py` para cargar el registro, preparar un Excel nuevo con contexto histórico y producir una predicción diaria de D+1 con la versión elegida.
+
+---
+
+## Sesión 8 — 2026-11-15
+
+- **Autoría** · Lio con asistencia de Codex
+- **Ramas** · `feature/preprocessing` para la revisión de Fase 2 y `feature/modeling` para Fase 3
+- **Archivos** · `notebooks/preprocesamiento.ipynb`, `notebooks/modelado.ipynb` y esta bitácora
+
+### Objetivo
+
+Mostrar las cuentas y decisiones de preprocesamiento en un orden que se pueda seguir desde los borradores de Lio y Genaro. Ubicar la ejecución de los dos baselines y el primer ajuste de los cuatro modelos en la sección 3.1, antes de la búsqueda de hiperparámetros.
+
+### Cómo se revisó Fase 2
+
+- En **2.1** mostramos los motivos de los 18 descartes horarios y un ejemplo con un día sin cierre. Buscamos D+1 por fecha y mostramos por qué contar primero los 1.172 cierres dejaba el último día de Train el 27/10/2022. Al repartir los 1.140 pares válidos, Train termina el 26/10/2022 y las particiones tienen 798, 171 y 171 filas.
+- Tomamos los criterios de Genaro de faltantes, extremos y colinealidad. Su borrador partía de 28 columnas de EDA. El notebook unificado muestra la elección por dominio entre 169 candidatas y el filtro calculado con Train, que queda con 28 representantes. Graficamos el salto de Envasado antes y después de limpiarlo y mostramos la mediana de Train como respaldo para los huecos.
+- En **2.2A** recuperamos las fórmulas de Lio para rezagos y ventanas calendario. Repetimos el ranking de Open-Meteo en Train y mostramos gráficamente la relación de radiación semanal con la etiqueta. Quedó como diagnóstico porque el caché no documenta cuándo se publicó cada observación. Mostramos también, con Train, el patrón mensual y la correlación entre las medias de 3, 7 y 14 días.
+- En **2.2B** escribimos directamente los ratios, la imputación de meta mensual y las interacciones de Genaro. Contamos 348 metas sustituidas en Train y dos cocientes Frío/Servicios mayores a 1. En el gráfico de interacción, radiación sola tuvo Spearman 0,772 y Bodega por radiación 0,767 en Train. Para la lista candidata conservamos la interacción de Bodega con el índice estacional del calendario, que podemos calcular al cierre de D.
+- En **2.3** ajustamos LASSO y el bosque en celdas separadas del notebook y comparamos sus propuestas con el mismo Ridge en Validation. De las 43 candidatas volvieron a quedar las mismas 12. La propuesta del bosque obtuvo 2.149,43 kW. Mantener las medias de 3 y 14 días dio 2.161,15 kW, y mantener solo la de 14 dio 2.193,52 kW para ese Ridge. La comparación mantiene la media de siete días como baseline de la fase siguiente.
+- En **2.4** igualamos las variables y las etiquetas calculadas en el notebook con las del pipeline. Comprobamos que el escalador aprendiera de X_train, que el CSV saliera sin escalar y que los hashes y shapes coincidieran con el linaje. Las 12 columnas y el orden de exportación siguen siendo los que usa el modelo serializado.
+
+### Cómo se revisó Fase 3
+
+La sección 3.1 ahora calcula primero las predicciones de persistencia y de la media móvil. Después entrena una configuración inicial de Ridge, Random Forest, XGBoost y LightGBM, registra seis resultados y muestra sus métricas en las mismas fechas de Validation. En 3.2 seguimos con la búsqueda de 54 configuraciones, incluidas las variantes de ventanas identificadas en 2.3. La selección reproducida coincide con la elección publicada de Ridge con las 12 columnas. La tabla final se lee del resultado de Test ya registrado para esa configuración.
+
+### Reproducibilidad
+
+Regeneramos la limpieza horaria desde los tres Excel en un clon de GitHub con una instalación nueva de Python 3.12.14 y los 116 paquetes fijados. Ejecutamos todas las celdas de los dos notebooks en Jupyter. Revisamos seis gráficos de preprocesamiento y el gráfico de predicciones y residuos de modelado. Los cinco CSV de Fase 2 conservaron sus hashes. La ejecución de `python -m src.train_model` reprodujo la selección y las 56 filas de métricas de Validation al comparar sus valores sin las fechas de corrida. La evaluación final registrada corresponde al mismo modelo `v1.0.0`.
