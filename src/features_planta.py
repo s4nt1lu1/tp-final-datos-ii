@@ -56,15 +56,32 @@ class FeaturesPlanta(BaseEstimator, TransformerMixin):
     las columnas de COLUMNAS_BASE y las columnas de clima de `columnas_clima`.
     """
 
-    def __init__(self, col_fecha: str = "DIA", columnas_clima: tuple = ("temp_media_c", "radiacion_roll7")):
+    def __init__(
+        self,
+        col_fecha: str = "DIA",
+        columnas_clima: tuple = ("temp_media_c", "radiacion_roll7"),
+        incluir_agua_cond: bool = True,
+    ):
         self.col_fecha = col_fecha
         self.columnas_clima = columnas_clima
+        self.incluir_agua_cond = incluir_agua_cond
 
     def _verificar_columnas(self, X: pd.DataFrame) -> None:
-        requeridas = [self.col_fecha] + list(COLUMNAS_BASE.values()) + list(self.columnas_clima)
+        requeridas = [self.col_fecha] + self._columnas_a_limpiar()
+        requeridas += [COLUMNAS_BASE["meta_frio"]] + list(self.columnas_clima)
+        if self.incluir_agua_cond:
+            requeridas.append(COLUMNAS_BASE["agua_cond"])
         faltantes = [c for c in requeridas if c not in X.columns]
         if faltantes:
             raise ValueError(f"FeaturesPlanta: faltan columnas en los datos de entrada: {faltantes}")
+
+    def _columnas_a_limpiar(self) -> List[str]:
+        columnas = list(COLUMNAS_A_LIMPIAR)
+        if not self.incluir_agua_cond:
+            columnas.remove(COLUMNAS_BASE["agua_planta"])
+        if not self.columnas_clima:
+            columnas.remove(COLUMNAS_BASE["hl_bodega"])
+        return columnas
 
     def fit(self, X: pd.DataFrame, y=None):
         self._verificar_columnas(X)
@@ -72,24 +89,27 @@ class FeaturesPlanta(BaseEstimator, TransformerMixin):
         self.limpieza_ = Pipeline([
             ("extremos", LimpiadorExtremos(factor=5.0, cuantil=0.99)),
             ("imputacion", ImputadorTemporal(limite=3)),
-        ]).fit(X[COLUMNAS_A_LIMPIAR])
+        ]).fit(X[self._columnas_a_limpiar()])
         # Meta típica de cada mes del año (las metas son mensuales y cambian con la estación)
         meses = pd.to_datetime(X[self.col_fecha]).dt.month
-        self.meta_por_mes_ = X[COLUMNAS_BASE["meta_frio"]].groupby(meses).median()
+        meta = X[COLUMNAS_BASE["meta_frio"]]
+        meta = meta.where(meta > 0)
+        self.meta_por_mes_ = meta.groupby(meses).median()
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         self._verificar_columnas(X)
         X = X.copy()
-        base = self.limpieza_.transform(X[COLUMNAS_A_LIMPIAR])
+        base = self.limpieza_.transform(X[self._columnas_a_limpiar()])
         c = COLUMNAS_BASE
         nuevas = pd.DataFrame(index=X.index)
 
         # 1) Ratios entre áreas (proporciones del mismo día D)
         nuevas["ratio_frio_servicios"] = _ratio(base[c["frio"]], base[c["servicios"]])
         nuevas["ratio_bodega_elaboracion"] = _ratio(base[c["bodega"]], base[c["elaboracion"]])
-        agua_cond = X[c["agua_cond"]].where(X[c["agua_cond"]] >= 0)  # sin imputar: falta el primer año
-        nuevas["ratio_aguacond_aguaplanta"] = _ratio(agua_cond, base[c["agua_planta"]])
+        if self.incluir_agua_cond:
+            agua_cond = X[c["agua_cond"]].where(X[c["agua_cond"]] >= 0)
+            nuevas["ratio_aguacond_aguaplanta"] = _ratio(agua_cond, base[c["agua_planta"]])
 
         # 2) Eficiencia contra la Meta: > 1 = se consumió más frío por Hl que lo planificado
         meses = pd.to_datetime(X[self.col_fecha]).dt.month
@@ -104,6 +124,8 @@ class FeaturesPlanta(BaseEstimator, TransformerMixin):
         return nuevas
 
     def get_feature_names_out(self, input_features=None):
-        nombres = ["ratio_frio_servicios", "ratio_bodega_elaboracion", "ratio_aguacond_aguaplanta",
-                   "meta_frio_imputada", "eficiencia_frio_vs_meta"]
+        nombres = ["ratio_frio_servicios", "ratio_bodega_elaboracion"]
+        if self.incluir_agua_cond:
+            nombres.append("ratio_aguacond_aguaplanta")
+        nombres += ["meta_frio_imputada", "eficiencia_frio_vs_meta"]
         return nombres + [f"bodega_x_{c}" for c in self.columnas_clima]

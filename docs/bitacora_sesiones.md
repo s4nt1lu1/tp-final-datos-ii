@@ -291,3 +291,54 @@ A partir de los resultados obtenidos hoy en `df_diario_eda` (`1.179` días váli
 1. Unificar en el notebook entregable oficial **`notebooks/preprocesamiento.ipynb`** las Secciones **2.1**, **2.2A** y **2.2B** (calculando también las correlaciones de 2.2A sobre el tramo `train` para mantener criterio 100% homogéneo sin fuga temporal).
 2. Ejecutar la **Sección 2.3 (Selección de Variables)** exclusivamente sobre `train` combinando todas las features candidatas (15 operativas limpias + 16 de clima/lags/calendario + 4 de ratios/meta/interacciones) mediante **al menos 2 métodos** (ej. **LASSO / `LassoCV`**, **Importancia con Random Forest** y **RFE** con `SEMILLA = 42`).
 3. Conectar la función de Feature Engineering y la lista de variables ganadoras de la 2.3 en `run_pipeline()` de `src/preprocessing_pipeline.py` para exportar el **`data/processed/dataset_final.csv`** definitivo, actualizar `data/checksums.json` y `data/processed/data_lineage.json`, y abrir el Pull Request de `feature/preprocessing`.
+
+---
+
+## Sesión 6 — 2026-11-15
+
+- **Autoría** · Lio con asistencia de Codex
+- **Rama** · `feature/preprocessing`
+- **Fase** · Cierre local de la Fase 2, secciones 2.1 a 2.4
+- **Punto de partida** · `0203fd1`, verificado contra `origin/feature/preprocessing`
+- **Archivos** · `notebooks/preprocesamiento.ipynb`, los scripts de limpieza, ingeniería, selección y exportación en `src/`, el caché climático fijo, `data/checksums.json`, `data/processed/data_lineage.json` y `README.md`
+
+### Objetivo
+
+Corregir el desfase entre los borradores, reunir el entregable de la Fase 2 en `preprocesamiento.ipynb` y dejar un script que reproduzca la selección y los datos procesados. Los borradores individuales y el notebook de corrección horaria se conservan en sus versiones publicadas como registro del trabajo del grupo. El corte y las cifras vigentes están en el entregable unificado.
+
+### Razonamiento y decisiones
+
+- Mantuvimos el cierre de las 23:59 y buscamos el consumo de D+1 por fecha exacta. Excluimos pares sin cierre válido de D o de D+1 antes de aplicar el reparto 70/15/15. Los cierres válidos sin etiqueta siguen en el historial para construir ventanas de fechas posteriores.
+- En la limpieza horaria, la mediana y el MAD se calibran con el primer año, hasta el 30/06/2021. El P99,9 de incrementos de ese tramo fue 4.956 kW. Aplicamos la centena superior (5.000 kW) como umbral para evitar que diferencias de pocos kW decidan un descarte. La regeneración desde los tres Excel conservó 18 exclusiones y reprodujo el mismo CSV horario y SHA-256 del grupo.
+- Para las predictoras partimos de hojas operativas elegidas por dominio. Aplicamos los criterios de completitud, Spearman y colinealidad con los pares de Train. Conservamos los mínimos de Lio para las medias de 3, 7 y 14 días y el desvío de 7 días. El arrastre de faltantes cuenta hasta tres días calendario y el resto usa medianas de Train.
+- Calculamos ratios, eficiencia eléctrica por hectolitro contra Meta e interacciones. Los cocientes Frío/Servicios fuera de [0, 1] se tratan como faltantes. Las metas sustituidas usan la mediana mensual de Train. El clima histórico de Tecate quedó como diagnóstico reproducible con copia fija, porque falta verificar cuándo estuvo disponible cada observación al cierre de D. Para el modelo se evaluó una interacción entre producción de Bodega e índice estacional conocido desde el calendario.
+- En 2.3 ajustamos LASSO estandarizada con `alpha=100` y Random Forest con semilla 42, usando solo Train. Fijamos un máximo de 12 variables para el bosque. Usamos el mismo Ridge estandarizado con `alpha=10` para comparar en Validation todos los subconjuntos y desempatar por cantidad de columnas a una precisión de 0,01 kW. El Test se reserva para el reporte de la Fase 3.
+- En 2.4 exportamos los CSV sin escalar, ajustamos el `StandardScaler` dentro de un `Pipeline` solo con `X_train` y dejamos en el linaje los scripts, la fecha, las reglas, las variables, los cortes y las huellas. El preparador ajustado puede transformar un tramo con su historial sin necesitar la etiqueta futura.
+
+### Hallazgos cuantitativos
+
+- El CSV horario conserva 29.296 filas y 421 columnas, con 1.172 días a las 23:59 y SHA-256 `bd015abb722ba2151d64ae9f229364cd61861b8682ffe846084d215aa083ae78`.
+- De las 1.172 fechas, 32 quedan sin etiqueta por huecos de calendario o por ser el último cierre. Quedaron 1.140 pares. El último D de Train es el 26/10/2022, el último D de Validation es el 29/04/2023 y el último D de Test es el 24/10/2023.
+- El filtro operativo revisó 169 candidatas y retuvo 28. Con las derivadas quedaron 43. En Train, el mes explicó el 68,01 % de la variación del target, el día de semana el 0,46 % y el indicador de fin de semana el 0,07 %. Se sustituyeron 348 metas mensuales faltantes.
+- Los baselines en Validation dieron 2.727,13 kW de MAE para persistencia y 2.395,32 kW para la media móvil de 7 días.
+
+| Subconjunto | Predictoras | MAE de Ridge en Validation (kW) |
+|---|---:|---:|
+| Random Forest | 12 | 2.149,43 |
+| Intersección | 9 | 2.227,85 |
+| LASSO | 22 | 2.286,60 |
+| Todas | 43 | 2.286,66 |
+
+El subconjunto elegido por menor MAE fue el de Random Forest. Los shapes finales de X son **798 × 12**, **171 × 12** y **171 × 12**, respectivamente. `dataset_final.csv` quedó con SHA-256 `2d023012ed97d340f30d79d57744c71fd8575ac03b0b56347bad3817932b6228`.
+
+### Controles de ejecución
+
+- Verificamos el target con fechas desordenadas, día bisiesto, huecos, un cierre nulo, uno infinito y el último día. También comprobamos que cuatro días de separación agotaran un arrastre limitado a tres.
+- Reejecutamos las celdas del notebook con Python 3.12.14 en Windows y ejecutamos los scripts desde un directorio nuevo partiendo de los tres Excel y de la copia fija del clima. Dos corridas independientes reprodujeron los cinco SHA-256 de salida.
+- Alterar los cierres posteriores al primer D de Test mantuvo las features y la selección en Validation. Pasar 16 días de contexto también reprodujo exactamente las features del último cierre del historial. Se comprobaron los 116 requisitos aplicables del entorno.
+
+### Estado al cierre
+
+La Fase 2 está lista para revisar en la rama local. Queda pendiente integrar el trabajo mediante el Pull Request previsto en la consigna. La evaluación de Test, el registro de modelos y el script de predicción corresponden a las fases siguientes.
+
+Se registró la comparación de ventanas y la justificación de la disponibilidad del clima histórico en [Decisiones a resolver antes de la Fase 3](DECISIONES%20A%20RESOLVER%20ANTES%20DE%20LA%20FASE%203.md).
