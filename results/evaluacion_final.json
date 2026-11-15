@@ -1,7 +1,7 @@
 {
   "version": "v1.0.0",
   "modelo": "Ridge",
-  "variante": "Fase 2 completa",
+  "variante": "Sin variables negativas (10 vars)",
   "desde_D": "2023-04-30",
   "hasta_D": "2023-10-24",
   "filas_test": 171,
@@ -17,9 +17,9 @@
       "r2": 0.523213
     },
     "Modelo final": {
-      "mae": 2824.115629,
-      "rmse": 3714.607292,
-      "r2": 0.572697
+      "mae": 2796.891949,
+      "rmse": 3660.122774,
+      "r2": 0.58514
     }
   }
 }

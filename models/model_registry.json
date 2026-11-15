@@ -1,8 +1,8 @@
 {
   "v1.0.0": {
     "path": "models/modelo_v1.0.0.pkl",
-    "sha256": "ccbd269aaebf2232582ab6a6a051786e5bd3368b936a80a8b6495c84ea61c902",
-    "git_commit": "3df5f36db9993d80e9019492cbb1ae242cf1e608",
+    "sha256": "7a5ee2fe283739e082820ebcb00e179f0a28adf3d82db59f0e0867f218dc9c24",
+    "git_commit": "3dc5fcc5c6faae56f8e4016661894d7548a578b8",
     "modelo": "Ridge",
     "hiperparametros": {
       "alpha": 10
@@ -12,27 +12,25 @@
       "KW Secador Kaeser_Totalizadores Energia",
       "KW Linea 3_Totalizadores Energia",
       "Red Paste L4_Consolidado Agua",
-      "KW Trafo 12_Totalizadores Energia",
       "frio_hoy_d",
       "frio_roll_mean_3",
       "frio_roll_mean_7",
       "frio_roll_mean_14",
       "frio_diff_1",
-      "ratio_frio_servicios",
       "bodega_x_calor_estacional"
     ],
     "semilla": 42,
     "n_train_validation": 969,
     "test_sha256": "bb810ba1eb904890f82d3e5efa0d443af248fa42883ccd96c4fd43159cdbe172",
     "metricas_validation": {
-      "mae": 2149.428252,
-      "rmse": 2790.707489,
-      "r2": 0.460502
+      "mae": 2126.679014,
+      "rmse": 2755.679475,
+      "r2": 0.473961
     },
     "metricas_test": {
-      "mae": 2824.115629,
-      "rmse": 3714.607292,
-      "r2": 0.572697
+      "mae": 2796.891949,
+      "rmse": 3660.122774,
+      "r2": 0.58514
     }
   }
 }

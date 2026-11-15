@@ -76,7 +76,7 @@
   },
   "preparation": {
     "hourly_cleaning": {
-      "script": "src/correccion_fechas.py",
+      "script": "src/preprocessing_pipeline.py (Parte A)",
       "calibration_through": "2021-06-30",
       "min_hourly_readings": 24,
       "mad_threshold": 3.5,
@@ -87,7 +87,7 @@
     "first_validation_D": "2022-10-27",
     "forecast_time": "Cierre de D. El último y de Train ya está disponible al emitir el primer pronóstico de Validation.",
     "predictor_cleaning": {
-      "script": "src/limpieza_predictoras.py",
+      "script": "src/preprocessing_pipeline.py (Parte B)",
       "max_missing_train": 0.2,
       "min_abs_spearman_y_train": 0.4,
       "redundancy_abs_spearman": 0.9,
@@ -127,8 +127,7 @@
     },
     "feature_engineering": {
       "scripts": [
-        "src/feature_engineering.py",
-        "src/features_planta.py"
+        "src/preprocessing_pipeline.py (Partes C y D)"
       ],
       "rolling_days_and_min_obs": {
         "mean_3": 2,
@@ -192,7 +191,7 @@
       ]
     },
     "selection": {
-      "script": "src/seleccion_variables.py",
+      "script": "src/preprocessing_pipeline.py (Parte E)",
       "fit_partition": "Train",
       "scoring_partition": "Validation",
       "lasso_alpha": 100,
