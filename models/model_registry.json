@@ -2,7 +2,7 @@
   "v1.0.0": {
     "path": "models/modelo_v1.0.0.pkl",
     "sha256": "6cef9d0876774b4a3d1f70b30c421aa94f7611f4c6bec2316cc7a3bfe6139880",
-    "git_commit": "11e512b96a07392a814878d16f5940dadb29297a",
+    "git_commit": "b4f00027289aa0cce5bab388ac71e4f5e3a22c7b",
     "modelo": "Ridge",
     "hiperparametros": {
       "alpha": 10
