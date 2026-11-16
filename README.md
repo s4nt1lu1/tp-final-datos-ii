@@ -6,12 +6,12 @@ cervecera para el día calendario siguiente.
 
 ## Entorno
 
-Cloná el repositorio y ubicate en la rama del pipeline de predicción.
+Cloná el repositorio y ubicá la versión de entrega.
 
 ```bash
 git clone https://github.com/s4nt1lu1/tp-final-datos-ii.git
 cd tp-final-datos-ii
-git switch feature/prediction-pipeline
+git switch --detach v1.0.0
 ```
 
 Creá un entorno aislado de Python 3.12 e instalá las versiones fijadas.
@@ -135,8 +135,6 @@ primer pronóstico conviene aportar al menos 16 días calendario de contexto.
 El comando avisa por la terminal si faltan cierres al comienzo o si se omiten
 fechas, e indica el motivo al descartar una jornada.
 
-El modelo auditado de esta rama es el .pkl indicado en
-`models/model_registry.json`. El commit `b4f0002` permite regenerar ese
-binario byte por byte. La etiqueta histórica `v1.0.0` está en un commit con
-un binario anterior. Para esta entrega se usa el archivo y el registro de
-la rama del pipeline de predicción.
+La etiqueta `v1.0.0` identifica la entrega auditada. Usá el .pkl y el
+registro de ese mismo commit. El registro indica el commit `b4f0002` de
+entrenamiento, desde el cual se reprodujo el binario byte por byte.
