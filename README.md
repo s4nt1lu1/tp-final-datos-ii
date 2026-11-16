@@ -64,8 +64,7 @@ CSV contra `data/checksums.json` y conserva ese registro.
 Abrí `notebooks/preprocesamiento.ipynb` con el mismo entorno para ver las
 decisiones y los controles paso a paso. Es el notebook que se entrega en la
 Fase 2. Los notebooks auxiliares registran el trabajo previo del grupo.
-`notebooks/eda.ipynb` contiene la exploración de los Excel y las decisiones
-por sesión están en `docs/bitacora_sesiones.md`.
+`notebooks/eda.ipynb` contiene la exploración de los Excel.
 
 ## Reutilizar la preparación diaria
 
