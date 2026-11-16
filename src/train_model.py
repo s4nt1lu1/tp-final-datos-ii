@@ -18,7 +18,14 @@ from sklearn.preprocessing import StandardScaler  # Centra y escala cada columna
 from xgboost import XGBRegressor  # Segundo método de boosting con árboles.
 
 from src.auxiliar_functions import PROJECT_ROOT, SEMILLA, huella  # Rutas, semilla y SHA-256 compartidos.
-from src.preprocessing_pipeline import PreparadorFeatures, features_temporales, ordenar_diario  # Ingeniería de Fase 2.
+from src.preprocessing_pipeline import (
+    PreparadorFeatures,
+    calibrar_limpieza,
+    features_temporales,
+    get_default_excel_sources,
+    ordenar_diario,
+    unificar_archivos_excel,
+)
 
 
 VERSION = "v1.0.0"  # Versión del primer modelo que se registra.
@@ -162,6 +169,8 @@ def comparar_modelos(salida):
         "Solo media 14": [c for c in columnas if c not in ["frio_roll_mean_3", "frio_roll_mean_7"]],
         "Sin variables negativas (10 vars)": [c for c in columnas if c not in excluir_ruido],
     }
+
+    
     pruebas = []  # Contendrá una fila por combinación de modelo, parámetros y columnas.
     mejor_ajuste = None  # Conserva el modelo ya entrenado para los gráficos de diagnóstico.
     mejor_criterio = (float("inf"), float("inf"))  # Orden de elección: MAE y cantidad de columnas.
@@ -239,8 +248,17 @@ def cerrar_modelo(salida, version):
               "test", len(train_val), test.index, metricas["Modelo final"], corrida)
 
     nombre_archivo = f"modelo_{version}.pkl"  # Incluye la versión semántica en el nombre.
-    ruta_modelo = carpeta_modelos / nombre_archivo  # Ubicación local del archivo de modelo.
-    bundle = {"modelo": modelo, "preparador": preparador, "columnas": columnas, "version": version}
+    ruta_modelo = carpeta_modelos / nombre_archivo  # Ubicación local del archivo de model74)
+    df_crudo_cal, *_ = unificar_archivos_excel(get_default_excel_sources())
+    df_mad_ee, _, umbral_salto = calibrar_limpieza(df_crudo_cal)
+    bundle = {
+        "modelo": modelo,
+        "preparador": preparador,
+        "columnas": columnas,
+        "version": version,
+        "df_mad_ee": df_mad_ee,
+        "umbral_salto": umbral_salto,
+    }
     joblib.dump(bundle, ruta_modelo, compress=3)  # Guarda el modelo y el estado necesario para Fase 4.
     ruta_registro = carpeta_modelos / "model_registry.json"  # Índice para cargar modelos por versión.
     registro = {}  # Un clon inicial puede tener un registro vacío.

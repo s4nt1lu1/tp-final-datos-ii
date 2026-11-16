@@ -70,6 +70,8 @@ MAX_FRIO_00HS = 100.0
 UMBRAL_SALTO_P999 = 5153.0
 EXIGIR_AL_MENOS_UN_CERO_FRIO = True
 # Primer año de la serie. La calibración termina antes del corte de Train.
+# src/preprocessing_pipeline.py (líneas 71-80)
+# Primer año de la serie. La calibración termina antes del corte de Train.
 FIN_CALIBRACION = "2021-06-30"
 
 
@@ -869,6 +871,19 @@ def exportar_y_versionar(
         "coincide_checksum": coincide_checksum,
     }
 
+def calibrar_limpieza(df_unificado: pd.DataFrame) -> Tuple[pd.DataFrame, float, float]:
+    """Parámetros de control de la limpieza, estimados solo con el primer año."""
+    cols_datos = [c for c in df_unificado.columns if c not in ("DIA", "HORA", "_archivo_origen")]
+    cols_ee = [c for c in cols_datos if c.endswith("_Consolidado EE")]
+    calibracion = df_unificado[df_unificado["DIA"] <= FIN_CALIBRACION]
+    df_mad_ee = calcular_parametros_mad_2359(calibracion, cols_ee, umbral_z=UMBRAL_MAD)
+    saltos = calibracion.groupby("DIA")[COL_TARGET].diff()
+    saltos_validos = saltos[saltos.between(0, 1_000_000, inclusive="left")]
+    if saltos_validos.empty:
+        raise ValueError(f"Faltan incrementos horarios para calibrar hasta {FIN_CALIBRACION}.")
+    percentil_salto = float(saltos_validos.quantile(0.999))
+    umbral_salto = float(np.ceil(percentil_salto / 100) * 100)
+    return df_mad_ee, percentil_salto, umbral_salto
 
 def run_cleaning_pipeline(
     raw_dir: Path = RAW_DATA_DIR,
@@ -2126,12 +2141,17 @@ def run_pipeline(
         raise FileNotFoundError("Generá dataset_trabajo.csv con python -m src.preprocessing_pipeline --solo-limpieza.")
     with open(checksums_path, encoding="utf-8") as archivo:
         registro = json.load(archivo)
+    # src/preprocessing_pipeline.py (líneas 858-864)
+# src/preprocessing_pipeline.py (líneas 858-864)
     entrada_sha256 = generate_checksum(input_csv)
-    clima_sha256 = generate_checksum(CLIMA_CSV)
     if entrada_sha256 != registro["data/processed/dataset_trabajo.csv"]:
         raise ValueError("El SHA-256 de dataset_trabajo.csv difiere del registrado.")
-    if clima_sha256 != registro["data/reference/clima_tecate_openmeteo.csv"]:
-        raise ValueError("El SHA-256 del clima de Tecate difiere del registrado.")
+
+    clima_sha256 = None
+    if CLIMA_CSV.is_file() and "data/reference/clima_tecate_openmeteo.csv" in registro:
+        clima_sha256 = generate_checksum(CLIMA_CSV)
+        if clima_sha256 != registro["data/reference/clima_tecate_openmeteo.csv"]:
+            raise ValueError("El SHA-256 del clima de Tecate difiere del registrado.")
 
     # 1. Fijamos una sola población supervisada y un solo corte por fechas.
     df_hourly, input_info = load_cleaned_data(input_csv)
