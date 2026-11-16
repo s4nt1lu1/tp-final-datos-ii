@@ -1,8 +1,8 @@
 {
   "v1.0.0": {
     "path": "models/modelo_v1.0.0.pkl",
-    "sha256": "7a5ee2fe283739e082820ebcb00e179f0a28adf3d82db59f0e0867f218dc9c24",
-    "git_commit": "3dc5fcc5c6faae56f8e4016661894d7548a578b8",
+    "sha256": "6cef9d0876774b4a3d1f70b30c421aa94f7611f4c6bec2316cc7a3bfe6139880",
+    "git_commit": "11e512b96a07392a814878d16f5940dadb29297a",
     "modelo": "Ridge",
     "hiperparametros": {
       "alpha": 10
