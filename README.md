@@ -6,12 +6,12 @@ cervecera para el día calendario siguiente.
 
 ## Entorno
 
-Cloná el repositorio y ubicate en la rama de modelado.
+Cloná el repositorio y ubicate en la rama del pipeline de predicción.
 
 ```bash
 git clone https://github.com/s4nt1lu1/tp-final-datos-ii.git
 cd tp-final-datos-ii
-git switch feature/modeling
+git switch feature/prediction-pipeline
 ```
 
 Creá un entorno aislado de Python 3.12 e instalá las versiones fijadas.
@@ -47,19 +47,19 @@ al cierre de D queda pendiente de verificar para incorporarla al modelo.
 
 ## Ejecutar la Fase 2
 
-Ejecutá los dos comandos desde la raíz, con el entorno activado.
+Desde la raíz, con el entorno activado y los tres Excel originales en
+`data/raw/`, ejecutá este comando.
 
 ```bash
-python -m src.correccion_fechas
-python -m src.preprocessing_pipeline
+python -m src.preprocessing_pipeline --verificar-hashes
 ```
 
-El primer comando parte de los tres Excel y genera `dataset_trabajo.csv` y la
-tabla de días descartados. El segundo verifica los hashes de sus entradas,
-ajusta la preparación en Train y elige las variables en Validation. Genera
-`dataset_final.csv`, `dataset_diario_base.csv`, `train.csv`, `validation.csv`,
-`test.csv` y `data_lineage.json` en `data/processed/`. Los CSV se guardan
-sin escalar y sus hashes quedan registrados en `data/checksums.json`.
+El comando limpia los Excel, genera `dataset_trabajo.csv` y la tabla de
+descartes, y prepara los datos diarios con los parámetros ajustados en Train.
+Genera `dataset_final.csv`, `dataset_diario_base.csv`, `train.csv`,
+`validation.csv`, `test.csv` y `data_lineage.json` en `data/processed/`.
+Los CSV se guardan sin escalar. En este modo, el comando compara los siete
+CSV contra `data/checksums.json` y conserva ese registro.
 
 Abrí `notebooks/preprocesamiento.ipynb` con el mismo entorno para ver las
 decisiones y los controles paso a paso. Es el notebook que se entrega en la
@@ -78,32 +78,65 @@ Las columnas finales y su orden figuran en el linaje. Se puede transformar el
 
 ## Ejecutar la Fase 3
 
-Después de generar los CSV de Fase 2, ejecutá el modelado desde la raíz.
+Después de generar los CSV de Fase 2, ejecutá el modelado desde la raíz
+con una carpeta de salida nueva para la corrida.
 
 ```bash
-python -m src.train_model
+python -m src.train_model --salida resultados_locales
+python -m src.train_model --salida resultados_locales --evaluar-test
 ```
 
-El script calcula los dos baselines y ajusta Ridge, Random Forest, XGBoost y
-LightGBM con Train. Agrega cada prueba a `results/experiment_logs.csv` y
-registra la elección por MAE de Validation en `results/seleccion_modelado.json`.
-`notebooks/modelado.ipynb` explica el espacio de búsqueda y reproduce las
-comparaciones, el análisis de residuos y la importancia de variables.
+El primer comando calcula los dos baselines, ajusta Ridge, Random Forest,
+XGBoost y LightGBM con Train, y elige por MAE de Validation. Guarda el log
+en `resultados_locales/results/experiment_logs.csv` y la elección en
+`resultados_locales/results/seleccion_modelado.json`. La notebook explica
+la búsqueda, los residuos y la importancia de las variables.
 
-Para trabajar con un registro de experimentos separado, agregá
-`--salida resultados_locales`. Usá la misma carpeta de salida para los pasos
-de una corrida.
+El segundo comando usa esa elección, reentrena con Train + Validation y
+guarda las métricas de Test en `resultados_locales/results/evaluacion_final.json`.
+Los dos comandos usan la misma salida. Si esa carpeta ya contiene una
+evaluación final, elegí otra para una corrida completa.
 
-Cuando la selección esté cerrada, la evaluación final se ejecuta con el
-siguiente comando.
+## Predecir con un Excel nuevo (Fase 4)
+
+Desde la raíz, con las dependencias instaladas y los archivos de `models/`
+de esta rama, ejecutá:
 
 ```bash
-python -m src.train_model --evaluar-test
+python -m src.predict "ruta/al/archivo_nuevo.xlsx" --salida "results/predicciones.csv"
 ```
 
-Ese paso reentrena el estimador con Train + Validation y guarda las métricas
-agregadas de Test en `results/evaluacion_final.json`. El comando evita repetir
-la evaluación en una salida que ya tenga ese archivo. La notebook muestra la
-tabla guardada. `models/modelo_v1.0.0.pkl` contiene el estimador, el preparador
-de Fase 2 y el orden de las columnas. La versión, el commit de entrenamiento
-y el hash del artefacto quedan en `models/model_registry.json`.
+El script carga el modelo y su preparación guardada, verifica el SHA-256
+del .pkl y emite una fila por fecha D. El valor de esa fila pronostica el
+consumo de D+1. Para este paso alcanzan el Excel nuevo y el modelo publicado
+con su registro. Las hojas y columnas se buscan por nombre.
+
+Para el Ridge publicado, estas son las mediciones mínimas. Cada una de las
+hojas correspondientes también debe tener las columnas `DIA` y `HORA`.
+
+| Hoja | Columnas de medición |
+| --- | --- |
+| Consolidado EE | `Frio (Kw)` |
+| Consolidado GasVapor | `ET Servicios (Mj)` |
+| Totalizadores Energia | `KW Secador Kaeser`, `KW Linea 3` |
+| Consolidado Agua | `Red Paste L4` |
+| Consolidado Produccion | `Hl Producido Bodega` |
+
+Las medias móviles usan el historial anterior a cada fecha. Si el Excel
+incluye los primeros días como contexto, usá `--desde AAAA-MM-DD` para
+exportar desde el día solicitado. Si el historial está en otro Excel, usá:
+
+```bash
+python -m src.predict "ruta/al/archivo_nuevo.xlsx" --historial "ruta/al/historial.xlsx"
+```
+
+El segundo Excel aporta las fechas anteriores a las del principal. Para el
+primer pronóstico conviene aportar al menos 16 días calendario de contexto.
+El comando avisa por la terminal si faltan cierres al comienzo o si se omiten
+fechas, e indica el motivo al descartar una jornada.
+
+El modelo auditado de esta rama es el .pkl indicado en
+`models/model_registry.json`. El commit `b4f0002` permite regenerar ese
+binario byte por byte. La etiqueta histórica `v1.0.0` está en un commit con
+un binario anterior. Para esta entrega se usa el archivo y el registro de
+la rama del pipeline de predicción.

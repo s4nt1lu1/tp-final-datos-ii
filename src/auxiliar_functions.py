@@ -73,4 +73,9 @@ def verificar_checksums(archivo_referencia: Path = DATA_DIR / "checksums.json", 
 
 
 if __name__ == "__main__":
-    generar_checksums_crudos()
+    # En un clon ya existe el registro completo. Verificamos los Excel sin
+    # reemplazar las huellas de los CSV por un JSON que solo liste los crudos.
+    if (DATA_DIR / "checksums.json").is_file():
+        verificar_checksums()
+    else:
+        generar_checksums_crudos()

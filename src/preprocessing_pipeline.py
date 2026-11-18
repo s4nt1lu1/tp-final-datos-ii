@@ -33,6 +33,13 @@ from sklearn.preprocessing import StandardScaler
 # ---------------------------------------------------------------------------
 # Rutas
 # ---------------------------------------------------------------------------
+# Al ejecutar el .py directamente, Python empieza a buscar módulos en src/.
+# Agregamos la raíz para que funcionen los mismos imports que con python -m.
+if __package__ in (None, ""):
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from src.auxiliar_functions import (
     DATA_DIR,
     PROJECT_ROOT,
@@ -1971,6 +1978,25 @@ def generate_checksum(filepath: Path | str, block_size: int = 1048576) -> str:
     return huella(Path(filepath), bloque=block_size)
 
 
+def verificar_hashes_exportados(exported_paths, registro):
+    """Compara los CSV de esta corrida con las huellas de referencia."""
+    hashes = {}
+    for nombre, ruta in exported_paths.items():
+        if ruta is None or not Path(ruta).is_file():
+            raise FileNotFoundError(f"La corrida no generó el archivo esperado: {nombre}.")
+        clave = f"data/processed/{nombre}"
+        esperado = registro.get(clave, registro.get(nombre))
+        if esperado is None:
+            raise ValueError(f"No hay un SHA-256 de referencia para {nombre}.")
+        calculado = generate_checksum(ruta)
+        if calculado != esperado:
+            raise ValueError(
+                f"SHA-256 distinto para {nombre}. Esperado: {esperado}. Calculado: {calculado}."
+            )
+        hashes[nombre] = calculado
+    return hashes
+
+
 def update_checksums(
     exported_paths: Dict[str, Path],
     checksums_path: Path | str = DEFAULT_CHECKSUMS_JSON,
@@ -2135,6 +2161,8 @@ def run_pipeline(
     output_dir: Path | str = PROCESSED_DIR,
     checksums_path: Path | str = DEFAULT_CHECKSUMS_JSON,
     lineage_path: Path | str = DEFAULT_LINEAGE_JSON,
+    *,
+    verificar_hashes: bool = False,
 ) -> Dict[str, Any]:
     """Ejecuta las secciones 2.1 a 2.4 a partir de los archivos verificados."""
     if not Path(input_csv).exists():
@@ -2148,9 +2176,10 @@ def run_pipeline(
         raise ValueError("El SHA-256 de dataset_trabajo.csv difiere del registrado.")
 
     clima_sha256 = None
-    if CLIMA_CSV.is_file() and "data/reference/clima_tecate_openmeteo.csv" in registro:
+    clave_clima = "data/reference/clima_tecate_openmeteo.csv"
+    if verificar_hashes or (CLIMA_CSV.is_file() and clave_clima in registro):
         clima_sha256 = generate_checksum(CLIMA_CSV)
-        if clima_sha256 != registro["data/reference/clima_tecate_openmeteo.csv"]:
+        if clima_sha256 != registro.get(clave_clima):
             raise ValueError("El SHA-256 del clima de Tecate difiere del registrado.")
 
     # 1. Fijamos una sola población supervisada y un solo corte por fechas.
@@ -2207,7 +2236,11 @@ def run_pipeline(
         test_df=split_dfs["test_df"],
         output_dir=output_dir,
     )
-    checksums = update_checksums(exported_paths, checksums_path)
+    # En auditoría se compara con el registro leído al empezar la corrida.
+    if verificar_hashes:
+        checksums = verificar_hashes_exportados(exported_paths, registro)
+    else:
+        checksums = update_checksums(exported_paths, checksums_path)
 
     preparation_report = {
         "hourly_cleaning": {
@@ -2342,18 +2375,30 @@ def main() -> None:
                         help="Guarda data/processed/diagnostico_mad_limpieza.png.")
     parser.add_argument("--expected-checksum", type=str, default=None,
                         help="SHA-256 de referencia para dataset_trabajo.csv.")
-    parser.add_argument("--no-update-checksums", action="store_true",
-                        help="No sobrescribe data/checksums.json tras exportar.")
+    parser.add_argument("--verificar-hashes", "--no-update-checksums", action="store_true",
+                        help="Compara los CSV con data/checksums.json y conserva el registro.")
     args = parser.parse_args()
 
-    run_cleaning_pipeline(
+    if args.verificar_hashes:
+        with DEFAULT_CHECKSUMS_JSON.open(encoding="utf-8") as archivo:
+            registro = json.load(archivo)
+
+    limpieza = run_cleaning_pipeline(
         verify_raw_checksums=not args.skip_raw_checksums,
         save_diagnostic_plot=args.save_plot,
         expected_checksum=args.expected_checksum,
-        update_checksums_file=not args.no_update_checksums,
+        update_checksums_file=not args.verificar_hashes,
     )
+    if args.verificar_hashes:
+        info = limpieza["export_info"]
+        verificar_hashes_exportados({
+            "dataset_trabajo.csv": info["ruta_salida_csv"],
+            "tabla_dias_borrados.csv": info["ruta_borrados_csv"],
+        }, registro)
+        if args.expected_checksum and not info["coincide_checksum"]:
+            raise ValueError("El SHA-256 de dataset_trabajo.csv difiere del indicado en --expected-checksum.")
     if not args.solo_limpieza:
-        run_pipeline()
+        run_pipeline(verificar_hashes=args.verificar_hashes)
 
 
 if __name__ == "__main__":
