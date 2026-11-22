@@ -35,10 +35,10 @@
   },
   "v2.0.0": {
     "path": "models/modelo_v2.0.0.pkl",
-    "sha256": "3f85afdc7c4f2b2dd5e709b209b89d31363e324eebe8501414e894245a8b432f",
-    "git_commit": "69302fb33a34b222f19f7abe292ca11a69804406",
+    "sha256": "a2b7da78dfd6586bb70bd5718a1ebf21e28bb12e61119e451962bc10599f5814",
+    "git_commit": "05054e641a4b6950de365791763262c48de026b4",
     "cambios_sin_commitear_al_entrenar": false,
-    "pipeline": "src/limpieza_horaria.py, src/eda.py, src/preprocessing_pipeline.py, src/seleccion_variables.py, src/train_model.py",
+    "pipeline": "src/auxiliar_functions.py, src/preprocessing_pipeline.py, src/train_model.py",
     "modelo": "Random Forest",
     "conjunto": "forward",
     "hiperparametros": {
@@ -90,7 +90,7 @@
     },
     "test_sha256": "ebe046ac697f33728f050ce251a4f32eaa2a98c475c89aa6873a7539a5dddb22",
     "corrida_utc": "2026-11-21T23:41:25.321365+00:00",
-    "regenerado_utc": "2026-11-22T02:55:14+00:00",
+    "regenerado_utc": "2026-11-22T23:11:13+00:00",
     "nota_regeneracion": "Reajustado desde git_commit con la configuración congelada; predice lo mismo que el modelo evaluado (diferencia máxima 0.0e+00 kW). Las métricas de Test son las de la evaluación única de corrida_utc."
   }
 }

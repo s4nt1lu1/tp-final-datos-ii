@@ -1,17 +1,17 @@
 {
-  "generado_utc": "2026-11-22T02:55:14+00:00",
+  "generado_utc": "2026-11-22T23:11:13+00:00",
   "version_modelo": "v2.0.0",
   "etapas": [
     {
       "etapa": "Limpieza horaria y unificación de los Excel",
-      "script": "src/limpieza_horaria.py",
+      "script": "src/auxiliar_functions.py",
       "salida": "data/processed/dataset_trabajo.csv",
       "sha256": "bd015abb722ba2151d64ae9f229364cd61861b8682ffe846084d215aa083ae78"
     },
     {
       "etapa": "Decisiones estructurales sobre las columnas (EDA)",
-      "script": "src/eda.py",
-      "fecha_utc": "2026-11-22T02:30:07+00:00",
+      "script": "src/preprocessing_pipeline.py (etapa eda)",
+      "fecha_utc": "2026-11-22T23:04:33+00:00",
       "salida": "results/eda/decisiones_columnas.csv",
       "sha256": "441c807ab2af0957515b5245d2c00b2b27d5bbc4f9e0377099de740073355977",
       "transformaciones": {
@@ -27,7 +27,7 @@
     {
       "etapa": "Preprocesamiento ajustado con Train",
       "script": "src/preprocessing_pipeline.py",
-      "fecha_utc": "2026-11-22T02:31:10+00:00",
+      "fecha_utc": "2026-11-22T23:04:44+00:00",
       "fin_ajuste": "2022-10-26",
       "transformaciones": {
         "aplicar_decisiones_eda": "419 -> 321",
@@ -46,8 +46,8 @@
     },
     {
       "etapa": "Variables creadas y selección",
-      "script": "src/seleccion_variables.py",
-      "fecha_utc": "2026-11-22T02:34:37+00:00",
+      "script": "src/preprocessing_pipeline.py (etapa seleccion)",
+      "fecha_utc": "2026-11-22T23:06:39+00:00",
       "candidatas": 360,
       "subconjuntos": {
         "mutual_information": 8,
