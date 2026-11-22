@@ -1,0 +1,8 @@
+modelo,conjunto,n_columnas,mae_interno,mae,rmse,r2,sesgo,hiperparametros
+Random Forest,forward,23.0,3406.242227631165,2297.595901,2859.564602,0.433551,38.6631004611564,"{""n_estimators"": 200, ""max_depth"": 11, ""min_samples_leaf"": 3, ""max_features"": 0.6, ""objetivo_y"": ""nivel""}"
+XGBoost,lasso,41.0,3398.4080137762403,2318.586948,2931.876335,0.404541,776.7381841648391,"{""n_estimators"": 300, ""learning_rate"": 0.03461617453314415, ""max_depth"": 2, ""min_child_weight"": 1.2928102714417076, ""subsample"": 0.730778084334067, ""colsample_bytree"": 0.8892365402876209, ""reg_lambda"": 0.023740735890527734, ""objective"": ""reg:absoluteerror"", ""objetivo_y"": ""nivel""}"
+Ridge,forward,23.0,2736.3136804960473,2320.72892,2951.595082,0.396504,246.64803783868177,"{""alpha"": 73.71931195045953, ""objetivo_y"": ""nivel""}"
+Lasso,forward,23.0,2839.2472523322667,2397.21683,3048.091187,0.356399,364.85323659727425,"{""alpha"": 31.107092841598856, ""objetivo_y"": ""nivel""}"
+LightGBM,forward,23.0,3349.503143312692,2455.314401,2999.365065,0.376811,721.2361485387312,"{""n_estimators"": 500, ""learning_rate"": 0.04457467998751702, ""num_leaves"": 4, ""min_child_samples"": 5, ""subsample"": 0.5801692575682175, ""colsample_bytree"": 0.3551525686955743, ""reg_lambda"": 0.01081552974580867, ""objective"": ""regression_l1"", ""objetivo_y"": ""nivel"", ""subsample_freq"": 1}"
+Persistencia,,,,2727.134503,3362.135626,0.216947,,
+Media móvil de 7 días,,,,2398.327485,3159.795538,0.308362,,
