@@ -6,9 +6,9 @@
   "tabla_dias_borrados.csv": "6407891e03ebab77bbf5602e59a531bbcca6c99226c9d54b964da388cedc50d2",
   "data/processed/dataset_trabajo.csv": "bd015abb722ba2151d64ae9f229364cd61861b8682ffe846084d215aa083ae78",
   "data/reference/clima_tecate_openmeteo.csv": "dc1d29dff8cb996bccbe4d802ea9aba3376f0769e1b362b5b0f74167034ac01a",
-  "data/processed/dataset_diario_base.csv": "dc8b215bb583e9c082512a2d7488b57616382e28ca7b7e9a170f364df1c00a3b",
-  "data/processed/dataset_final.csv": "2d023012ed97d340f30d79d57744c71fd8575ac03b0b56347bad3817932b6228",
-  "data/processed/train.csv": "b0f285a1fce335b4762f51ac196ad079a175162440f178070d5dbb617e62dd19",
-  "data/processed/validation.csv": "bf6ad117034f113c8910e090bfca5cc31c5b29c860db786b4e29e77443ed0e3a",
-  "data/processed/test.csv": "bb810ba1eb904890f82d3e5efa0d443af248fa42883ccd96c4fd43159cdbe172"
+  "data/processed/dataset_final.csv": "722849ad911923f6117bd58af6365f8c8b6056187ef8dfaa26bd3c0640d6504d",
+  "data/processed/train.csv": "650e978ede6604c9bef549af9dfb6fc8498f62c92d8bf4b667cab1f3631eb53e",
+  "data/processed/validation.csv": "3056e2e1c88e22fa589be883818de9d8c131c55c852ce8dbef72655b3c5d9be7",
+  "data/processed/test.csv": "ebe046ac697f33728f050ce251a4f32eaa2a98c475c89aa6873a7539a5dddb22",
+  "data/processed/historial_completo.csv": "b46f1a303d112380c1fa3ac682afebb41ae9264db756583a607b94497a9368d0"
 }
