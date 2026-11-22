@@ -1,0 +1,47 @@
+variable,familia,origen,definicion,pct_dias_train
+bin_frio_q1,binning,Frio (Kw)_Consolidado EE,"frio < 17,771",20.024420024420024
+bin_frio_q2,binning,Frio (Kw)_Consolidado EE,"17,771 <= frio < 23,691",20.024420024420024
+bin_frio_q3,binning,Frio (Kw)_Consolidado EE,"23,691 <= frio < 27,721",19.902319902319903
+bin_frio_q4,binning,Frio (Kw)_Consolidado EE,"27,721 <= frio < 31,673",20.024420024420024
+bin_frio_q5,binning,Frio (Kw)_Consolidado EE,"frio >= 31,673",20.024420024420024
+bin_bodega_q1,binning,Hl Producido Bodega_Consolidado Produccion,"bodega < 7,349",25.03052503052503
+bin_bodega_q2,binning,Hl Producido Bodega_Consolidado Produccion,"7,349 <= bodega < 9,812",24.90842490842491
+bin_bodega_q3,binning,Hl Producido Bodega_Consolidado Produccion,"9,812 <= bodega < 11,603",25.03052503052503
+bin_bodega_q4,binning,Hl Producido Bodega_Consolidado Produccion,"bodega >= 11,603",25.03052503052503
+bin_envasada_q1,binning,Hl Cerveza Envasada_Consolidado Produccion,"envasada < 6,818",25.03052503052503
+bin_envasada_q2,binning,Hl Cerveza Envasada_Consolidado Produccion,"6,818 <= envasada < 9,791",24.90842490842491
+bin_envasada_q3,binning,Hl Cerveza Envasada_Consolidado Produccion,"9,791 <= envasada < 11,863",25.03052503052503
+bin_envasada_q4,binning,Hl Cerveza Envasada_Consolidado Produccion,"envasada >= 11,863",25.03052503052503
+bin_mosto_cero,binning,Hl de Mosto_Consolidado Produccion,mosto <= 0 (sin actividad),8.18070818070818
+bin_mosto_q1,binning,Hl de Mosto_Consolidado Produccion,"mosto < 6,273 (y > 0)",30.64713064713065
+bin_mosto_q2,binning,Hl de Mosto_Consolidado Produccion,"6,273 <= mosto < 7,499 (y > 0)",30.525030525030527
+bin_mosto_q3,binning,Hl de Mosto_Consolidado Produccion,"mosto >= 7,499 (y > 0)",30.64713064713065
+int_frio_x_bodega,interacción,Frio (Kw)_Consolidado EE × Hl Producido Bodega_Consolidado Produccion,z(frio) × z(bodega),
+int_frio_x_envasada,interacción,Frio (Kw)_Consolidado EE × Hl Cerveza Envasada_Consolidado Produccion,z(frio) × z(envasada),
+int_frio_x_mosto,interacción,Frio (Kw)_Consolidado EE × Hl de Mosto_Consolidado Produccion,z(frio) × z(mosto),
+int_bodega_x_envasada,interacción,Hl Producido Bodega_Consolidado Produccion × Hl Cerveza Envasada_Consolidado Produccion,z(bodega) × z(envasada),
+int_bodega_x_mosto,interacción,Hl Producido Bodega_Consolidado Produccion × Hl de Mosto_Consolidado Produccion,z(bodega) × z(mosto),
+int_envasada_x_mosto,interacción,Hl Cerveza Envasada_Consolidado Produccion × Hl de Mosto_Consolidado Produccion,z(envasada) × z(mosto),
+int_frio_x_anio_sin_1,interacción,Frio (Kw)_Consolidado EE × anio_sin_1,z(frio) × anio_sin_1,
+int_frio_x_anio_cos_1,interacción,Frio (Kw)_Consolidado EE × anio_cos_1,z(frio) × anio_cos_1,
+int_bodega_x_anio_sin_1,interacción,Hl Producido Bodega_Consolidado Produccion × anio_sin_1,z(bodega) × anio_sin_1,
+int_bodega_x_anio_cos_1,interacción,Hl Producido Bodega_Consolidado Produccion × anio_cos_1,z(bodega) × anio_cos_1,
+int_envasada_x_anio_sin_1,interacción,Hl Cerveza Envasada_Consolidado Produccion × anio_sin_1,z(envasada) × anio_sin_1,
+int_envasada_x_anio_cos_1,interacción,Hl Cerveza Envasada_Consolidado Produccion × anio_cos_1,z(envasada) × anio_cos_1,
+int_mosto_x_anio_sin_1,interacción,Hl de Mosto_Consolidado Produccion × anio_sin_1,z(mosto) × anio_sin_1,
+int_mosto_x_anio_cos_1,interacción,Hl de Mosto_Consolidado Produccion × anio_cos_1,z(mosto) × anio_cos_1,
+ratio_bodega_elaboracion_kw,ratio entre áreas,Bodega (Kw)_Consolidado EE / Elaboracion (Kw)_Consolidado EE,Bodega (Kw) / Elaboracion (Kw) (0 si el denominador <= 0; recortado a [0.474; 1.99]),100.0
+ratio_frio_elaboracion_kw,ratio entre áreas,Frio (Kw)_Consolidado EE / Elaboracion (Kw)_Consolidado EE,Frio (Kw) / Elaboracion (Kw) (0 si el denominador <= 0; recortado a [0.852; 6.84]),100.0
+ratio_frio_envasado_kw,ratio entre áreas,Frio (Kw)_Consolidado EE / Envasado (Kw)_Consolidado EE,Frio (Kw) / Envasado (Kw) (0 si el denominador <= 0; recortado a [0.282; 28.5]),100.0
+ratio_frio_por_hl_mosto,ratio entre áreas,Frio (Kw)_Consolidado EE / Hl de Mosto_Consolidado Produccion,Frio (Kw) / Hl de Mosto (0 si el denominador <= 0; recortado a [1.18; 50.1]),91.81929181929182
+ratio_mosto_envasada,ratio entre áreas,Hl de Mosto_Consolidado Produccion / Hl Cerveza Envasada_Consolidado Produccion,Hl de Mosto / Hl Cerveza Envasada (0 si el denominador <= 0; recortado a [0; 81.5]),96.94749694749694
+ratio_agua_bodega_por_hl,ratio entre áreas,Agua Bodega (Hl)_Consolidado Agua / Hl Producido Bodega_Consolidado Produccion,Agua Bodega (Hl) / Hl Producido Bodega (0 si el denominador <= 0; recortado a [0.404; 6.83]),98.9010989010989
+ratio_agua_elab_por_hl_mosto,ratio entre áreas,Agua Elaboracion (Hl)_Consolidado Agua / Hl de Mosto_Consolidado Produccion,Agua Elaboracion (Hl) / Hl de Mosto (0 si el denominador <= 0; recortado a [1.77; 30.9]),91.81929181929182
+ratio_et_elab_por_hl_mosto,ratio entre áreas,ET Elaboracion (Mj)_Consolidado GasVapor / Hl de Mosto_Consolidado Produccion,ET Elaboracion (Mj) / Hl de Mosto (0 si el denominador <= 0; recortado a [7.76; 367]),91.81929181929182
+efic_frio_vs_meta,eficiencia vs meta,EE Frio / Hl_Consolidado KPI / Meta EE Frio_Consolidado KPI,EE Frio / Hl / Meta EE Frio (0 si el denominador <= 0; recortado a [0; 2.09]),100.0
+efic_planta_vs_meta,eficiencia vs meta,EE Planta / Hl_Consolidado KPI / Meta EE Planta_Consolidado KPI,EE Planta / Hl / Meta EE Planta (0 si el denominador <= 0; recortado a [0; 2.14]),100.0
+efic_bodega_vs_meta,eficiencia vs meta,EE Bodega / Hl_Consolidado KPI / Meta EE Bodega_Consolidado KPI,EE Bodega / Hl / Meta EE Bodega (0 si el denominador <= 0; recortado a [0; 2.88]),100.0
+efic_elaboracion_vs_meta,eficiencia vs meta,EE Elaboracion / Hl_Consolidado KPI / Meta EE Elaboracion_Consolidado KPI,EE Elaboracion / Hl / Meta EE Elaboracion (0 si el denominador <= 0; recortado a [0; 2.05]),100.0
+sin_produccion_hl_de_mosto,ratio entre áreas,Hl de Mosto_Consolidado Produccion,1 si Hl de Mosto <= 0 (día sin producción),8.18070818070818
+sin_produccion_hl_cerveza_envasada,ratio entre áreas,Hl Cerveza Envasada_Consolidado Produccion,1 si Hl Cerveza Envasada <= 0 (día sin producción),3.0525030525030523
+sin_produccion_hl_producido_bodega,ratio entre áreas,Hl Producido Bodega_Consolidado Produccion,1 si Hl Producido Bodega <= 0 (día sin producción),1.098901098901099

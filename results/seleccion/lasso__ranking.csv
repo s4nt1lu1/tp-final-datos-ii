@@ -1,0 +1,361 @@
+columna,coeficiente,puntaje
+Frio (Kw)_Consolidado EE,1967.98794710556,1967.98794710556
+anio_cos_1,-1749.2876144503703,1749.2876144503703
+frio_media_10,891.3134755276128,891.3134755276128
+frio_min_14,756.2341848554997,756.2341848554997
+Meta ET Planta_Consolidado KPI,-484.1722360850612,484.1722360850612
+KW Secador Kaeser_Totalizadores Energia,291.72432471166496,291.72432471166496
+bin_frio_q1,-275.4336193809995,275.4336193809995
+ratio_agua_bodega_por_hl,-262.0382007378596,262.0382007378596
+mes_sin,256.0749033745845,256.0749033745845
+ET Servicios / Hl_Consolidado KPI,-239.08063450703332,239.08063450703332
+Totaliador_Aire_L4_Totalizadores Aire,238.6122700392605,238.6122700392605
+Red Paste L4_Totalizadores Agua,232.90340296014892,232.90340296014892
+frio_diff_1,226.14160847188646,226.14160847188646
+dia_semana_cos,180.26307190116432,180.26307190116432
+bin_envasada_q2,-178.2733986066842,178.2733986066842
+Aire Envasado (M3)_Consolidado Aire,173.49555664062245,173.49555664062245
+Totalizador_Aire_Bodega_Totalizadores Aire,-169.74842490325835,169.74842490325835
+HL Mosto IPA_Totalizadores Produccion,-148.7750396562412,148.7750396562412
+Kw Admininistracion_Totalizadores Energia,146.8666856560281,146.8666856560281
+KW Trafo 12_Totalizadores Energia,146.85198696470292,146.85198696470292
+HL Mosto Sol_Totalizadores Produccion,-139.20910449156227,139.20910449156227
+ratio_frio_elaboracion_kw,128.15396785321823,128.15396785321823
+ET Linea 2/Hl_Consolidado KPI,121.53136087709997,121.53136087709997
+Red  Bodega Interno_Totalizadores Agua,-86.89194650464465,86.89194650464465
+Agua Bodega / Hl_Consolidado KPI,-66.72210413888423,66.72210413888423
+Kw Molino_Totalizadores Energia,57.63518135053322,57.63518135053322
+KW Obrador Contratistas_Totalizadores Energia,45.98469429436075,45.98469429436075
+Aire Bodega / Hl_Consolidado KPI,-40.39963810633838,40.39963810633838
+bin_frio_q4,35.37478451972415,35.37478451972415
+ratio_et_elab_por_hl_mosto,34.07958544553341,34.07958544553341
+Totalizador_L3_Totalizadores CO2,29.65359705626481,29.65359705626481
+Tot Aire Expulsion_Consolidado Aire,29.079180752191565,29.079180752191565
+Rechazo Osmosis_Totalizadores Agua,24.573610987151962,24.573610987151962
+Agua Cond REC_Totalizadores Agua,21.694557931733467,21.694557931733467
+bin_mosto_q1,-20.892764930973268,20.892764930973268
+Tot_Vapor_CIP_Bodega_Totalizadores Gas y Vapor,-16.62208098255876,16.62208098255876
+Totalizador_Filtracion_Totalizadores CO2,-12.362339148481228,12.362339148481228
+int_envasada_x_anio_cos_1,10.186563137988543,10.186563137988543
+FC L1 y L2_Totalizadores Agua,4.656313439250985,4.656313439250985
+Meta ET Envasado_Consolidado KPI,-7.664749242422205e-11,7.664749242422205e-11
+Meta ET Cocina_Consolidado KPI,-2.3290469920210563e-11,2.3290469920210563e-11
+EE Planta / Hl_Consolidado KPI,0.0,0.0
+EE Elaboracion / Hl_Consolidado KPI,-0.0,0.0
+EE Bodega / Hl_Consolidado KPI,-0.0,0.0
+EE Cocina / Hl_Consolidado KPI,0.0,0.0
+EE Envasado / Hl_Consolidado KPI,0.0,0.0
+EE Linea 2 / Hl_Consolidado KPI,0.0,0.0
+EE Linea 3 / Hl_Consolidado KPI,-0.0,0.0
+EE Linea 4 / Hl_Consolidado KPI,0.0,0.0
+EE Servicios / Hl_Consolidado KPI,0.0,0.0
+EE Sala Maq / Hl_Consolidado KPI,0.0,0.0
+EE Frio / Hl_Consolidado KPI,0.0,0.0
+EE Aire / Hl_Consolidado KPI,-0.0,0.0
+EE CO2 / Hl_Consolidado KPI,-0.0,0.0
+EE Caldera / Hl_Consolidado KPI,-0.0,0.0
+EE Eflu / Hl_Consolidado KPI,-0.0,0.0
+EE Agua / Hl_Consolidado KPI,-0.0,0.0
+EE Resto Serv / Hl_Consolidado KPI,0.0,0.0
+EE Resto Planta / Hl_Consolidado KPI,0.0,0.0
+Agua Planta / Hl_Consolidado KPI,-0.0,0.0
+Agua Elab / Hl_Consolidado KPI,-0.0,0.0
+Agua Cocina / Hl_Consolidado KPI,0.0,0.0
+Agua Envas / Hl_Consolidado KPI,0.0,0.0
+Agua Linea 2/Hl_Consolidado KPI,0.0,0.0
+Agua Linea 3/Hl_Consolidado KPI,-0.0,0.0
+Agua Linea 4/Hl_Consolidado KPI,0.0,0.0
+Agua Linea 5/Hl_Consolidado KPI,-0.0,0.0
+Agua Servicios/Hl_Consolidado KPI,-0.0,0.0
+Agua Planta de Agua/Hl_Consolidado KPI,0.0,0.0
+Produccion Agua / Hl_Consolidado KPI,-0.0,0.0
+ET Planta / Hl_Consolidado KPI,-0.0,0.0
+ET Elab/Hl_Consolidado KPI,-0.0,0.0
+ET Bodega/Hl_Consolidado KPI,-0.0,0.0
+ET Cocina/Hl_Consolidado KPI,0.0,0.0
+ET Envasado/Hl_Consolidado KPI,-0.0,0.0
+ET Linea 3/Hl_Consolidado KPI,-0.0,0.0
+ET Linea 4/Hl_Consolidado KPI,0.0,0.0
+ET Linea 5/Hl_Consolidado KPI,-0.0,0.0
+Aire Planta / Hl_Consolidado KPI,-0.0,0.0
+Aire Elaboracion / Hl_Consolidado KPI,-0.0,0.0
+Aire Cocina / Hl_Consolidado KPI,-0.0,0.0
+Aire Envasado / Hl_Consolidado KPI,0.0,0.0
+Aire L2 / Hl_Consolidado KPI,0.0,0.0
+Aire L3 / Hl_Consolidado KPI,-0.0,0.0
+Aire L4 / Hl_Consolidado KPI,0.0,0.0
+Aire L5 / Hl_Consolidado KPI,-0.0,0.0
+Aire Servicios / Hl_Consolidado KPI,0.0,0.0
+CO 2 / Hl_Consolidado KPI,-0.0,0.0
+CO 2 Filtro / Hl_Consolidado KPI,0.0,0.0
+CO 2 linea 3 / Hl_Consolidado KPI,0.0,0.0
+CO 2 Linea 4 / Hl_Consolidado KPI,0.0,0.0
+Meta EE Planta_Consolidado KPI,-0.0,0.0
+Meta Agua Planta_Consolidado KPI,-0.0,0.0
+Meta Aire Planta_Consolidado KPI,-0.0,0.0
+Meta Agua Elab_Consolidado KPI,-0.0,0.0
+Meta Agua Bodega_Consolidado KPI,-0.0,0.0
+Meta Agua Cocina_Consolidado KPI,-0.0,0.0
+Meta Agua Envas_Consolidado KPI,-0.0,0.0
+Meta Agua Linea 2_Consolidado KPI,-0.0,0.0
+Meta Agua Linea 4_Consolidado KPI,-0.0,0.0
+Meta Agua Linea 5_Consolidado KPI,-0.0,0.0
+Meta Agua Servicios_Consolidado KPI,-0.0,0.0
+Meta Agua Planta de Agua_Consolidado KPI,-0.0,0.0
+Meta EE Elaboracion_Consolidado KPI,-0.0,0.0
+Meta EE Bodega_Consolidado KPI,-0.0,0.0
+Meta EE Cocina_Consolidado KPI,-0.0,0.0
+Meta EE Envasado_Consolidado KPI,-0.0,0.0
+Meta EE Linea 2_Consolidado KPI,-0.0,0.0
+Meta EE Linea 3_Consolidado KPI,-0.0,0.0
+Meta EE Linea 4_Consolidado KPI,-0.0,0.0
+Meta EE Servicios_Consolidado KPI,-0.0,0.0
+Meta EE Sala Maq_Consolidado KPI,-0.0,0.0
+Meta EE Frio_Consolidado KPI,-0.0,0.0
+Meta EE Aire_Consolidado KPI,-0.0,0.0
+Meta EE CO2_Consolidado KPI,-0.0,0.0
+Meta EE Caldera_Consolidado KPI,-0.0,0.0
+Meta EE Resto Serv_Consolidado KPI,-0.0,0.0
+Meta EE Resto Planta_Consolidado KPI,-0.0,0.0
+Meta ET Elab_Consolidado KPI,-0.0,0.0
+Meta ET Bodega_Consolidado KPI,-0.0,0.0
+Meta ET Linea 2_Consolidado KPI,-0.0,0.0
+Meta ET Linea 3_Consolidado KPI,-0.0,0.0
+Meta ET Linea 4_Consolidado KPI,-0.0,0.0
+Meta ET Linea 5_Consolidado KPI,-0.0,0.0
+Meta ET Servicios_Consolidado KPI,-0.0,0.0
+Meta Aire Elaboracion_Consolidado KPI,-0.0,0.0
+Meta Aire Cocina_Consolidado KPI,-0.0,0.0
+Meta Aire Bodega_Consolidado KPI,-0.0,0.0
+Meta Aire L2_Consolidado KPI,-0.0,0.0
+Meta Aire L5_Consolidado KPI,-0.0,0.0
+Meta Aire Servicios_Consolidado KPI,-0.0,0.0
+Hl de Mosto_Consolidado Produccion,0.0,0.0
+Hl Cerveza Cocina_Consolidado Produccion,0.0,0.0
+Hl Producido Bodega_Consolidado Produccion,0.0,0.0
+Hl Cerveza Filtrada_Consolidado Produccion,-0.0,0.0
+Hl Cerveza Envasada_Consolidado Produccion,0.0,0.0
+HL Mosto Tecate_Totalizadores Produccion,0.0,0.0
+HL Mosto Heineken_Totalizadores Produccion,0.0,0.0
+HL Mosto Negra_Totalizadores Produccion,-0.0,0.0
+HL Mosto Amstel_Totalizadores Produccion,-0.0,0.0
+HL Mosto Miller_Totalizadores Produccion,-0.0,0.0
+HL Mosto APA_Totalizadores Produccion,-0.0,0.0
+HL Mosto Roja_Totalizadores Produccion,0.0,0.0
+HL Mosto Isenbeck_Totalizadores Produccion,-0.0,0.0
+HL Mosto Golden_Totalizadores Produccion,0.0,0.0
+HL Mosto Amstel Lager_Totalizadores Produccion,-0.0,0.0
+Hl Mosto Cautiva Roja_Totalizadores Produccion,0.0,0.0
+Hl Mosto Cautiva Torrontes_Totalizadores Produccion,0.0,0.0
+Hl Mosto Cautiva Blend_Totalizadores Produccion,0.0,0.0
+Hl Mosto Bieckert Urbana_Totalizadores Produccion,0.0,0.0
+HL Cerveza Sin Diliuir A90_Totalizadores Produccion,-0.0,0.0
+HL Cerceza Sin Diluir A190_Totalizadores Produccion,-0.0,0.0
+Hl Cerveza L2_Totalizadores Produccion,0.0,0.0
+Hl Cerveza L3_Totalizadores Produccion,0.0,0.0
+Hl Cerveza L4_Totalizadores Produccion,0.0,0.0
+Hl Cerveza L5_Totalizadores Produccion,0.0,0.0
+Elaboracion (Kw)_Consolidado EE,0.0,0.0
+Bodega (Kw)_Consolidado EE,-0.0,0.0
+Cocina (Kw)_Consolidado EE,0.0,0.0
+Envasado (Kw)_Consolidado EE,0.0,0.0
+Linea 2 (Kw)_Consolidado EE,0.0,0.0
+Linea 3 (Kw)_Consolidado EE,0.0,0.0
+Linea 4 (Kw)_Consolidado EE,0.0,0.0
+Aire (Kw)_Consolidado EE,0.0,0.0
+Calderas (Kw)_Consolidado EE,0.0,0.0
+Efluentes (Kw)_Consolidado EE,0.0,0.0
+Pta Agua / Eflu (Kw)_Consolidado EE,0.0,0.0
+Prod Agua (Kw)_Consolidado EE,0.0,0.0
+KW Trafo 4_Totalizadores Energia,0.0,0.0
+KW Trafo 5_Totalizadores Energia,0.0,0.0
+KW Trafo 8_Totalizadores Energia,0.0,0.0
+KW Trafo 11_Totalizadores Energia,0.0,0.0
+KW Linea 2_Totalizadores Energia,0.0,0.0
+KW Trafo 9_Totalizadores Energia,0.0,0.0
+KW Trafo 10_Totalizadores Energia,-0.0,0.0
+KW Cocina_Totalizadores Energia,-0.0,0.0
+KW Linea 3 y 4_Totalizadores Energia,0.0,0.0
+KW Linea 3_Totalizadores Energia,0.0,0.0
+KW Servicio L2_Totalizadores Energia,0.0,0.0
+KW Planta de Agua_Totalizadores Energia,-0.0,0.0
+Kw Casona_Totalizadores Energia,-0.0,0.0
+KW Laboratorio_Totalizadores Energia,0.0,0.0
+KW Pta Agua/Log_Totalizadores Energia,0.0,0.0
+KW Comp Kaeser_Totalizadores Energia,-0.0,0.0
+KW Iluminacion L3_Totalizadores Energia,-0.0,0.0
+KW Iluminacion L4_Totalizadores Energia,-0.0,0.0
+KW Ilum Dep L3/L4_Totalizadores Energia,0.0,0.0
+KW CO2_Totalizadores Energia,-0.0,0.0
+KW Caldera 3_Totalizadores Energia,0.0,0.0
+KW Caldera 4_Totalizadores Energia,0.0,0.0
+KW Filtr Carbon_Totalizadores Energia,0.0,0.0
+KW Atlas 3_Totalizadores Energia,-0.0,0.0
+KW Toma Agua_Totalizadores Energia,0.0,0.0
+KW Enfr Agua Cocina_Totalizadores Energia,-0.0,0.0
+KW Enfluentes Coc_Totalizadores Energia,0.0,0.0
+KW Enfluente Efl_Totalizadores Energia,0.0,0.0
+KW Enfluentes Hidr_Totalizadores Energia,-0.0,0.0
+Kw Compresores Aire_Totalizadores Energia,0.0,0.0
+Kw Linea Barriles_Totalizadores Energia,0.0,0.0
+Agua Planta (Hl)_Consolidado Agua,0.0,0.0
+Agua Elaboracion (Hl)_Consolidado Agua,-0.0,0.0
+Agua Bodega (Hl)_Consolidado Agua,-0.0,0.0
+Agua Cocina (Hl)_Consolidado Agua,0.0,0.0
+Agua Dilucion (Hl)_Consolidado Agua,-0.0,0.0
+Agua Envasado (Hl)_Consolidado Agua,0.0,0.0
+Planta de agua (Hl)_Consolidado Agua,0.0,0.0
+Produccion (Hl)_Consolidado Agua,0.0,0.0
+Red L1 y L2_Totalizadores Agua,-0.0,0.0
+Red Paste L1_Totalizadores Agua,0.0,0.0
+Red L3_Totalizadores Agua,0.0,0.0
+FC Linea 3_Totalizadores Agua,0.0,0.0
+Rinser_Totalizadores Agua,0.0,0.0
+FC Barriles_Totalizadores Agua,0.0,0.0
+Red Bodega_Totalizadores Agua,0.0,0.0
+FC CIP Bodega_Totalizadores Agua,0.0,0.0
+FC Centec I_Totalizadores Agua,-0.0,0.0
+FC Cocina_Totalizadores Agua,0.0,0.0
+FC Centec II_Totalizadores Agua,-0.0,0.0
+Agua Red Servicios_Totalizadores Agua,-0.0,0.0
+Agua Cald_Totalizadores Agua,0.0,0.0
+Agua Cist Industrial_Totalizadores Agua,-0.0,0.0
+Rep Agua Puerto_Totalizadores Agua,-0.0,0.0
+Agua Helada Cocina_Totalizadores Agua,0.0,0.0
+Entrada Osmosis_Totalizadores Agua,0.0,0.0
+Red Administracion_Totalizadores Agua,-0.0,0.0
+Filtro de Carbon_Totalizadores Agua,-0.0,0.0
+Assa_Totalizadores Agua,0.0,0.0
+FC Lavadora L3_Totalizadores Agua,0.0,0.0
+Red Paste L3_Totalizadores Agua,0.0,0.0
+FC Lavadora L2_Totalizadores Agua,0.0,0.0
+Glicol Paste L3_Totalizadores Agua,0.0,0.0
+Red Lavadora L3_Totalizadores Agua,0.0,0.0
+Dilución A90_Totalizadores Agua,-0.0,0.0
+Dilución A190_Totalizadores Agua,-0.0,0.0
+Agua Planta CO2_Totalizadores Agua,-0.0,0.0
+Retorno Planta CO2_Totalizadores Agua,0.0,0.0
+Agua Limpieza y Bbba Vacio L2_Totalizadores Agua,0.0,0.0
+Agua Enjuagadora L2_Totalizadores Agua,-0.0,0.0
+Agua Lavadora L2_Totalizadores Agua,-0.0,0.0
+Temp Tq Intermedio_Totalizadores Agua,0.0,0.0
+Conversion Kg/Mj_Consolidado GasVapor,-0.0,0.0
+Gas Planta (Mj)_Consolidado GasVapor,0.0,0.0
+Vapor Elaboracion (Kg)_Consolidado GasVapor,0.0,0.0
+Vapor Cocina (Kg)_Consolidado GasVapor,0.0,0.0
+Vapor Envasado (Kg)_Consolidado GasVapor,0.0,0.0
+ET Elaboracion (Mj)_Consolidado GasVapor,0.0,0.0
+ET Envasado (Mj)_Consolidado GasVapor,0.0,0.0
+ET Servicios (Mj)_Consolidado GasVapor,-0.0,0.0
+Vapor L3_Consolidado GasVapor,0.0,0.0
+M3_Tot_Gas_Totalizadores Gas y Vapor,0.0,0.0
+Tot_Vapor_L3_L4_Totalizadores Gas y Vapor,0.0,0.0
+CAUDAL DE GAS CALDERA 1 M3_Totalizadores Gas y Vapor,0.0,0.0
+CAUDAL DE BIO-GAS M3_Totalizadores Gas y Vapor,-0.0,0.0
+VAPOR DE CALDERA 3 KG_Totalizadores Gas y Vapor,0.0,0.0
+VAPOR DE CALDERA 4 KG_Totalizadores Gas y Vapor,0.0,0.0
+VAPOR DE LINEA 1 Y 2 KG_Totalizadores Gas y Vapor,0.0,0.0
+VAPOR DE LINEA 4 KG_Totalizadores Gas y Vapor,0.0,0.0
+VAPOR COCINA 1 KG_Totalizadores Gas y Vapor,0.0,0.0
+VAPOR COCINA 2 KG_Totalizadores Gas y Vapor,-0.0,0.0
+TOT GAS ENTRADA PRINCIPAL M3_Totalizadores Gas y Vapor,-0.0,0.0
+TOT AGUA DESAIREADA_Totalizadores Gas y Vapor,-0.0,0.0
+Vapor Olla 1 (Ton)_Totalizadores Gas y Vapor,0.0,0.0
+(Vapor Olla 2 (Ton)_Totalizadores Gas y Vapor,-0.0,0.0
+Vapor_L5 (KG)_Totalizadores Gas y Vapor,0.0,0.0
+Aire Planta (M3)_Consolidado Aire,0.0,0.0
+Aire Elaboracion (m3)_Consolidado Aire,0.0,0.0
+Totalizador_Aire_L2_Totalizadores Aire,0.0,0.0
+Totalizador_Aire_L3_Totalizadores Aire,0.0,0.0
+Totalizador_Aire_L5_Totalizadores Aire,0.0,0.0
+Totalizador_Aire_Cocina_Totalizadores Aire,0.0,0.0
+Totalizador Sistema Kaeser_Totalizadores Aire,0.0,0.0
+Totalizador_L2_Barriles_Totalizadores CO2,0.0,0.0
+Totaliador_Latas_Totalizadores CO2,0.0,0.0
+Totalizador_Bodega_Totalizadores CO2,0.0,0.0
+Totalizador_Tq_Pulmon_Totalizadores CO2,0.0,0.0
+Totalizador Bba P1_Totalizadores Efluentes,0.0,0.0
+Totalizador Bba P2_Totalizadores Efluentes,-0.0,0.0
+Totalizador Bba P4_Totalizadores Efluentes,-0.0,0.0
+Totalizador Bba Envasado_Totalizadores Efluentes,-0.0,0.0
+Totalizador Bba P51_Totalizadores Efluentes,0.0,0.0
+Tot  Trasiego_Totalizadores Glicol,0.0,0.0
+Meta EE Planta_Consolidado KPI__imputado,0.0,0.0
+Tot  Trasiego_Totalizadores Glicol__imputado,0.0,0.0
+frio_lag_1,0.0,0.0
+frio_lag_2,0.0,0.0
+frio_lag_3,0.0,0.0
+frio_lag_4,0.0,0.0
+frio_lag_5,0.0,0.0
+frio_lag_6,0.0,0.0
+frio_lag_7,0.0,0.0
+frio_lag_14,-0.0,0.0
+frio_media_2,0.0,0.0
+frio_media_3,0.0,0.0
+frio_media_5,0.0,0.0
+frio_media_7,0.0,0.0
+frio_media_14,0.0,0.0
+frio_media_21,0.0,0.0
+frio_media_28,0.0,0.0
+frio_mediana_3,0.0,0.0
+frio_mediana_7,0.0,0.0
+frio_mediana_14,0.0,0.0
+frio_desvio_3,-0.0,0.0
+frio_desvio_7,0.0,0.0
+frio_desvio_14,0.0,0.0
+frio_min_3,0.0,0.0
+frio_max_3,0.0,0.0
+frio_min_7,0.0,0.0
+frio_max_7,0.0,0.0
+frio_max_14,0.0,0.0
+frio_ewm_3,0.0,0.0
+frio_ewm_7,0.0,0.0
+frio_ewm_14,0.0,0.0
+frio_diff_2,0.0,0.0
+frio_diff_3,0.0,0.0
+frio_diff_7,0.0,0.0
+mes,-0.0,0.0
+dia_semana_sin,0.0,0.0
+fin_de_semana,-0.0,0.0
+mes_cos,-0.0,0.0
+anio_sin_1,0.0,0.0
+anio_sin_2,-0.0,0.0
+anio_cos_2,-0.0,0.0
+bin_frio_q2,0.0,0.0
+bin_frio_q3,-0.0,0.0
+bin_frio_q5,0.0,0.0
+bin_bodega_q1,-0.0,0.0
+bin_bodega_q2,-0.0,0.0
+bin_bodega_q3,0.0,0.0
+bin_bodega_q4,0.0,0.0
+bin_envasada_q1,-0.0,0.0
+bin_envasada_q3,0.0,0.0
+bin_envasada_q4,0.0,0.0
+bin_mosto_cero,0.0,0.0
+bin_mosto_q2,0.0,0.0
+bin_mosto_q3,0.0,0.0
+int_frio_x_bodega,-0.0,0.0
+int_frio_x_envasada,-0.0,0.0
+int_frio_x_mosto,-0.0,0.0
+int_bodega_x_envasada,-0.0,0.0
+int_bodega_x_mosto,0.0,0.0
+int_envasada_x_mosto,0.0,0.0
+int_frio_x_anio_sin_1,0.0,0.0
+int_frio_x_anio_cos_1,0.0,0.0
+int_bodega_x_anio_sin_1,0.0,0.0
+int_bodega_x_anio_cos_1,0.0,0.0
+int_envasada_x_anio_sin_1,-0.0,0.0
+int_mosto_x_anio_sin_1,0.0,0.0
+int_mosto_x_anio_cos_1,0.0,0.0
+ratio_bodega_elaboracion_kw,-0.0,0.0
+ratio_frio_envasado_kw,-0.0,0.0
+ratio_frio_por_hl_mosto,0.0,0.0
+ratio_mosto_envasada,-0.0,0.0
+ratio_agua_elab_por_hl_mosto,0.0,0.0
+efic_frio_vs_meta,0.0,0.0
+efic_planta_vs_meta,0.0,0.0
+efic_bodega_vs_meta,-0.0,0.0
+efic_elaboracion_vs_meta,-0.0,0.0
+sin_produccion_hl_de_mosto,0.0,0.0
+sin_produccion_hl_cerveza_envasada,0.0,0.0
+sin_produccion_hl_producido_bodega,0.0,0.0

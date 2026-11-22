@@ -1,0 +1,136 @@
+,mutual_information,ridge,lasso,forward,n_metodos,familia
+frio_media_10,True,True,True,True,4,derivada del frío
+frio_min_14,True,True,True,True,4,derivada del frío
+anio_cos_1,True,True,True,True,4,ciclo anual
+HL Mosto Sol_Totalizadores Produccion,False,True,True,True,3,preprocesamiento
+Frio (Kw)_Consolidado EE,False,True,True,True,3,preprocesamiento
+KW Trafo 12_Totalizadores Energia,False,True,True,True,3,preprocesamiento
+Totalizador_Aire_Bodega_Totalizadores Aire,False,True,True,True,3,preprocesamiento
+Totalizador_Filtracion_Totalizadores CO2,False,True,True,True,3,preprocesamiento
+frio_ewm_14,True,True,False,True,3,derivada del frío
+frio_diff_1,False,True,True,True,3,derivada del frío
+dia_semana_cos,False,True,True,True,3,calendario
+ratio_agua_bodega_por_hl,False,True,True,True,3,ratio entre áreas
+ET Linea 2/Hl_Consolidado KPI,False,True,True,False,2,preprocesamiento
+ET Servicios / Hl_Consolidado KPI,False,True,True,False,2,preprocesamiento
+Aire Bodega / Hl_Consolidado KPI,False,True,True,False,2,preprocesamiento
+Meta ET Cocina_Consolidado KPI,False,False,True,True,2,preprocesamiento
+HL Mosto IPA_Totalizadores Produccion,False,True,True,False,2,preprocesamiento
+Kw Molino_Totalizadores Energia,False,True,True,False,2,preprocesamiento
+Kw Admininistracion_Totalizadores Energia,False,True,True,False,2,preprocesamiento
+KW Secador Kaeser_Totalizadores Energia,False,True,True,False,2,preprocesamiento
+KW Obrador Contratistas_Totalizadores Energia,False,True,True,False,2,preprocesamiento
+FC L1 y L2_Totalizadores Agua,False,True,True,False,2,preprocesamiento
+Red Paste L4_Totalizadores Agua,False,True,True,False,2,preprocesamiento
+Agua Cond REC_Totalizadores Agua,False,True,True,False,2,preprocesamiento
+Rechazo Osmosis_Totalizadores Agua,False,True,True,False,2,preprocesamiento
+Red  Bodega Interno_Totalizadores Agua,False,True,True,False,2,preprocesamiento
+Tot_Vapor_CIP_Bodega_Totalizadores Gas y Vapor,False,True,True,False,2,preprocesamiento
+Tot Aire Expulsion_Consolidado Aire,False,True,True,False,2,preprocesamiento
+Totaliador_Aire_L4_Totalizadores Aire,False,True,True,False,2,preprocesamiento
+Totalizador_L3_Totalizadores CO2,False,True,True,False,2,preprocesamiento
+Tot  Trasiego_Totalizadores Glicol,False,True,False,True,2,preprocesamiento
+frio_media_14,False,True,False,True,2,derivada del frío
+frio_mediana_7,True,True,False,False,2,derivada del frío
+frio_ewm_3,True,True,False,False,2,derivada del frío
+frio_ewm_7,True,True,False,False,2,derivada del frío
+fin_de_semana,False,True,False,True,2,calendario
+mes_sin,False,True,True,False,2,calendario
+bin_envasada_q2,False,True,True,False,2,binning
+bin_mosto_q1,False,True,True,False,2,binning
+int_envasada_x_anio_cos_1,False,True,True,False,2,interacción
+ratio_et_elab_por_hl_mosto,False,True,True,False,2,ratio entre áreas
+efic_frio_vs_meta,False,True,False,True,2,eficiencia vs meta
+EE Planta / Hl_Consolidado KPI,False,True,False,False,1,preprocesamiento
+EE Bodega / Hl_Consolidado KPI,False,False,False,True,1,preprocesamiento
+EE CO2 / Hl_Consolidado KPI,False,True,False,False,1,preprocesamiento
+Agua Bodega / Hl_Consolidado KPI,False,False,True,False,1,preprocesamiento
+Agua Cocina / Hl_Consolidado KPI,False,True,False,False,1,preprocesamiento
+ET Bodega/Hl_Consolidado KPI,False,True,False,False,1,preprocesamiento
+ET Envasado/Hl_Consolidado KPI,False,True,False,False,1,preprocesamiento
+ET Linea 4/Hl_Consolidado KPI,False,True,False,False,1,preprocesamiento
+ET Linea 5/Hl_Consolidado KPI,False,True,False,False,1,preprocesamiento
+Aire L2 / Hl_Consolidado KPI,False,True,False,False,1,preprocesamiento
+Aire L4 / Hl_Consolidado KPI,False,True,False,False,1,preprocesamiento
+CO 2 linea 3 / Hl_Consolidado KPI,False,True,False,False,1,preprocesamiento
+Meta ET Planta_Consolidado KPI,False,False,True,False,1,preprocesamiento
+Meta ET Envasado_Consolidado KPI,False,False,True,False,1,preprocesamiento
+Hl Cerveza Envasada_Consolidado Produccion,False,True,False,False,1,preprocesamiento
+HL Mosto Tecate_Totalizadores Produccion,False,True,False,False,1,preprocesamiento
+HL Mosto Miller_Totalizadores Produccion,False,True,False,False,1,preprocesamiento
+HL Mosto Roja_Totalizadores Produccion,False,True,False,False,1,preprocesamiento
+Hl Cerveza L3_Totalizadores Produccion,False,True,False,False,1,preprocesamiento
+KW Trafo 4_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Linea 2_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Trafo 9_Totalizadores Energia,False,False,False,True,1,preprocesamiento
+KW Trafo 10_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Cocina_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Planta de Agua_Totalizadores Energia,False,False,False,True,1,preprocesamiento
+Kw Casona_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Laboratorio_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Comp Kaeser_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Iluminacion L3_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Iluminacion L4_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW CO2_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Caldera 3_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Caldera 4_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Atlas 3_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Toma Agua_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+KW Enfluentes Hidr_Totalizadores Energia,False,True,False,False,1,preprocesamiento
+Agua Bodega (Hl)_Consolidado Agua,False,True,False,False,1,preprocesamiento
+Red L1 y L2_Totalizadores Agua,False,True,False,False,1,preprocesamiento
+Red Paste L1_Totalizadores Agua,False,True,False,False,1,preprocesamiento
+FC Barriles_Totalizadores Agua,False,True,False,False,1,preprocesamiento
+FC CIP Bodega_Totalizadores Agua,False,True,False,False,1,preprocesamiento
+FC Centec I_Totalizadores Agua,False,True,False,False,1,preprocesamiento
+FC Centec II_Totalizadores Agua,False,True,False,False,1,preprocesamiento
+Agua Cist Industrial_Totalizadores Agua,False,True,False,False,1,preprocesamiento
+Rep Agua Puerto_Totalizadores Agua,False,True,False,False,1,preprocesamiento
+Agua Planta CO2_Totalizadores Agua,False,True,False,False,1,preprocesamiento
+Agua Limpieza y Bbba Vacio L2_Totalizadores Agua,False,True,False,False,1,preprocesamiento
+Vapor Cocina (Kg)_Consolidado GasVapor,False,True,False,False,1,preprocesamiento
+Vapor Envasado (Kg)_Consolidado GasVapor,False,False,False,True,1,preprocesamiento
+Vapor L3_Consolidado GasVapor,False,True,False,False,1,preprocesamiento
+Tot_Vapor_L3_L4_Totalizadores Gas y Vapor,False,True,False,False,1,preprocesamiento
+VAPOR DE LINEA 4 KG_Totalizadores Gas y Vapor,False,True,False,False,1,preprocesamiento
+Vapor Olla 1 (Ton)_Totalizadores Gas y Vapor,False,True,False,False,1,preprocesamiento
+(Vapor Olla 2 (Ton)_Totalizadores Gas y Vapor,False,True,False,False,1,preprocesamiento
+Vapor_L5 (KG)_Totalizadores Gas y Vapor,False,True,False,False,1,preprocesamiento
+Aire Elaboracion (m3)_Consolidado Aire,False,True,False,False,1,preprocesamiento
+Aire Envasado (M3)_Consolidado Aire,False,False,True,False,1,preprocesamiento
+Totalizador_Aire_Cocina_Totalizadores Aire,False,True,False,False,1,preprocesamiento
+Totalizador_Bodega_Totalizadores CO2,False,True,False,False,1,preprocesamiento
+Totalizador_Tq_Pulmon_Totalizadores CO2,False,True,False,False,1,preprocesamiento
+Totalizador Bba P4_Totalizadores Efluentes,False,True,False,False,1,preprocesamiento
+Tot  Trasiego_Totalizadores Glicol__imputado,False,True,False,False,1,preprocesamiento
+frio_lag_2,False,True,False,False,1,derivada del frío
+frio_lag_3,False,True,False,False,1,derivada del frío
+frio_lag_5,False,True,False,False,1,derivada del frío
+frio_lag_7,False,True,False,False,1,derivada del frío
+frio_lag_14,False,True,False,False,1,derivada del frío
+frio_media_2,False,True,False,False,1,derivada del frío
+frio_media_21,False,True,False,False,1,derivada del frío
+frio_media_28,False,True,False,False,1,derivada del frío
+frio_mediana_3,False,True,False,False,1,derivada del frío
+frio_mediana_14,True,False,False,False,1,derivada del frío
+frio_desvio_3,False,True,False,False,1,derivada del frío
+frio_desvio_7,False,True,False,False,1,derivada del frío
+frio_min_3,False,True,False,False,1,derivada del frío
+frio_min_7,False,True,False,False,1,derivada del frío
+frio_max_7,False,False,False,True,1,derivada del frío
+frio_diff_2,False,True,False,False,1,derivada del frío
+frio_diff_3,False,True,False,False,1,derivada del frío
+frio_diff_7,False,True,False,False,1,derivada del frío
+mes,False,True,False,False,1,calendario
+mes_cos,False,True,False,False,1,calendario
+anio_sin_1,False,True,False,False,1,ciclo anual
+bin_frio_q1,False,False,True,False,1,binning
+bin_frio_q4,False,False,True,False,1,binning
+int_frio_x_envasada,False,False,False,True,1,interacción
+int_bodega_x_envasada,False,True,False,False,1,interacción
+int_bodega_x_mosto,False,True,False,False,1,interacción
+int_frio_x_anio_cos_1,False,True,False,False,1,interacción
+int_mosto_x_anio_sin_1,False,True,False,False,1,interacción
+ratio_frio_elaboracion_kw,False,False,True,False,1,ratio entre áreas
+efic_planta_vs_meta,False,True,False,False,1,eficiencia vs meta
+sin_produccion_hl_producido_bodega,False,True,False,False,1,ratio entre áreas
