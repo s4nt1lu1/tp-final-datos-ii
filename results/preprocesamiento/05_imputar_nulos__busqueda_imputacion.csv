@@ -1,0 +1,1603 @@
+columna,metodo,mae_relativo
+EE Planta / Hl_Consolidado KPI,mediana_train,0.34470454494940816
+EE Planta / Hl_Consolidado KPI,ffill_3,0.34470454494940816
+EE Planta / Hl_Consolidado KPI,mediana_dia_semana,0.07300998642887642
+EE Planta / Hl_Consolidado KPI,mediana_mes,0.24496470636667284
+EE Planta / Hl_Consolidado KPI,media_movil_7,0.34470454494940816
+EE Planta / Hl_Consolidado KPI,lag_7,0.34470454494940816
+EE Elaboracion / Hl_Consolidado KPI,mediana_train,0.03807097494037833
+EE Elaboracion / Hl_Consolidado KPI,ffill_3,0.03807097494037833
+EE Elaboracion / Hl_Consolidado KPI,mediana_dia_semana,0.19651202375872265
+EE Elaboracion / Hl_Consolidado KPI,mediana_mes,0.040699971113262436
+EE Elaboracion / Hl_Consolidado KPI,media_movil_7,0.03807097494037833
+EE Elaboracion / Hl_Consolidado KPI,lag_7,0.03807097494037833
+EE Bodega / Hl_Consolidado KPI,mediana_train,0.648458664730566
+EE Bodega / Hl_Consolidado KPI,ffill_3,0.648458664730566
+EE Bodega / Hl_Consolidado KPI,mediana_dia_semana,0.3646660447458943
+EE Bodega / Hl_Consolidado KPI,mediana_mes,0.49958518052630824
+EE Bodega / Hl_Consolidado KPI,media_movil_7,0.648458664730566
+EE Bodega / Hl_Consolidado KPI,lag_7,0.648458664730566
+EE Cocina / Hl_Consolidado KPI,mediana_train,0.719304605306168
+EE Cocina / Hl_Consolidado KPI,ffill_3,0.8972508290749972
+EE Cocina / Hl_Consolidado KPI,mediana_dia_semana,0.7130465575826817
+EE Cocina / Hl_Consolidado KPI,mediana_mes,0.7220926534463477
+EE Cocina / Hl_Consolidado KPI,media_movil_7,0.6890285864840122
+EE Cocina / Hl_Consolidado KPI,lag_7,0.8696906464330996
+EE Envasado / Hl_Consolidado KPI,mediana_train,0.8099148789060684
+EE Envasado / Hl_Consolidado KPI,ffill_3,0.9699637876342723
+EE Envasado / Hl_Consolidado KPI,mediana_dia_semana,0.8098956913623563
+EE Envasado / Hl_Consolidado KPI,mediana_mes,0.8676899641523608
+EE Envasado / Hl_Consolidado KPI,media_movil_7,0.8550445386906818
+EE Envasado / Hl_Consolidado KPI,lag_7,0.8322873738056712
+EE Linea 2 / Hl_Consolidado KPI,mediana_train,0.977587654380305
+EE Linea 2 / Hl_Consolidado KPI,ffill_3,0.9668856464465942
+EE Linea 2 / Hl_Consolidado KPI,mediana_dia_semana,0.9780240477401028
+EE Linea 2 / Hl_Consolidado KPI,mediana_mes,0.9511690621424767
+EE Linea 2 / Hl_Consolidado KPI,media_movil_7,0.9600701777514823
+EE Linea 2 / Hl_Consolidado KPI,lag_7,1.0360707394733724
+EE Linea 3 / Hl_Consolidado KPI,mediana_train,0.8878246222176615
+EE Linea 3 / Hl_Consolidado KPI,ffill_3,1.2464730400642603
+EE Linea 3 / Hl_Consolidado KPI,mediana_dia_semana,0.8735771215285301
+EE Linea 3 / Hl_Consolidado KPI,mediana_mes,0.8901235206666395
+EE Linea 3 / Hl_Consolidado KPI,media_movil_7,1.0087821127271117
+EE Linea 3 / Hl_Consolidado KPI,lag_7,1.1530266639411484
+EE Linea 4 / Hl_Consolidado KPI,mediana_train,1.1498691898111093
+EE Linea 4 / Hl_Consolidado KPI,ffill_3,0.8589098900387062
+EE Linea 4 / Hl_Consolidado KPI,mediana_dia_semana,1.1490831228419163
+EE Linea 4 / Hl_Consolidado KPI,mediana_mes,1.1443862276948542
+EE Linea 4 / Hl_Consolidado KPI,media_movil_7,0.9693287947746524
+EE Linea 4 / Hl_Consolidado KPI,lag_7,1.054968463255195
+EE Servicios / Hl_Consolidado KPI,mediana_train,0.8023295105415365
+EE Servicios / Hl_Consolidado KPI,ffill_3,0.8023295105415365
+EE Servicios / Hl_Consolidado KPI,mediana_dia_semana,0.5664315699594968
+EE Servicios / Hl_Consolidado KPI,mediana_mes,0.5692956838525173
+EE Servicios / Hl_Consolidado KPI,media_movil_7,0.8023295105415365
+EE Servicios / Hl_Consolidado KPI,lag_7,0.8023295105415365
+EE Sala Maq / Hl_Consolidado KPI,mediana_train,0.8197536410354029
+EE Sala Maq / Hl_Consolidado KPI,ffill_3,0.8197536410354029
+EE Sala Maq / Hl_Consolidado KPI,mediana_dia_semana,0.6396655548819447
+EE Sala Maq / Hl_Consolidado KPI,mediana_mes,0.513993573455601
+EE Sala Maq / Hl_Consolidado KPI,media_movil_7,0.8197536410354029
+EE Sala Maq / Hl_Consolidado KPI,lag_7,0.8197536410354029
+EE Frio / Hl_Consolidado KPI,mediana_train,0.7928020440608293
+EE Frio / Hl_Consolidado KPI,ffill_3,0.7928020440608293
+EE Frio / Hl_Consolidado KPI,mediana_dia_semana,0.6954676945117229
+EE Frio / Hl_Consolidado KPI,mediana_mes,0.3775357113329133
+EE Frio / Hl_Consolidado KPI,media_movil_7,0.7928020440608293
+EE Frio / Hl_Consolidado KPI,lag_7,0.7928020440608293
+EE Aire / Hl_Consolidado KPI,mediana_train,0.595796737150839
+EE Aire / Hl_Consolidado KPI,ffill_3,0.595796737150839
+EE Aire / Hl_Consolidado KPI,mediana_dia_semana,0.46451098645542716
+EE Aire / Hl_Consolidado KPI,mediana_mes,0.6482690693196904
+EE Aire / Hl_Consolidado KPI,media_movil_7,0.595796737150839
+EE Aire / Hl_Consolidado KPI,lag_7,0.595796737150839
+EE CO2 / Hl_Consolidado KPI,mediana_train,1.3344836316321722
+EE CO2 / Hl_Consolidado KPI,ffill_3,1.3344836316321722
+EE CO2 / Hl_Consolidado KPI,mediana_dia_semana,1.29201127158212
+EE CO2 / Hl_Consolidado KPI,mediana_mes,1.6986349774993876
+EE CO2 / Hl_Consolidado KPI,media_movil_7,1.3344836316321722
+EE CO2 / Hl_Consolidado KPI,lag_7,1.3344836316321722
+EE Caldera / Hl_Consolidado KPI,mediana_train,0.8438840640943044
+EE Caldera / Hl_Consolidado KPI,ffill_3,0.8438840640943044
+EE Caldera / Hl_Consolidado KPI,mediana_dia_semana,0.9362501138944198
+EE Caldera / Hl_Consolidado KPI,mediana_mes,0.9425889049916449
+EE Caldera / Hl_Consolidado KPI,media_movil_7,0.8438840640943044
+EE Caldera / Hl_Consolidado KPI,lag_7,0.8438840640943044
+EE Eflu / Hl_Consolidado KPI,mediana_train,0.831947879415435
+EE Eflu / Hl_Consolidado KPI,ffill_3,0.831947879415435
+EE Eflu / Hl_Consolidado KPI,mediana_dia_semana,0.6527079183704187
+EE Eflu / Hl_Consolidado KPI,mediana_mes,0.9456358969827101
+EE Eflu / Hl_Consolidado KPI,media_movil_7,0.831947879415435
+EE Eflu / Hl_Consolidado KPI,lag_7,0.831947879415435
+EE Agua / Hl_Consolidado KPI,mediana_train,0.6250313990122371
+EE Agua / Hl_Consolidado KPI,ffill_3,0.6250313990122371
+EE Agua / Hl_Consolidado KPI,mediana_dia_semana,0.6345334625053002
+EE Agua / Hl_Consolidado KPI,mediana_mes,0.6174093354723077
+EE Agua / Hl_Consolidado KPI,media_movil_7,0.6250313990122371
+EE Agua / Hl_Consolidado KPI,lag_7,0.6250313990122371
+EE Resto Serv / Hl_Consolidado KPI,mediana_train,0.028339468946570415
+EE Resto Serv / Hl_Consolidado KPI,ffill_3,0.028339468946570415
+EE Resto Serv / Hl_Consolidado KPI,mediana_dia_semana,0.15336857931360182
+EE Resto Serv / Hl_Consolidado KPI,mediana_mes,0.02297212764995972
+EE Resto Serv / Hl_Consolidado KPI,media_movil_7,0.028339468946570415
+EE Resto Serv / Hl_Consolidado KPI,lag_7,0.028339468946570415
+EE Resto Planta / Hl_Consolidado KPI,mediana_train,4.07691939731584
+EE Resto Planta / Hl_Consolidado KPI,ffill_3,4.07691939731584
+EE Resto Planta / Hl_Consolidado KPI,mediana_dia_semana,4.154859149069894
+EE Resto Planta / Hl_Consolidado KPI,mediana_mes,4.079538081629187
+EE Resto Planta / Hl_Consolidado KPI,media_movil_7,4.07691939731584
+EE Resto Planta / Hl_Consolidado KPI,lag_7,4.07691939731584
+Agua Planta / Hl_Consolidado KPI,mediana_train,1.396673740991596
+Agua Planta / Hl_Consolidado KPI,ffill_3,1.396673740991596
+Agua Planta / Hl_Consolidado KPI,mediana_dia_semana,1.5809313042528004
+Agua Planta / Hl_Consolidado KPI,mediana_mes,1.520021646008698
+Agua Planta / Hl_Consolidado KPI,media_movil_7,1.396673740991596
+Agua Planta / Hl_Consolidado KPI,lag_7,1.396673740991596
+Agua Elab / Hl_Consolidado KPI,mediana_train,0.926907169963899
+Agua Elab / Hl_Consolidado KPI,ffill_3,0.926907169963899
+Agua Elab / Hl_Consolidado KPI,mediana_dia_semana,0.8285660714898208
+Agua Elab / Hl_Consolidado KPI,mediana_mes,0.9743856406527946
+Agua Elab / Hl_Consolidado KPI,media_movil_7,0.926907169963899
+Agua Elab / Hl_Consolidado KPI,lag_7,0.926907169963899
+Agua Bodega / Hl_Consolidado KPI,mediana_train,1.627368852922073
+Agua Bodega / Hl_Consolidado KPI,ffill_3,1.627368852922073
+Agua Bodega / Hl_Consolidado KPI,mediana_dia_semana,1.2631531415118094
+Agua Bodega / Hl_Consolidado KPI,mediana_mes,1.735710886352067
+Agua Bodega / Hl_Consolidado KPI,media_movil_7,1.627368852922073
+Agua Bodega / Hl_Consolidado KPI,lag_7,1.627368852922073
+Agua Cocina / Hl_Consolidado KPI,mediana_train,0.9176608221256746
+Agua Cocina / Hl_Consolidado KPI,ffill_3,1.256579771424429
+Agua Cocina / Hl_Consolidado KPI,mediana_dia_semana,0.92995486341158
+Agua Cocina / Hl_Consolidado KPI,mediana_mes,0.9345058582880329
+Agua Cocina / Hl_Consolidado KPI,media_movil_7,1.1961932347252342
+Agua Cocina / Hl_Consolidado KPI,lag_7,1.0296826752019854
+Agua Envas / Hl_Consolidado KPI,mediana_train,0.7575216580007523
+Agua Envas / Hl_Consolidado KPI,ffill_3,0.7575216580007523
+Agua Envas / Hl_Consolidado KPI,mediana_dia_semana,0.6525168668725568
+Agua Envas / Hl_Consolidado KPI,mediana_mes,0.6394034505368661
+Agua Envas / Hl_Consolidado KPI,media_movil_7,0.7575216580007523
+Agua Envas / Hl_Consolidado KPI,lag_7,0.7575216580007523
+Agua Linea 2/Hl_Consolidado KPI,mediana_train,1.000097419192377
+Agua Linea 2/Hl_Consolidado KPI,ffill_3,0.8389268594668245
+Agua Linea 2/Hl_Consolidado KPI,mediana_dia_semana,0.9903659598684152
+Agua Linea 2/Hl_Consolidado KPI,mediana_mes,0.975445488106626
+Agua Linea 2/Hl_Consolidado KPI,media_movil_7,0.8505017435124571
+Agua Linea 2/Hl_Consolidado KPI,lag_7,0.9623218090706694
+Agua Linea 3/Hl_Consolidado KPI,mediana_train,0.8782353463712539
+Agua Linea 3/Hl_Consolidado KPI,ffill_3,1.2464852807592268
+Agua Linea 3/Hl_Consolidado KPI,mediana_dia_semana,0.8815147854590097
+Agua Linea 3/Hl_Consolidado KPI,mediana_mes,0.792938000674011
+Agua Linea 3/Hl_Consolidado KPI,media_movil_7,0.8921992339454775
+Agua Linea 3/Hl_Consolidado KPI,lag_7,0.8865276083601661
+Agua Linea 4/Hl_Consolidado KPI,mediana_train,0.06646429585528088
+Agua Linea 4/Hl_Consolidado KPI,ffill_3,0.06646429585528088
+Agua Linea 4/Hl_Consolidado KPI,mediana_dia_semana,0.003733167377947792
+Agua Linea 4/Hl_Consolidado KPI,mediana_mes,0.11692149284417387
+Agua Linea 4/Hl_Consolidado KPI,media_movil_7,0.06646429585528088
+Agua Linea 4/Hl_Consolidado KPI,lag_7,0.06646429585528088
+Agua Linea 5/Hl_Consolidado KPI,mediana_train,0.5145785860578022
+Agua Linea 5/Hl_Consolidado KPI,ffill_3,0.5911420333141549
+Agua Linea 5/Hl_Consolidado KPI,mediana_dia_semana,0.5091944456972911
+Agua Linea 5/Hl_Consolidado KPI,mediana_mes,0.4715015150839261
+Agua Linea 5/Hl_Consolidado KPI,media_movil_7,0.49769645633664555
+Agua Linea 5/Hl_Consolidado KPI,lag_7,0.41599010159234995
+Agua Servicios/Hl_Consolidado KPI,mediana_train,0.2858334739214347
+Agua Servicios/Hl_Consolidado KPI,ffill_3,0.2858334739214347
+Agua Servicios/Hl_Consolidado KPI,mediana_dia_semana,0.29985494391201084
+Agua Servicios/Hl_Consolidado KPI,mediana_mes,0.2858334739214347
+Agua Servicios/Hl_Consolidado KPI,media_movil_7,0.2858334739214347
+Agua Servicios/Hl_Consolidado KPI,lag_7,0.2858334739214347
+Agua Planta de Agua/Hl_Consolidado KPI,mediana_train,0.6437707697532306
+Agua Planta de Agua/Hl_Consolidado KPI,ffill_3,0.5539899258129741
+Agua Planta de Agua/Hl_Consolidado KPI,mediana_dia_semana,0.643098877260016
+Agua Planta de Agua/Hl_Consolidado KPI,mediana_mes,0.6329379071509594
+Agua Planta de Agua/Hl_Consolidado KPI,media_movil_7,0.49648188713751834
+Agua Planta de Agua/Hl_Consolidado KPI,lag_7,0.627031932769893
+Produccion Agua / Hl_Consolidado KPI,mediana_train,0.5347065748728305
+Produccion Agua / Hl_Consolidado KPI,ffill_3,0.43961893596929286
+Produccion Agua / Hl_Consolidado KPI,mediana_dia_semana,0.5537997592394598
+Produccion Agua / Hl_Consolidado KPI,mediana_mes,0.49627545217335634
+Produccion Agua / Hl_Consolidado KPI,media_movil_7,0.39338034107033315
+Produccion Agua / Hl_Consolidado KPI,lag_7,0.5334110390134601
+ET Planta / Hl_Consolidado KPI,mediana_train,0.39009209253530136
+ET Planta / Hl_Consolidado KPI,ffill_3,0.39009209253530136
+ET Planta / Hl_Consolidado KPI,mediana_dia_semana,0.32041530041001637
+ET Planta / Hl_Consolidado KPI,mediana_mes,0.6749780636372241
+ET Planta / Hl_Consolidado KPI,media_movil_7,0.39009209253530136
+ET Planta / Hl_Consolidado KPI,lag_7,0.39009209253530136
+ET Elab/Hl_Consolidado KPI,mediana_train,0.20245473780213008
+ET Elab/Hl_Consolidado KPI,ffill_3,0.20245473780213008
+ET Elab/Hl_Consolidado KPI,mediana_dia_semana,0.11817299500021781
+ET Elab/Hl_Consolidado KPI,mediana_mes,0.1995441145169067
+ET Elab/Hl_Consolidado KPI,media_movil_7,0.20245473780213008
+ET Elab/Hl_Consolidado KPI,lag_7,0.20245473780213008
+ET Bodega/Hl_Consolidado KPI,mediana_train,0.564264140796503
+ET Bodega/Hl_Consolidado KPI,ffill_3,0.564264140796503
+ET Bodega/Hl_Consolidado KPI,mediana_dia_semana,0.5216494007848126
+ET Bodega/Hl_Consolidado KPI,mediana_mes,0.9800007623408131
+ET Bodega/Hl_Consolidado KPI,media_movil_7,0.564264140796503
+ET Bodega/Hl_Consolidado KPI,lag_7,0.564264140796503
+ET Cocina/Hl_Consolidado KPI,mediana_train,0.5584042862184871
+ET Cocina/Hl_Consolidado KPI,ffill_3,0.22662650516648192
+ET Cocina/Hl_Consolidado KPI,mediana_dia_semana,0.5600875053455806
+ET Cocina/Hl_Consolidado KPI,mediana_mes,0.550215800972672
+ET Cocina/Hl_Consolidado KPI,media_movil_7,0.24480785902627505
+ET Cocina/Hl_Consolidado KPI,lag_7,0.4416536096441764
+ET Envasado/Hl_Consolidado KPI,mediana_train,0.6018998014798878
+ET Envasado/Hl_Consolidado KPI,ffill_3,0.6018998014798878
+ET Envasado/Hl_Consolidado KPI,mediana_dia_semana,0.549479543153561
+ET Envasado/Hl_Consolidado KPI,mediana_mes,0.7900962684043231
+ET Envasado/Hl_Consolidado KPI,media_movil_7,0.6018998014798878
+ET Envasado/Hl_Consolidado KPI,lag_7,0.6018998014798878
+ET Linea 2/Hl_Consolidado KPI,mediana_train,0.7849945638983494
+ET Linea 2/Hl_Consolidado KPI,ffill_3,1.0696435268686533
+ET Linea 2/Hl_Consolidado KPI,mediana_dia_semana,0.7925358683986994
+ET Linea 2/Hl_Consolidado KPI,mediana_mes,0.755871810038413
+ET Linea 2/Hl_Consolidado KPI,media_movil_7,1.0319529370641047
+ET Linea 2/Hl_Consolidado KPI,lag_7,1.0967869117312552
+ET Linea 3/Hl_Consolidado KPI,mediana_train,0.9809275932228788
+ET Linea 3/Hl_Consolidado KPI,ffill_3,1.1940402594809927
+ET Linea 3/Hl_Consolidado KPI,mediana_dia_semana,0.9759769751785906
+ET Linea 3/Hl_Consolidado KPI,mediana_mes,0.9773918305140044
+ET Linea 3/Hl_Consolidado KPI,media_movil_7,1.0538335333959903
+ET Linea 3/Hl_Consolidado KPI,lag_7,0.9933682672675701
+ET Linea 4/Hl_Consolidado KPI,mediana_train,0.7070097801712514
+ET Linea 4/Hl_Consolidado KPI,ffill_3,0.7070097801712514
+ET Linea 4/Hl_Consolidado KPI,mediana_dia_semana,0.6640285546892112
+ET Linea 4/Hl_Consolidado KPI,mediana_mes,0.5263031144609375
+ET Linea 4/Hl_Consolidado KPI,media_movil_7,0.7070097801712514
+ET Linea 4/Hl_Consolidado KPI,lag_7,0.7070097801712514
+ET Linea 5/Hl_Consolidado KPI,mediana_train,0.5368901384583825
+ET Linea 5/Hl_Consolidado KPI,ffill_3,0.531622762919227
+ET Linea 5/Hl_Consolidado KPI,mediana_dia_semana,0.5161511807923005
+ET Linea 5/Hl_Consolidado KPI,mediana_mes,0.5059209280569396
+ET Linea 5/Hl_Consolidado KPI,media_movil_7,0.5005152643119244
+ET Linea 5/Hl_Consolidado KPI,lag_7,0.5138253660847485
+ET Servicios / Hl_Consolidado KPI,mediana_train,0.17993135726101064
+ET Servicios / Hl_Consolidado KPI,ffill_3,0.17993135726101064
+ET Servicios / Hl_Consolidado KPI,mediana_dia_semana,0.1819072855709843
+ET Servicios / Hl_Consolidado KPI,mediana_mes,0.5121088536384119
+ET Servicios / Hl_Consolidado KPI,media_movil_7,0.17993135726101064
+ET Servicios / Hl_Consolidado KPI,lag_7,0.17993135726101064
+Aire Planta / Hl_Consolidado KPI,mediana_train,0.640875733564019
+Aire Planta / Hl_Consolidado KPI,ffill_3,0.640875733564019
+Aire Planta / Hl_Consolidado KPI,mediana_dia_semana,0.5474656328258481
+Aire Planta / Hl_Consolidado KPI,mediana_mes,0.6788726132762782
+Aire Planta / Hl_Consolidado KPI,media_movil_7,0.640875733564019
+Aire Planta / Hl_Consolidado KPI,lag_7,0.640875733564019
+Aire Elaboracion / Hl_Consolidado KPI,mediana_train,1.1427011865525423
+Aire Elaboracion / Hl_Consolidado KPI,ffill_3,1.1427011865525423
+Aire Elaboracion / Hl_Consolidado KPI,mediana_dia_semana,1.1238022609295
+Aire Elaboracion / Hl_Consolidado KPI,mediana_mes,1.2239814095769648
+Aire Elaboracion / Hl_Consolidado KPI,media_movil_7,1.1427011865525423
+Aire Elaboracion / Hl_Consolidado KPI,lag_7,1.1427011865525423
+Aire Cocina / Hl_Consolidado KPI,mediana_train,0.5727790052688552
+Aire Cocina / Hl_Consolidado KPI,ffill_3,0.8039310366462966
+Aire Cocina / Hl_Consolidado KPI,mediana_dia_semana,0.6019698029911071
+Aire Cocina / Hl_Consolidado KPI,mediana_mes,0.6018832965224623
+Aire Cocina / Hl_Consolidado KPI,media_movil_7,0.7715215932999518
+Aire Cocina / Hl_Consolidado KPI,lag_7,0.9297217613733897
+Aire Bodega / Hl_Consolidado KPI,mediana_train,1.1339022846820828
+Aire Bodega / Hl_Consolidado KPI,ffill_3,1.1339022846820828
+Aire Bodega / Hl_Consolidado KPI,mediana_dia_semana,1.0842024232222032
+Aire Bodega / Hl_Consolidado KPI,mediana_mes,1.2225319593255928
+Aire Bodega / Hl_Consolidado KPI,media_movil_7,1.1339022846820828
+Aire Bodega / Hl_Consolidado KPI,lag_7,1.1339022846820828
+Aire Envasado / Hl_Consolidado KPI,mediana_train,0.48152056432505497
+Aire Envasado / Hl_Consolidado KPI,ffill_3,0.48152056432505497
+Aire Envasado / Hl_Consolidado KPI,mediana_dia_semana,0.3608921241866895
+Aire Envasado / Hl_Consolidado KPI,mediana_mes,0.48214956485628485
+Aire Envasado / Hl_Consolidado KPI,media_movil_7,0.48152056432505497
+Aire Envasado / Hl_Consolidado KPI,lag_7,0.48152056432505497
+Aire L2 / Hl_Consolidado KPI,mediana_train,0.6657774015427991
+Aire L2 / Hl_Consolidado KPI,ffill_3,1.128475459484963
+Aire L2 / Hl_Consolidado KPI,mediana_dia_semana,0.6517241897164447
+Aire L2 / Hl_Consolidado KPI,mediana_mes,0.644783169240861
+Aire L2 / Hl_Consolidado KPI,media_movil_7,0.88273367727999
+Aire L2 / Hl_Consolidado KPI,lag_7,0.8012689657308552
+Aire L3 / Hl_Consolidado KPI,mediana_train,0.8311192387209013
+Aire L3 / Hl_Consolidado KPI,ffill_3,1.4128084781518129
+Aire L3 / Hl_Consolidado KPI,mediana_dia_semana,0.8348157607691318
+Aire L3 / Hl_Consolidado KPI,mediana_mes,0.8034027853528645
+Aire L3 / Hl_Consolidado KPI,media_movil_7,0.9840835193421186
+Aire L3 / Hl_Consolidado KPI,lag_7,0.8269968280328739
+Aire L4 / Hl_Consolidado KPI,mediana_train,0.2939233612862269
+Aire L4 / Hl_Consolidado KPI,ffill_3,0.2939233612862269
+Aire L4 / Hl_Consolidado KPI,mediana_dia_semana,0.33827972166385983
+Aire L4 / Hl_Consolidado KPI,mediana_mes,0.46757350766022887
+Aire L4 / Hl_Consolidado KPI,media_movil_7,0.2939233612862269
+Aire L4 / Hl_Consolidado KPI,lag_7,0.2939233612862269
+Aire L5 / Hl_Consolidado KPI,mediana_train,0.454299958215098
+Aire L5 / Hl_Consolidado KPI,ffill_3,0.4350295998524949
+Aire L5 / Hl_Consolidado KPI,mediana_dia_semana,0.42550427136586694
+Aire L5 / Hl_Consolidado KPI,mediana_mes,0.3669367685047211
+Aire L5 / Hl_Consolidado KPI,media_movil_7,0.4175600987783606
+Aire L5 / Hl_Consolidado KPI,lag_7,0.2759503736773491
+Aire Servicios / Hl_Consolidado KPI,mediana_train,0.6736703794780218
+Aire Servicios / Hl_Consolidado KPI,ffill_3,0.6736703794780218
+Aire Servicios / Hl_Consolidado KPI,mediana_dia_semana,0.7760414230553908
+Aire Servicios / Hl_Consolidado KPI,mediana_mes,0.7411512516356255
+Aire Servicios / Hl_Consolidado KPI,media_movil_7,0.6736703794780218
+Aire Servicios / Hl_Consolidado KPI,lag_7,0.6736703794780218
+CO 2 / Hl_Consolidado KPI,mediana_train,1.6312752007825477
+CO 2 / Hl_Consolidado KPI,ffill_3,1.6312752007825477
+CO 2 / Hl_Consolidado KPI,mediana_dia_semana,1.3919901996964505
+CO 2 / Hl_Consolidado KPI,mediana_mes,1.7894481429818938
+CO 2 / Hl_Consolidado KPI,media_movil_7,1.6312752007825477
+CO 2 / Hl_Consolidado KPI,lag_7,1.6312752007825477
+CO 2 Filtro / Hl_Consolidado KPI,mediana_train,0.819961905757919
+CO 2 Filtro / Hl_Consolidado KPI,ffill_3,0.9642437856025285
+CO 2 Filtro / Hl_Consolidado KPI,mediana_dia_semana,0.8151203615755264
+CO 2 Filtro / Hl_Consolidado KPI,mediana_mes,0.8062212897130596
+CO 2 Filtro / Hl_Consolidado KPI,media_movil_7,0.8158991914763006
+CO 2 Filtro / Hl_Consolidado KPI,lag_7,0.8329877917103249
+CO 2 linea 3 / Hl_Consolidado KPI,mediana_train,0.853632146037745
+CO 2 linea 3 / Hl_Consolidado KPI,ffill_3,0.725941491367427
+CO 2 linea 3 / Hl_Consolidado KPI,mediana_dia_semana,0.8626454505412184
+CO 2 linea 3 / Hl_Consolidado KPI,mediana_mes,0.8525367178635952
+CO 2 linea 3 / Hl_Consolidado KPI,media_movil_7,0.7290511741414977
+CO 2 linea 3 / Hl_Consolidado KPI,lag_7,0.6712435535606941
+CO 2 Linea 4 / Hl_Consolidado KPI,mediana_train,1.6185757789127058
+CO 2 Linea 4 / Hl_Consolidado KPI,ffill_3,0.42422949395288584
+CO 2 Linea 4 / Hl_Consolidado KPI,mediana_dia_semana,1.6345755858282363
+CO 2 Linea 4 / Hl_Consolidado KPI,mediana_mes,1.5693396837574851
+CO 2 Linea 4 / Hl_Consolidado KPI,media_movil_7,0.6653840615812476
+CO 2 Linea 4 / Hl_Consolidado KPI,lag_7,0.9864376908525454
+Meta EE Planta_Consolidado KPI,mediana_train,0.5936920222634513
+Meta EE Planta_Consolidado KPI,ffill_3,0.5936920222634513
+Meta EE Planta_Consolidado KPI,mediana_dia_semana,0.5936920222634513
+Meta EE Planta_Consolidado KPI,mediana_mes,0.9012523191094624
+Meta EE Planta_Consolidado KPI,media_movil_7,0.5936920222634513
+Meta EE Planta_Consolidado KPI,lag_7,0.5936920222634513
+Meta Agua Planta_Consolidado KPI,mediana_train,0.22370129870129915
+Meta Agua Planta_Consolidado KPI,ffill_3,0.22370129870129915
+Meta Agua Planta_Consolidado KPI,mediana_dia_semana,0.22370129870129915
+Meta Agua Planta_Consolidado KPI,mediana_mes,0.6300324675324674
+Meta Agua Planta_Consolidado KPI,media_movil_7,0.22370129870129915
+Meta Agua Planta_Consolidado KPI,lag_7,0.22370129870129915
+Meta ET Planta_Consolidado KPI,mediana_train,0.601669758812616
+Meta ET Planta_Consolidado KPI,ffill_3,0.601669758812616
+Meta ET Planta_Consolidado KPI,mediana_dia_semana,0.601669758812616
+Meta ET Planta_Consolidado KPI,mediana_mes,0.33562152133580714
+Meta ET Planta_Consolidado KPI,media_movil_7,0.601669758812616
+Meta ET Planta_Consolidado KPI,lag_7,0.601669758812616
+Meta Aire Planta_Consolidado KPI,mediana_train,0.5936920222634535
+Meta Aire Planta_Consolidado KPI,ffill_3,0.5936920222634535
+Meta Aire Planta_Consolidado KPI,mediana_dia_semana,0.5936920222634535
+Meta Aire Planta_Consolidado KPI,mediana_mes,0.9012523191094622
+Meta Aire Planta_Consolidado KPI,media_movil_7,0.5936920222634535
+Meta Aire Planta_Consolidado KPI,lag_7,0.5936920222634535
+Meta Agua Elab_Consolidado KPI,mediana_train,0.2237012987013043
+Meta Agua Elab_Consolidado KPI,ffill_3,0.2237012987013043
+Meta Agua Elab_Consolidado KPI,mediana_dia_semana,0.2237012987013043
+Meta Agua Elab_Consolidado KPI,mediana_mes,0.6300324675324616
+Meta Agua Elab_Consolidado KPI,media_movil_7,0.2237012987013043
+Meta Agua Elab_Consolidado KPI,lag_7,0.2237012987013043
+Meta Agua Bodega_Consolidado KPI,mediana_train,0.22370129870130526
+Meta Agua Bodega_Consolidado KPI,ffill_3,0.22370129870130526
+Meta Agua Bodega_Consolidado KPI,mediana_dia_semana,0.22370129870130526
+Meta Agua Bodega_Consolidado KPI,mediana_mes,0.6300324675324689
+Meta Agua Bodega_Consolidado KPI,media_movil_7,0.22370129870130526
+Meta Agua Bodega_Consolidado KPI,lag_7,0.22370129870130526
+Meta Agua Cocina_Consolidado KPI,mediana_train,0.22370129870129885
+Meta Agua Cocina_Consolidado KPI,ffill_3,0.22370129870129885
+Meta Agua Cocina_Consolidado KPI,mediana_dia_semana,0.22370129870129885
+Meta Agua Cocina_Consolidado KPI,mediana_mes,0.6300324675324674
+Meta Agua Cocina_Consolidado KPI,media_movil_7,0.22370129870129885
+Meta Agua Cocina_Consolidado KPI,lag_7,0.22370129870129885
+Meta Agua Envas_Consolidado KPI,mediana_train,0.22370129870128724
+Meta Agua Envas_Consolidado KPI,ffill_3,0.22370129870128724
+Meta Agua Envas_Consolidado KPI,mediana_dia_semana,0.22370129870128724
+Meta Agua Envas_Consolidado KPI,mediana_mes,0.6300324675324358
+Meta Agua Envas_Consolidado KPI,media_movil_7,0.22370129870128724
+Meta Agua Envas_Consolidado KPI,lag_7,0.22370129870128724
+Meta Agua Linea 2_Consolidado KPI,mediana_train,0.22370129870129796
+Meta Agua Linea 2_Consolidado KPI,ffill_3,0.22370129870129796
+Meta Agua Linea 2_Consolidado KPI,mediana_dia_semana,0.22370129870129796
+Meta Agua Linea 2_Consolidado KPI,mediana_mes,0.6300324675324668
+Meta Agua Linea 2_Consolidado KPI,media_movil_7,0.22370129870129796
+Meta Agua Linea 2_Consolidado KPI,lag_7,0.22370129870129796
+Meta Agua Linea 4_Consolidado KPI,mediana_train,0.22370129870129632
+Meta Agua Linea 4_Consolidado KPI,ffill_3,0.22370129870129632
+Meta Agua Linea 4_Consolidado KPI,mediana_dia_semana,0.22370129870129632
+Meta Agua Linea 4_Consolidado KPI,mediana_mes,0.6300324675324603
+Meta Agua Linea 4_Consolidado KPI,media_movil_7,0.22370129870129632
+Meta Agua Linea 4_Consolidado KPI,lag_7,0.22370129870129632
+Meta Agua Linea 5_Consolidado KPI,mediana_train,0.22370129870129069
+Meta Agua Linea 5_Consolidado KPI,ffill_3,0.22370129870129069
+Meta Agua Linea 5_Consolidado KPI,mediana_dia_semana,0.22370129870129069
+Meta Agua Linea 5_Consolidado KPI,mediana_mes,0.6300324675324445
+Meta Agua Linea 5_Consolidado KPI,media_movil_7,0.22370129870129069
+Meta Agua Linea 5_Consolidado KPI,lag_7,0.22370129870129069
+Meta Agua Servicios_Consolidado KPI,mediana_train,0.22370129870129807
+Meta Agua Servicios_Consolidado KPI,ffill_3,0.22370129870129807
+Meta Agua Servicios_Consolidado KPI,mediana_dia_semana,0.22370129870129807
+Meta Agua Servicios_Consolidado KPI,mediana_mes,0.6300324675324674
+Meta Agua Servicios_Consolidado KPI,media_movil_7,0.22370129870129807
+Meta Agua Servicios_Consolidado KPI,lag_7,0.22370129870129807
+Meta Agua Planta de Agua_Consolidado KPI,mediana_train,0.22370129870129066
+Meta Agua Planta de Agua_Consolidado KPI,ffill_3,0.22370129870129066
+Meta Agua Planta de Agua_Consolidado KPI,mediana_dia_semana,0.22370129870129066
+Meta Agua Planta de Agua_Consolidado KPI,mediana_mes,0.6300324675324446
+Meta Agua Planta de Agua_Consolidado KPI,media_movil_7,0.22370129870129066
+Meta Agua Planta de Agua_Consolidado KPI,lag_7,0.22370129870129066
+Meta EE Elaboracion_Consolidado KPI,mediana_train,0.581632653061222
+Meta EE Elaboracion_Consolidado KPI,ffill_3,0.581632653061222
+Meta EE Elaboracion_Consolidado KPI,mediana_dia_semana,0.581632653061222
+Meta EE Elaboracion_Consolidado KPI,mediana_mes,0.889192949907236
+Meta EE Elaboracion_Consolidado KPI,media_movil_7,0.581632653061222
+Meta EE Elaboracion_Consolidado KPI,lag_7,0.581632653061222
+Meta EE Bodega_Consolidado KPI,mediana_train,0.5936920222634536
+Meta EE Bodega_Consolidado KPI,ffill_3,0.5936920222634536
+Meta EE Bodega_Consolidado KPI,mediana_dia_semana,0.5936920222634536
+Meta EE Bodega_Consolidado KPI,mediana_mes,0.9012523191094624
+Meta EE Bodega_Consolidado KPI,media_movil_7,0.5936920222634536
+Meta EE Bodega_Consolidado KPI,lag_7,0.5936920222634536
+Meta EE Cocina_Consolidado KPI,mediana_train,0.5936920222634549
+Meta EE Cocina_Consolidado KPI,ffill_3,0.5936920222634549
+Meta EE Cocina_Consolidado KPI,mediana_dia_semana,0.5936920222634549
+Meta EE Cocina_Consolidado KPI,mediana_mes,0.9012523191094647
+Meta EE Cocina_Consolidado KPI,media_movil_7,0.5936920222634549
+Meta EE Cocina_Consolidado KPI,lag_7,0.5936920222634549
+Meta EE Envasado_Consolidado KPI,mediana_train,0.5936920222634454
+Meta EE Envasado_Consolidado KPI,ffill_3,0.5936920222634454
+Meta EE Envasado_Consolidado KPI,mediana_dia_semana,0.5936920222634454
+Meta EE Envasado_Consolidado KPI,mediana_mes,0.9012523191094585
+Meta EE Envasado_Consolidado KPI,media_movil_7,0.5936920222634454
+Meta EE Envasado_Consolidado KPI,lag_7,0.5936920222634454
+Meta EE Linea 2_Consolidado KPI,mediana_train,0.5936920222634468
+Meta EE Linea 2_Consolidado KPI,ffill_3,0.5936920222634468
+Meta EE Linea 2_Consolidado KPI,mediana_dia_semana,0.5936920222634468
+Meta EE Linea 2_Consolidado KPI,mediana_mes,0.9012523191094594
+Meta EE Linea 2_Consolidado KPI,media_movil_7,0.5936920222634468
+Meta EE Linea 2_Consolidado KPI,lag_7,0.5936920222634468
+Meta EE Linea 3_Consolidado KPI,mediana_train,0.5936920222634423
+Meta EE Linea 3_Consolidado KPI,ffill_3,0.5936920222634423
+Meta EE Linea 3_Consolidado KPI,mediana_dia_semana,0.5936920222634423
+Meta EE Linea 3_Consolidado KPI,mediana_mes,0.9012523191094599
+Meta EE Linea 3_Consolidado KPI,media_movil_7,0.5936920222634423
+Meta EE Linea 3_Consolidado KPI,lag_7,0.5936920222634423
+Meta EE Linea 4_Consolidado KPI,mediana_train,0.593692022263457
+Meta EE Linea 4_Consolidado KPI,ffill_3,0.593692022263457
+Meta EE Linea 4_Consolidado KPI,mediana_dia_semana,0.593692022263457
+Meta EE Linea 4_Consolidado KPI,mediana_mes,0.9012523191094659
+Meta EE Linea 4_Consolidado KPI,media_movil_7,0.593692022263457
+Meta EE Linea 4_Consolidado KPI,lag_7,0.593692022263457
+Meta EE Servicios_Consolidado KPI,mediana_train,0.5936920222634445
+Meta EE Servicios_Consolidado KPI,ffill_3,0.5936920222634445
+Meta EE Servicios_Consolidado KPI,mediana_dia_semana,0.5936920222634445
+Meta EE Servicios_Consolidado KPI,mediana_mes,0.901252319109459
+Meta EE Servicios_Consolidado KPI,media_movil_7,0.5936920222634445
+Meta EE Servicios_Consolidado KPI,lag_7,0.5936920222634445
+Meta EE Sala Maq_Consolidado KPI,mediana_train,0.5936920222634455
+Meta EE Sala Maq_Consolidado KPI,ffill_3,0.5936920222634455
+Meta EE Sala Maq_Consolidado KPI,mediana_dia_semana,0.5936920222634455
+Meta EE Sala Maq_Consolidado KPI,mediana_mes,0.9012523191094597
+Meta EE Sala Maq_Consolidado KPI,media_movil_7,0.5936920222634455
+Meta EE Sala Maq_Consolidado KPI,lag_7,0.5936920222634455
+Meta EE Frio_Consolidado KPI,mediana_train,0.593692022263457
+Meta EE Frio_Consolidado KPI,ffill_3,0.593692022263457
+Meta EE Frio_Consolidado KPI,mediana_dia_semana,0.593692022263457
+Meta EE Frio_Consolidado KPI,mediana_mes,0.9012523191094634
+Meta EE Frio_Consolidado KPI,media_movil_7,0.593692022263457
+Meta EE Frio_Consolidado KPI,lag_7,0.593692022263457
+Meta EE Aire_Consolidado KPI,mediana_train,0.5936920222634539
+Meta EE Aire_Consolidado KPI,ffill_3,0.5936920222634539
+Meta EE Aire_Consolidado KPI,mediana_dia_semana,0.5936920222634539
+Meta EE Aire_Consolidado KPI,mediana_mes,0.901252319109463
+Meta EE Aire_Consolidado KPI,media_movil_7,0.5936920222634539
+Meta EE Aire_Consolidado KPI,lag_7,0.5936920222634539
+Meta EE CO2_Consolidado KPI,mediana_train,0.5936920222634571
+Meta EE CO2_Consolidado KPI,ffill_3,0.5936920222634571
+Meta EE CO2_Consolidado KPI,mediana_dia_semana,0.5936920222634571
+Meta EE CO2_Consolidado KPI,mediana_mes,0.9012523191094636
+Meta EE CO2_Consolidado KPI,media_movil_7,0.5936920222634571
+Meta EE CO2_Consolidado KPI,lag_7,0.5936920222634571
+Meta EE Caldera_Consolidado KPI,mediana_train,0.5936920222634477
+Meta EE Caldera_Consolidado KPI,ffill_3,0.5936920222634477
+Meta EE Caldera_Consolidado KPI,mediana_dia_semana,0.5936920222634477
+Meta EE Caldera_Consolidado KPI,mediana_mes,0.9012523191094756
+Meta EE Caldera_Consolidado KPI,media_movil_7,0.5936920222634477
+Meta EE Caldera_Consolidado KPI,lag_7,0.5936920222634477
+Meta EE Resto Serv_Consolidado KPI,mediana_train,0.5936920222634539
+Meta EE Resto Serv_Consolidado KPI,ffill_3,0.5936920222634539
+Meta EE Resto Serv_Consolidado KPI,mediana_dia_semana,0.5936920222634539
+Meta EE Resto Serv_Consolidado KPI,mediana_mes,0.9012523191094708
+Meta EE Resto Serv_Consolidado KPI,media_movil_7,0.5936920222634539
+Meta EE Resto Serv_Consolidado KPI,lag_7,0.5936920222634539
+Meta EE Resto Planta_Consolidado KPI,mediana_train,0.5936920222634453
+Meta EE Resto Planta_Consolidado KPI,ffill_3,0.5936920222634453
+Meta EE Resto Planta_Consolidado KPI,mediana_dia_semana,0.5936920222634453
+Meta EE Resto Planta_Consolidado KPI,mediana_mes,0.9012523191094582
+Meta EE Resto Planta_Consolidado KPI,media_movil_7,0.5936920222634453
+Meta EE Resto Planta_Consolidado KPI,lag_7,0.5936920222634453
+Meta ET Elab_Consolidado KPI,mediana_train,0.6016697588126151
+Meta ET Elab_Consolidado KPI,ffill_3,0.6016697588126151
+Meta ET Elab_Consolidado KPI,mediana_dia_semana,0.6016697588126151
+Meta ET Elab_Consolidado KPI,mediana_mes,0.3356215213358069
+Meta ET Elab_Consolidado KPI,media_movil_7,0.6016697588126151
+Meta ET Elab_Consolidado KPI,lag_7,0.6016697588126151
+Meta ET Bodega_Consolidado KPI,mediana_train,0.6016697588126146
+Meta ET Bodega_Consolidado KPI,ffill_3,0.6016697588126146
+Meta ET Bodega_Consolidado KPI,mediana_dia_semana,0.6016697588126146
+Meta ET Bodega_Consolidado KPI,mediana_mes,0.3356215213358065
+Meta ET Bodega_Consolidado KPI,media_movil_7,0.6016697588126146
+Meta ET Bodega_Consolidado KPI,lag_7,0.6016697588126146
+Meta ET Cocina_Consolidado KPI,mediana_train,0.6016697588126207
+Meta ET Cocina_Consolidado KPI,ffill_3,0.6016697588126207
+Meta ET Cocina_Consolidado KPI,mediana_dia_semana,0.6016697588126207
+Meta ET Cocina_Consolidado KPI,mediana_mes,0.33562152133580725
+Meta ET Cocina_Consolidado KPI,media_movil_7,0.6016697588126207
+Meta ET Cocina_Consolidado KPI,lag_7,0.6016697588126207
+Meta ET Envasado_Consolidado KPI,mediana_train,0.6016697588126145
+Meta ET Envasado_Consolidado KPI,ffill_3,0.6016697588126145
+Meta ET Envasado_Consolidado KPI,mediana_dia_semana,0.6016697588126145
+Meta ET Envasado_Consolidado KPI,mediana_mes,0.3356215213358069
+Meta ET Envasado_Consolidado KPI,media_movil_7,0.6016697588126145
+Meta ET Envasado_Consolidado KPI,lag_7,0.6016697588126145
+Meta ET Linea 2_Consolidado KPI,mediana_train,0.6016697588126168
+Meta ET Linea 2_Consolidado KPI,ffill_3,0.6016697588126168
+Meta ET Linea 2_Consolidado KPI,mediana_dia_semana,0.6016697588126168
+Meta ET Linea 2_Consolidado KPI,mediana_mes,0.33562152133580814
+Meta ET Linea 2_Consolidado KPI,media_movil_7,0.6016697588126168
+Meta ET Linea 2_Consolidado KPI,lag_7,0.6016697588126168
+Meta ET Linea 3_Consolidado KPI,mediana_train,0.6016697588126338
+Meta ET Linea 3_Consolidado KPI,ffill_3,0.6016697588126338
+Meta ET Linea 3_Consolidado KPI,mediana_dia_semana,0.6016697588126338
+Meta ET Linea 3_Consolidado KPI,mediana_mes,0.3356215213358109
+Meta ET Linea 3_Consolidado KPI,media_movil_7,0.6016697588126338
+Meta ET Linea 3_Consolidado KPI,lag_7,0.6016697588126338
+Meta ET Linea 4_Consolidado KPI,mediana_train,0.6016697588126151
+Meta ET Linea 4_Consolidado KPI,ffill_3,0.6016697588126151
+Meta ET Linea 4_Consolidado KPI,mediana_dia_semana,0.6016697588126151
+Meta ET Linea 4_Consolidado KPI,mediana_mes,0.33562152133580764
+Meta ET Linea 4_Consolidado KPI,media_movil_7,0.6016697588126151
+Meta ET Linea 4_Consolidado KPI,lag_7,0.6016697588126151
+Meta ET Linea 5_Consolidado KPI,mediana_train,0.6016697588126138
+Meta ET Linea 5_Consolidado KPI,ffill_3,0.6016697588126138
+Meta ET Linea 5_Consolidado KPI,mediana_dia_semana,0.6016697588126138
+Meta ET Linea 5_Consolidado KPI,mediana_mes,0.3356215213358064
+Meta ET Linea 5_Consolidado KPI,media_movil_7,0.6016697588126138
+Meta ET Linea 5_Consolidado KPI,lag_7,0.6016697588126138
+Meta ET Servicios_Consolidado KPI,mediana_train,0.6016697588126138
+Meta ET Servicios_Consolidado KPI,ffill_3,0.6016697588126138
+Meta ET Servicios_Consolidado KPI,mediana_dia_semana,0.6016697588126138
+Meta ET Servicios_Consolidado KPI,mediana_mes,0.33562152133580947
+Meta ET Servicios_Consolidado KPI,media_movil_7,0.6016697588126138
+Meta ET Servicios_Consolidado KPI,lag_7,0.6016697588126138
+Meta Aire Elaboracion_Consolidado KPI,mediana_train,0.5936920222634513
+Meta Aire Elaboracion_Consolidado KPI,ffill_3,0.5936920222634513
+Meta Aire Elaboracion_Consolidado KPI,mediana_dia_semana,0.5936920222634513
+Meta Aire Elaboracion_Consolidado KPI,mediana_mes,0.9012523191094624
+Meta Aire Elaboracion_Consolidado KPI,media_movil_7,0.5936920222634513
+Meta Aire Elaboracion_Consolidado KPI,lag_7,0.5936920222634513
+Meta Aire Cocina_Consolidado KPI,mediana_train,0.5936920222634545
+Meta Aire Cocina_Consolidado KPI,ffill_3,0.5936920222634545
+Meta Aire Cocina_Consolidado KPI,mediana_dia_semana,0.5936920222634545
+Meta Aire Cocina_Consolidado KPI,mediana_mes,0.9012523191094636
+Meta Aire Cocina_Consolidado KPI,media_movil_7,0.5936920222634545
+Meta Aire Cocina_Consolidado KPI,lag_7,0.5936920222634545
+Meta Aire Bodega_Consolidado KPI,mediana_train,0.5936920222634348
+Meta Aire Bodega_Consolidado KPI,ffill_3,0.5936920222634348
+Meta Aire Bodega_Consolidado KPI,mediana_dia_semana,0.5936920222634348
+Meta Aire Bodega_Consolidado KPI,mediana_mes,0.9012523191094551
+Meta Aire Bodega_Consolidado KPI,media_movil_7,0.5936920222634348
+Meta Aire Bodega_Consolidado KPI,lag_7,0.5936920222634348
+Meta Aire L2_Consolidado KPI,mediana_train,0.5936920222634565
+Meta Aire L2_Consolidado KPI,ffill_3,0.5936920222634565
+Meta Aire L2_Consolidado KPI,mediana_dia_semana,0.5936920222634565
+Meta Aire L2_Consolidado KPI,mediana_mes,0.9012523191094632
+Meta Aire L2_Consolidado KPI,media_movil_7,0.5936920222634565
+Meta Aire L2_Consolidado KPI,lag_7,0.5936920222634565
+Meta Aire L5_Consolidado KPI,mediana_train,0.5936920222634541
+Meta Aire L5_Consolidado KPI,ffill_3,0.5936920222634541
+Meta Aire L5_Consolidado KPI,mediana_dia_semana,0.5936920222634541
+Meta Aire L5_Consolidado KPI,mediana_mes,0.9012523191094647
+Meta Aire L5_Consolidado KPI,media_movil_7,0.5936920222634541
+Meta Aire L5_Consolidado KPI,lag_7,0.5936920222634541
+Meta Aire Servicios_Consolidado KPI,mediana_train,0.593692022263443
+Meta Aire Servicios_Consolidado KPI,ffill_3,0.593692022263443
+Meta Aire Servicios_Consolidado KPI,mediana_dia_semana,0.593692022263443
+Meta Aire Servicios_Consolidado KPI,mediana_mes,0.9012523191094566
+Meta Aire Servicios_Consolidado KPI,media_movil_7,0.593692022263443
+Meta Aire Servicios_Consolidado KPI,lag_7,0.593692022263443
+Hl de Mosto_Consolidado Produccion,mediana_train,0.876893569331869
+Hl de Mosto_Consolidado Produccion,ffill_3,0.8637483520753183
+Hl de Mosto_Consolidado Produccion,mediana_dia_semana,0.8788295299119385
+Hl de Mosto_Consolidado Produccion,mediana_mes,0.7591615628726781
+Hl de Mosto_Consolidado Produccion,media_movil_7,0.7734564960182975
+Hl de Mosto_Consolidado Produccion,lag_7,0.9387028165755956
+Hl Cerveza Cocina_Consolidado Produccion,mediana_train,0.6704834238362408
+Hl Cerveza Cocina_Consolidado Produccion,ffill_3,0.6067294911555342
+Hl Cerveza Cocina_Consolidado Produccion,mediana_dia_semana,0.6766020435999329
+Hl Cerveza Cocina_Consolidado Produccion,mediana_mes,0.6218448379448541
+Hl Cerveza Cocina_Consolidado Produccion,media_movil_7,0.6240052722880022
+Hl Cerveza Cocina_Consolidado Produccion,lag_7,0.7656258094283747
+Hl Producido Bodega_Consolidado Produccion,mediana_train,0.46933640875946997
+Hl Producido Bodega_Consolidado Produccion,ffill_3,0.5039692253042954
+Hl Producido Bodega_Consolidado Produccion,mediana_dia_semana,0.45590427742680933
+Hl Producido Bodega_Consolidado Produccion,mediana_mes,0.4338884536432643
+Hl Producido Bodega_Consolidado Produccion,media_movil_7,0.4474967811526933
+Hl Producido Bodega_Consolidado Produccion,lag_7,0.5271467369306073
+Hl Cerveza Filtrada_Consolidado Produccion,mediana_train,0.5346310056960811
+Hl Cerveza Filtrada_Consolidado Produccion,ffill_3,0.6440213387597611
+Hl Cerveza Filtrada_Consolidado Produccion,mediana_dia_semana,0.5012912785186298
+Hl Cerveza Filtrada_Consolidado Produccion,mediana_mes,0.43041968636804634
+Hl Cerveza Filtrada_Consolidado Produccion,media_movil_7,0.46424508756190813
+Hl Cerveza Filtrada_Consolidado Produccion,lag_7,0.4989116565338137
+Hl Cerveza Envasada_Consolidado Produccion,mediana_train,0.5563679966719279
+Hl Cerveza Envasada_Consolidado Produccion,ffill_3,0.5439929523180266
+Hl Cerveza Envasada_Consolidado Produccion,mediana_dia_semana,0.5314845403712269
+Hl Cerveza Envasada_Consolidado Produccion,mediana_mes,0.5284917226443491
+Hl Cerveza Envasada_Consolidado Produccion,media_movil_7,0.5272149071058884
+Hl Cerveza Envasada_Consolidado Produccion,lag_7,0.48185588958631576
+HL Mosto Tecate_Totalizadores Produccion,mediana_train,0.49655374525166185
+HL Mosto Tecate_Totalizadores Produccion,ffill_3,0.5533643953782842
+HL Mosto Tecate_Totalizadores Produccion,mediana_dia_semana,0.48629535652105094
+HL Mosto Tecate_Totalizadores Produccion,mediana_mes,0.5045307059195948
+HL Mosto Tecate_Totalizadores Produccion,media_movil_7,0.5208157684864861
+HL Mosto Tecate_Totalizadores Produccion,lag_7,0.5558387246755303
+HL Mosto Heineken_Totalizadores Produccion,mediana_train,2.1734104046242773
+HL Mosto Heineken_Totalizadores Produccion,ffill_3,1.842917291086848
+HL Mosto Heineken_Totalizadores Produccion,mediana_dia_semana,2.1734104046242773
+HL Mosto Heineken_Totalizadores Produccion,mediana_mes,2.1734104046242773
+HL Mosto Heineken_Totalizadores Produccion,media_movil_7,3.392309997859131
+HL Mosto Heineken_Totalizadores Produccion,lag_7,3.6985370727181905
+HL Mosto Negra_Totalizadores Produccion,mediana_train,0.23006399800243008
+HL Mosto Negra_Totalizadores Produccion,ffill_3,0.3988487012045079
+HL Mosto Negra_Totalizadores Produccion,mediana_dia_semana,0.23006399800243008
+HL Mosto Negra_Totalizadores Produccion,mediana_mes,0.23006399800243008
+HL Mosto Negra_Totalizadores Produccion,media_movil_7,0.38271850361739096
+HL Mosto Negra_Totalizadores Produccion,lag_7,0.3717481270008711
+HL Mosto Amstel_Totalizadores Produccion,mediana_train,0.0
+HL Mosto Amstel_Totalizadores Produccion,ffill_3,0.12075259006558817
+HL Mosto Amstel_Totalizadores Produccion,mediana_dia_semana,0.0
+HL Mosto Amstel_Totalizadores Produccion,mediana_mes,0.0
+HL Mosto Amstel_Totalizadores Produccion,media_movil_7,0.1262940081113389
+HL Mosto Amstel_Totalizadores Produccion,lag_7,0.3078617594752241
+HL Mosto Sol_Totalizadores Produccion,mediana_train,0.28413302050951844
+HL Mosto Sol_Totalizadores Produccion,ffill_3,0.24682184318181494
+HL Mosto Sol_Totalizadores Produccion,mediana_dia_semana,0.28413302050951844
+HL Mosto Sol_Totalizadores Produccion,mediana_mes,0.28413302050951844
+HL Mosto Sol_Totalizadores Produccion,media_movil_7,0.39563989981015857
+HL Mosto Sol_Totalizadores Produccion,lag_7,0.4412611893489203
+HL Mosto Miller_Totalizadores Produccion,mediana_train,0.19985650719624118
+HL Mosto Miller_Totalizadores Produccion,ffill_3,0.6629180328456021
+HL Mosto Miller_Totalizadores Produccion,mediana_dia_semana,0.19985650719624118
+HL Mosto Miller_Totalizadores Produccion,mediana_mes,0.19985650719624118
+HL Mosto Miller_Totalizadores Produccion,media_movil_7,0.5751072794898915
+HL Mosto Miller_Totalizadores Produccion,lag_7,0.4369618733313701
+HL Mosto IPA_Totalizadores Produccion,mediana_train,0.1084416676832927
+HL Mosto IPA_Totalizadores Produccion,ffill_3,0.3751696461888176
+HL Mosto IPA_Totalizadores Produccion,mediana_dia_semana,0.1084416676832927
+HL Mosto IPA_Totalizadores Produccion,mediana_mes,0.1084416676832927
+HL Mosto IPA_Totalizadores Produccion,media_movil_7,0.4730585444929145
+HL Mosto IPA_Totalizadores Produccion,lag_7,0.5318676870262836
+HL Mosto APA_Totalizadores Produccion,mediana_train,0.20950026782702574
+HL Mosto APA_Totalizadores Produccion,ffill_3,0.3911676888953213
+HL Mosto APA_Totalizadores Produccion,mediana_dia_semana,0.20950026782702574
+HL Mosto APA_Totalizadores Produccion,mediana_mes,0.20950026782702574
+HL Mosto APA_Totalizadores Produccion,media_movil_7,0.3880687304559429
+HL Mosto APA_Totalizadores Produccion,lag_7,0.4970353940936015
+HL Mosto Roja_Totalizadores Produccion,mediana_train,0.0
+HL Mosto Roja_Totalizadores Produccion,ffill_3,0.0
+HL Mosto Roja_Totalizadores Produccion,mediana_dia_semana,0.0
+HL Mosto Roja_Totalizadores Produccion,mediana_mes,0.0
+HL Mosto Roja_Totalizadores Produccion,media_movil_7,0.0
+HL Mosto Roja_Totalizadores Produccion,lag_7,0.0
+HL Mosto Isenbeck_Totalizadores Produccion,mediana_train,0.23171335630403303
+HL Mosto Isenbeck_Totalizadores Produccion,ffill_3,0.28673293947560313
+HL Mosto Isenbeck_Totalizadores Produccion,mediana_dia_semana,0.23171335630403303
+HL Mosto Isenbeck_Totalizadores Produccion,mediana_mes,0.23171335630403303
+HL Mosto Isenbeck_Totalizadores Produccion,media_movil_7,0.38655056149246997
+HL Mosto Isenbeck_Totalizadores Produccion,lag_7,0.3512191273987523
+HL Mosto Golden_Totalizadores Produccion,mediana_train,0.5005103720741395
+HL Mosto Golden_Totalizadores Produccion,ffill_3,0.5611345486767282
+HL Mosto Golden_Totalizadores Produccion,mediana_dia_semana,0.5005103720741395
+HL Mosto Golden_Totalizadores Produccion,mediana_mes,0.5005103720741395
+HL Mosto Golden_Totalizadores Produccion,media_movil_7,0.8019041664864358
+HL Mosto Golden_Totalizadores Produccion,lag_7,0.9599672487482608
+HL Mosto Amstel Lager_Totalizadores Produccion,mediana_train,0.24739819320236112
+HL Mosto Amstel Lager_Totalizadores Produccion,ffill_3,0.47648206329595555
+HL Mosto Amstel Lager_Totalizadores Produccion,mediana_dia_semana,0.24739819320236112
+HL Mosto Amstel Lager_Totalizadores Produccion,mediana_mes,0.24739819320236112
+HL Mosto Amstel Lager_Totalizadores Produccion,media_movil_7,0.5401207286364946
+HL Mosto Amstel Lager_Totalizadores Produccion,lag_7,0.394653756120977
+Hl Mosto Cautiva Roja_Totalizadores Produccion,mediana_train,0.12068846147217177
+Hl Mosto Cautiva Roja_Totalizadores Produccion,ffill_3,0.12068846147217177
+Hl Mosto Cautiva Roja_Totalizadores Produccion,mediana_dia_semana,0.12068846147217177
+Hl Mosto Cautiva Roja_Totalizadores Produccion,mediana_mes,0.12068846147217177
+Hl Mosto Cautiva Roja_Totalizadores Produccion,media_movil_7,0.26260287222853773
+Hl Mosto Cautiva Roja_Totalizadores Produccion,lag_7,0.12068846147217177
+Hl Mosto Cautiva Torrontes_Totalizadores Produccion,mediana_train,0.0
+Hl Mosto Cautiva Torrontes_Totalizadores Produccion,ffill_3,0.0
+Hl Mosto Cautiva Torrontes_Totalizadores Produccion,mediana_dia_semana,0.0
+Hl Mosto Cautiva Torrontes_Totalizadores Produccion,mediana_mes,0.0
+Hl Mosto Cautiva Torrontes_Totalizadores Produccion,media_movil_7,0.03808933025985201
+Hl Mosto Cautiva Torrontes_Totalizadores Produccion,lag_7,0.15313578910311307
+Hl Mosto Cautiva Blend_Totalizadores Produccion,mediana_train,0.014845873637323145
+Hl Mosto Cautiva Blend_Totalizadores Produccion,ffill_3,0.19943553139295553
+Hl Mosto Cautiva Blend_Totalizadores Produccion,mediana_dia_semana,0.014845873637323145
+Hl Mosto Cautiva Blend_Totalizadores Produccion,mediana_mes,0.014845873637323145
+Hl Mosto Cautiva Blend_Totalizadores Produccion,media_movil_7,0.1657405938661337
+Hl Mosto Cautiva Blend_Totalizadores Produccion,lag_7,0.20837882876483693
+Hl Mosto Bieckert Urbana_Totalizadores Produccion,mediana_train,0.0
+Hl Mosto Bieckert Urbana_Totalizadores Produccion,ffill_3,0.0
+Hl Mosto Bieckert Urbana_Totalizadores Produccion,mediana_dia_semana,0.0
+Hl Mosto Bieckert Urbana_Totalizadores Produccion,mediana_mes,0.0
+Hl Mosto Bieckert Urbana_Totalizadores Produccion,media_movil_7,0.01409119204321643
+Hl Mosto Bieckert Urbana_Totalizadores Produccion,lag_7,0.0
+HL Cerveza Sin Diliuir A90_Totalizadores Produccion,mediana_train,0.5964976238098523
+HL Cerveza Sin Diliuir A90_Totalizadores Produccion,ffill_3,0.5686204959947977
+HL Cerveza Sin Diliuir A90_Totalizadores Produccion,mediana_dia_semana,0.6048463112398555
+HL Cerveza Sin Diliuir A90_Totalizadores Produccion,mediana_mes,0.5447797713471209
+HL Cerveza Sin Diliuir A90_Totalizadores Produccion,media_movil_7,0.5978100139520139
+HL Cerveza Sin Diliuir A90_Totalizadores Produccion,lag_7,0.7298664275697175
+HL Cerceza Sin Diluir A190_Totalizadores Produccion,mediana_train,0.7140630815844491
+HL Cerceza Sin Diluir A190_Totalizadores Produccion,ffill_3,0.903300877659852
+HL Cerceza Sin Diluir A190_Totalizadores Produccion,mediana_dia_semana,0.7111305914724718
+HL Cerceza Sin Diluir A190_Totalizadores Produccion,mediana_mes,0.6871140888234906
+HL Cerceza Sin Diluir A190_Totalizadores Produccion,media_movil_7,0.6458918220415982
+HL Cerceza Sin Diluir A190_Totalizadores Produccion,lag_7,0.8104178189648275
+Hl Cerveza L2_Totalizadores Produccion,mediana_train,0.46725784624655514
+Hl Cerveza L2_Totalizadores Produccion,ffill_3,0.4588862654645669
+Hl Cerveza L2_Totalizadores Produccion,mediana_dia_semana,0.46536170787520814
+Hl Cerveza L2_Totalizadores Produccion,mediana_mes,0.47842947793855994
+Hl Cerveza L2_Totalizadores Produccion,media_movil_7,0.4666332585144096
+Hl Cerveza L2_Totalizadores Produccion,lag_7,0.43454036826643605
+Hl Cerveza L3_Totalizadores Produccion,mediana_train,0.41960699320907385
+Hl Cerveza L3_Totalizadores Produccion,ffill_3,0.43987381399605063
+Hl Cerveza L3_Totalizadores Produccion,mediana_dia_semana,0.38061455473679146
+Hl Cerveza L3_Totalizadores Produccion,mediana_mes,0.41679269212862624
+Hl Cerveza L3_Totalizadores Produccion,media_movil_7,0.3996564554316324
+Hl Cerveza L3_Totalizadores Produccion,lag_7,0.33050618889370514
+Hl Cerveza L4_Totalizadores Produccion,mediana_train,1.4034622607268539
+Hl Cerveza L4_Totalizadores Produccion,ffill_3,0.7555218903038815
+Hl Cerveza L4_Totalizadores Produccion,mediana_dia_semana,1.416949402178773
+Hl Cerveza L4_Totalizadores Produccion,mediana_mes,1.2633832525893312
+Hl Cerveza L4_Totalizadores Produccion,media_movil_7,0.989358298722499
+Hl Cerveza L4_Totalizadores Produccion,lag_7,1.0384678102331846
+Hl Cerveza L5_Totalizadores Produccion,mediana_train,0.5906432748538011
+Hl Cerveza L5_Totalizadores Produccion,ffill_3,0.45511154429283085
+Hl Cerveza L5_Totalizadores Produccion,mediana_dia_semana,0.5262887156162009
+Hl Cerveza L5_Totalizadores Produccion,mediana_mes,0.5787849252761533
+Hl Cerveza L5_Totalizadores Produccion,media_movil_7,0.6218439617562425
+Hl Cerveza L5_Totalizadores Produccion,lag_7,0.4741173922460472
+Elaboracion (Kw)_Consolidado EE,mediana_train,0.5364625865936101
+Elaboracion (Kw)_Consolidado EE,ffill_3,0.4573931295716793
+Elaboracion (Kw)_Consolidado EE,mediana_dia_semana,0.525185516339271
+Elaboracion (Kw)_Consolidado EE,mediana_mes,0.482034279542447
+Elaboracion (Kw)_Consolidado EE,media_movil_7,0.43501189868165024
+Elaboracion (Kw)_Consolidado EE,lag_7,0.5848104716016268
+Bodega (Kw)_Consolidado EE,mediana_train,0.5188200542247708
+Bodega (Kw)_Consolidado EE,ffill_3,0.5743958890783422
+Bodega (Kw)_Consolidado EE,mediana_dia_semana,0.48782641829138756
+Bodega (Kw)_Consolidado EE,mediana_mes,0.4735017125292428
+Bodega (Kw)_Consolidado EE,media_movil_7,0.5322383217912846
+Bodega (Kw)_Consolidado EE,lag_7,0.5952881923822783
+Cocina (Kw)_Consolidado EE,mediana_train,0.6699854975457386
+Cocina (Kw)_Consolidado EE,ffill_3,0.6004759779860182
+Cocina (Kw)_Consolidado EE,mediana_dia_semana,0.6848133273836086
+Cocina (Kw)_Consolidado EE,mediana_mes,0.642505206009222
+Cocina (Kw)_Consolidado EE,media_movil_7,0.632188542529908
+Cocina (Kw)_Consolidado EE,lag_7,0.7073850959393128
+Envasado (Kw)_Consolidado EE,mediana_train,0.5145602740525405
+Envasado (Kw)_Consolidado EE,ffill_3,0.4727850145598631
+Envasado (Kw)_Consolidado EE,mediana_dia_semana,0.47253515859689443
+Envasado (Kw)_Consolidado EE,mediana_mes,0.42394063948332417
+Envasado (Kw)_Consolidado EE,media_movil_7,0.45141028701303576
+Envasado (Kw)_Consolidado EE,lag_7,0.3526092277396008
+Linea 2 (Kw)_Consolidado EE,mediana_train,0.4213918516873016
+Linea 2 (Kw)_Consolidado EE,ffill_3,0.5258721549652972
+Linea 2 (Kw)_Consolidado EE,mediana_dia_semana,0.4450133649365164
+Linea 2 (Kw)_Consolidado EE,mediana_mes,0.4588854559895508
+Linea 2 (Kw)_Consolidado EE,media_movil_7,0.44948665225949364
+Linea 2 (Kw)_Consolidado EE,lag_7,0.3197187097306544
+Linea 3 (Kw)_Consolidado EE,mediana_train,0.4659253897400839
+Linea 3 (Kw)_Consolidado EE,ffill_3,0.4103443653570327
+Linea 3 (Kw)_Consolidado EE,mediana_dia_semana,0.47599093845926993
+Linea 3 (Kw)_Consolidado EE,mediana_mes,0.4714615085588665
+Linea 3 (Kw)_Consolidado EE,media_movil_7,0.4934756906743877
+Linea 3 (Kw)_Consolidado EE,lag_7,0.33668583531051866
+Linea 4 (Kw)_Consolidado EE,mediana_train,2.334204413472706
+Linea 4 (Kw)_Consolidado EE,ffill_3,1.044027186303609
+Linea 4 (Kw)_Consolidado EE,mediana_dia_semana,2.3424850518346454
+Linea 4 (Kw)_Consolidado EE,mediana_mes,2.186959607691315
+Linea 4 (Kw)_Consolidado EE,media_movil_7,1.9176801614954926
+Linea 4 (Kw)_Consolidado EE,lag_7,2.790091194562739
+Aire (Kw)_Consolidado EE,mediana_train,0.6683509009444606
+Aire (Kw)_Consolidado EE,ffill_3,0.5314685878219386
+Aire (Kw)_Consolidado EE,mediana_dia_semana,0.6470884505044644
+Aire (Kw)_Consolidado EE,mediana_mes,0.5400589884924089
+Aire (Kw)_Consolidado EE,media_movil_7,0.5598462661343427
+Aire (Kw)_Consolidado EE,lag_7,0.5477387744576604
+Calderas (Kw)_Consolidado EE,mediana_train,0.47891784403500803
+Calderas (Kw)_Consolidado EE,ffill_3,0.11774092577362612
+Calderas (Kw)_Consolidado EE,mediana_dia_semana,0.47874599531098483
+Calderas (Kw)_Consolidado EE,mediana_mes,0.5170068862238698
+Calderas (Kw)_Consolidado EE,media_movil_7,0.11553372180497276
+Calderas (Kw)_Consolidado EE,lag_7,0.21325199160396235
+Efluentes (Kw)_Consolidado EE,mediana_train,0.560114295685556
+Efluentes (Kw)_Consolidado EE,ffill_3,0.23718535968241503
+Efluentes (Kw)_Consolidado EE,mediana_dia_semana,0.5696898311739301
+Efluentes (Kw)_Consolidado EE,mediana_mes,0.45458709592985214
+Efluentes (Kw)_Consolidado EE,media_movil_7,0.23291640959485485
+Efluentes (Kw)_Consolidado EE,lag_7,0.3209658421672556
+Frio (Kw)_Consolidado EE,mediana_train,0.5580842429615193
+Frio (Kw)_Consolidado EE,ffill_3,0.2958643215967048
+Frio (Kw)_Consolidado EE,mediana_dia_semana,0.5677585588511954
+Frio (Kw)_Consolidado EE,mediana_mes,0.2961992993663619
+Frio (Kw)_Consolidado EE,media_movil_7,0.2902735388615568
+Frio (Kw)_Consolidado EE,lag_7,0.4428439951005272
+Pta Agua / Eflu (Kw)_Consolidado EE,mediana_train,0.6703637684029841
+Pta Agua / Eflu (Kw)_Consolidado EE,ffill_3,0.41103848946986205
+Pta Agua / Eflu (Kw)_Consolidado EE,mediana_dia_semana,0.6683171585132369
+Pta Agua / Eflu (Kw)_Consolidado EE,mediana_mes,0.6853337294513766
+Pta Agua / Eflu (Kw)_Consolidado EE,media_movil_7,0.43997617004152945
+Pta Agua / Eflu (Kw)_Consolidado EE,lag_7,0.5196408529741863
+Prod Agua (Kw)_Consolidado EE,mediana_train,0.502741735446138
+Prod Agua (Kw)_Consolidado EE,ffill_3,0.21485636579976203
+Prod Agua (Kw)_Consolidado EE,mediana_dia_semana,0.5036860760131201
+Prod Agua (Kw)_Consolidado EE,mediana_mes,0.4167815614356495
+Prod Agua (Kw)_Consolidado EE,media_movil_7,0.2264158737953287
+Prod Agua (Kw)_Consolidado EE,lag_7,0.31324406167173463
+KW Trafo 4_Totalizadores Energia,mediana_train,0.46947443580798176
+KW Trafo 4_Totalizadores Energia,ffill_3,0.3008534085151847
+KW Trafo 4_Totalizadores Energia,mediana_dia_semana,0.4745513108260291
+KW Trafo 4_Totalizadores Energia,mediana_mes,0.45175262440837605
+KW Trafo 4_Totalizadores Energia,media_movil_7,0.31610340904644774
+KW Trafo 4_Totalizadores Energia,lag_7,0.36211716713524067
+KW Trafo 5_Totalizadores Energia,mediana_train,0.43970126474443394
+KW Trafo 5_Totalizadores Energia,ffill_3,0.18980418162298832
+KW Trafo 5_Totalizadores Energia,mediana_dia_semana,0.43916106755383183
+KW Trafo 5_Totalizadores Energia,mediana_mes,0.3305497655109551
+KW Trafo 5_Totalizadores Energia,media_movil_7,0.17692551396273729
+KW Trafo 5_Totalizadores Energia,lag_7,0.31032465851155183
+KW Trafo 8_Totalizadores Energia,mediana_train,0.507275237780103
+KW Trafo 8_Totalizadores Energia,ffill_3,0.43622167733485645
+KW Trafo 8_Totalizadores Energia,mediana_dia_semana,0.4716901097063536
+KW Trafo 8_Totalizadores Energia,mediana_mes,0.4796736203644121
+KW Trafo 8_Totalizadores Energia,media_movil_7,0.4669587549293077
+KW Trafo 8_Totalizadores Energia,lag_7,0.31470533874047435
+KW Trafo 11_Totalizadores Energia,mediana_train,0.4630581790629925
+KW Trafo 11_Totalizadores Energia,ffill_3,0.24828307138776454
+KW Trafo 11_Totalizadores Energia,mediana_dia_semana,0.49135154189305813
+KW Trafo 11_Totalizadores Energia,mediana_mes,0.2902132705582365
+KW Trafo 11_Totalizadores Energia,media_movil_7,0.2386210811468199
+KW Trafo 11_Totalizadores Energia,lag_7,0.32054061135489137
+KW Trafo 12_Totalizadores Energia,mediana_train,0.5587538232021595
+KW Trafo 12_Totalizadores Energia,ffill_3,0.3743619680572395
+KW Trafo 12_Totalizadores Energia,mediana_dia_semana,0.5785255370777846
+KW Trafo 12_Totalizadores Energia,mediana_mes,0.5236244372263053
+KW Trafo 12_Totalizadores Energia,media_movil_7,0.38019849169878356
+KW Trafo 12_Totalizadores Energia,lag_7,0.6043511741118279
+KW Linea 2_Totalizadores Energia,mediana_train,0.4755958602894784
+KW Linea 2_Totalizadores Energia,ffill_3,0.5071490678745532
+KW Linea 2_Totalizadores Energia,mediana_dia_semana,0.43220863036101614
+KW Linea 2_Totalizadores Energia,mediana_mes,0.4938731991307069
+KW Linea 2_Totalizadores Energia,media_movil_7,0.4649059180026964
+KW Linea 2_Totalizadores Energia,lag_7,0.35652738932677913
+KW Trafo 9_Totalizadores Energia,mediana_train,0.552197295557227
+KW Trafo 9_Totalizadores Energia,ffill_3,0.4774401776380876
+KW Trafo 9_Totalizadores Energia,mediana_dia_semana,0.5340396744359986
+KW Trafo 9_Totalizadores Energia,mediana_mes,0.3832753703166793
+KW Trafo 9_Totalizadores Energia,media_movil_7,0.4233200168352088
+KW Trafo 9_Totalizadores Energia,lag_7,0.4943318565953416
+KW Trafo 10_Totalizadores Energia,mediana_train,0.6020926889274228
+KW Trafo 10_Totalizadores Energia,ffill_3,0.46463654407632
+KW Trafo 10_Totalizadores Energia,mediana_dia_semana,0.6045392515980751
+KW Trafo 10_Totalizadores Energia,mediana_mes,0.4851278403099131
+KW Trafo 10_Totalizadores Energia,media_movil_7,0.46446400456804615
+KW Trafo 10_Totalizadores Energia,lag_7,0.5738876747280108
+KW Cocina_Totalizadores Energia,mediana_train,0.6079740943128922
+KW Cocina_Totalizadores Energia,ffill_3,0.6151172065669012
+KW Cocina_Totalizadores Energia,mediana_dia_semana,0.6139028774837197
+KW Cocina_Totalizadores Energia,mediana_mes,0.5804612069478672
+KW Cocina_Totalizadores Energia,media_movil_7,0.6272718923635027
+KW Cocina_Totalizadores Energia,lag_7,0.7339309737252521
+Kw Molino_Totalizadores Energia,mediana_train,0.5524223073648361
+Kw Molino_Totalizadores Energia,ffill_3,0.43184333759046406
+Kw Molino_Totalizadores Energia,mediana_dia_semana,0.5494252873563218
+Kw Molino_Totalizadores Energia,mediana_mes,0.571596424010217
+Kw Molino_Totalizadores Energia,media_movil_7,0.49573297654523707
+Kw Molino_Totalizadores Energia,lag_7,0.5610387398893145
+KW Linea 3 y 4_Totalizadores Energia,mediana_train,0.5195252683623568
+KW Linea 3 y 4_Totalizadores Energia,ffill_3,0.4578170852955811
+KW Linea 3 y 4_Totalizadores Energia,mediana_dia_semana,0.4777287877519161
+KW Linea 3 y 4_Totalizadores Energia,mediana_mes,0.44543771962498085
+KW Linea 3 y 4_Totalizadores Energia,media_movil_7,0.4999449784581841
+KW Linea 3 y 4_Totalizadores Energia,lag_7,0.5320066564836711
+KW Linea 3_Totalizadores Energia,mediana_train,0.578502312876744
+KW Linea 3_Totalizadores Energia,ffill_3,0.5396478710882991
+KW Linea 3_Totalizadores Energia,mediana_dia_semana,0.5326816022822721
+KW Linea 3_Totalizadores Energia,mediana_mes,0.5529426991696295
+KW Linea 3_Totalizadores Energia,media_movil_7,0.5147722944259897
+KW Linea 3_Totalizadores Energia,lag_7,0.42269625746747075
+KW Servicio L2_Totalizadores Energia,mediana_train,0.43755176902141757
+KW Servicio L2_Totalizadores Energia,ffill_3,0.16910227586478918
+KW Servicio L2_Totalizadores Energia,mediana_dia_semana,0.4463081292154775
+KW Servicio L2_Totalizadores Energia,mediana_mes,0.4698359168540212
+KW Servicio L2_Totalizadores Energia,media_movil_7,0.15504566004211015
+KW Servicio L2_Totalizadores Energia,lag_7,0.19109178400978188
+KW Planta de Agua_Totalizadores Energia,mediana_train,0.6536093319719051
+KW Planta de Agua_Totalizadores Energia,ffill_3,0.3438225192611158
+KW Planta de Agua_Totalizadores Energia,mediana_dia_semana,0.6558990067761997
+KW Planta de Agua_Totalizadores Energia,mediana_mes,0.6069494724465485
+KW Planta de Agua_Totalizadores Energia,media_movil_7,0.4573712352604027
+KW Planta de Agua_Totalizadores Energia,lag_7,0.6360345307713728
+Kw Casona_Totalizadores Energia,mediana_train,0.7557052001496446
+Kw Casona_Totalizadores Energia,ffill_3,0.4833520389075945
+Kw Casona_Totalizadores Energia,mediana_dia_semana,0.7497194163860831
+Kw Casona_Totalizadores Energia,mediana_mes,0.7087542087542088
+Kw Casona_Totalizadores Energia,media_movil_7,0.456466784244562
+Kw Casona_Totalizadores Energia,lag_7,0.4489337822671156
+KW Laboratorio_Totalizadores Energia,mediana_train,0.680852695345449
+KW Laboratorio_Totalizadores Energia,ffill_3,0.34496332080873143
+KW Laboratorio_Totalizadores Energia,mediana_dia_semana,0.6655420085371777
+KW Laboratorio_Totalizadores Energia,mediana_mes,0.4943639291465378
+KW Laboratorio_Totalizadores Energia,media_movil_7,0.35164310848690883
+KW Laboratorio_Totalizadores Energia,lag_7,0.44562022339800117
+Kw Admininistracion_Totalizadores Energia,mediana_train,0.5303250487511023
+Kw Admininistracion_Totalizadores Energia,ffill_3,0.4658121250512352
+Kw Admininistracion_Totalizadores Energia,mediana_dia_semana,0.5571941630244223
+Kw Admininistracion_Totalizadores Energia,mediana_mes,0.508514824521333
+Kw Admininistracion_Totalizadores Energia,media_movil_7,0.4943220921513743
+Kw Admininistracion_Totalizadores Energia,lag_7,0.5672088976109545
+KW Pta Agua/Log_Totalizadores Energia,mediana_train,0.6010928961748634
+KW Pta Agua/Log_Totalizadores Energia,ffill_3,0.3186399514268367
+KW Pta Agua/Log_Totalizadores Energia,mediana_dia_semana,0.6163934426229508
+KW Pta Agua/Log_Totalizadores Energia,mediana_mes,0.6181744586116171
+KW Pta Agua/Log_Totalizadores Energia,media_movil_7,0.36599126839564
+KW Pta Agua/Log_Totalizadores Energia,lag_7,0.5027322404371585
+KW Comp Kaeser_Totalizadores Energia,mediana_train,0.530276672994608
+KW Comp Kaeser_Totalizadores Energia,ffill_3,0.44504435574098267
+KW Comp Kaeser_Totalizadores Energia,mediana_dia_semana,0.538368257313825
+KW Comp Kaeser_Totalizadores Energia,mediana_mes,0.47998036653938597
+KW Comp Kaeser_Totalizadores Energia,media_movil_7,0.3684442991641686
+KW Comp Kaeser_Totalizadores Energia,lag_7,0.4535473765510073
+KW Iluminacion L3_Totalizadores Energia,mediana_train,0.8161375661375662
+KW Iluminacion L3_Totalizadores Energia,ffill_3,0.8505291005291005
+KW Iluminacion L3_Totalizadores Energia,mediana_dia_semana,0.8280423280423281
+KW Iluminacion L3_Totalizadores Energia,mediana_mes,0.8121693121693122
+KW Iluminacion L3_Totalizadores Energia,media_movil_7,0.8874580078945159
+KW Iluminacion L3_Totalizadores Energia,lag_7,0.9254850088183421
+KW Iluminacion L4_Totalizadores Energia,mediana_train,0.7430149447693307
+KW Iluminacion L4_Totalizadores Energia,ffill_3,0.25146198830409355
+KW Iluminacion L4_Totalizadores Energia,mediana_dia_semana,0.7467511371020144
+KW Iluminacion L4_Totalizadores Energia,mediana_mes,0.7136127355425601
+KW Iluminacion L4_Totalizadores Energia,media_movil_7,0.39186237197933105
+KW Iluminacion L4_Totalizadores Energia,lag_7,0.5477582846003898
+KW Ilum Dep L3/L4_Totalizadores Energia,mediana_train,0.48229772472196714
+KW Ilum Dep L3/L4_Totalizadores Energia,ffill_3,0.202734414855627
+KW Ilum Dep L3/L4_Totalizadores Energia,mediana_dia_semana,0.5086215692276298
+KW Ilum Dep L3/L4_Totalizadores Energia,mediana_mes,0.4257728803183349
+KW Ilum Dep L3/L4_Totalizadores Energia,media_movil_7,0.2223830415749608
+KW Ilum Dep L3/L4_Totalizadores Energia,lag_7,0.2992551780430568
+KW CO2_Totalizadores Energia,mediana_train,0.6014031095942358
+KW CO2_Totalizadores Energia,ffill_3,0.31486959086504024
+KW CO2_Totalizadores Energia,mediana_dia_semana,0.5961909577381704
+KW CO2_Totalizadores Energia,mediana_mes,0.5838031433025744
+KW CO2_Totalizadores Energia,media_movil_7,0.43226369551739285
+KW CO2_Totalizadores Energia,lag_7,0.557287321451144
+KW Secador Kaeser_Totalizadores Energia,mediana_train,0.7603723942521756
+KW Secador Kaeser_Totalizadores Energia,ffill_3,0.4592187816231532
+KW Secador Kaeser_Totalizadores Energia,mediana_dia_semana,0.7611819469742968
+KW Secador Kaeser_Totalizadores Energia,mediana_mes,0.5767051204209674
+KW Secador Kaeser_Totalizadores Energia,media_movil_7,0.4891447653742736
+KW Secador Kaeser_Totalizadores Energia,lag_7,0.7994333130945153
+KW Caldera 3_Totalizadores Energia,mediana_train,0.48624862486248627
+KW Caldera 3_Totalizadores Energia,ffill_3,0.40960762742940965
+KW Caldera 3_Totalizadores Energia,mediana_dia_semana,0.4949272705048282
+KW Caldera 3_Totalizadores Energia,mediana_mes,0.5289695636230289
+KW Caldera 3_Totalizadores Energia,media_movil_7,0.30628197740408963
+KW Caldera 3_Totalizadores Energia,lag_7,0.42892066984476224
+KW Caldera 4_Totalizadores Energia,mediana_train,0.5405609952225534
+KW Caldera 4_Totalizadores Energia,ffill_3,0.13587342131403435
+KW Caldera 4_Totalizadores Energia,mediana_dia_semana,0.5445343172035382
+KW Caldera 4_Totalizadores Energia,mediana_mes,0.5321058606499219
+KW Caldera 4_Totalizadores Energia,media_movil_7,0.1300226821725332
+KW Caldera 4_Totalizadores Energia,lag_7,0.21888746984532423
+KW Filtr Carbon_Totalizadores Energia,mediana_train,0.32014807182246646
+KW Filtr Carbon_Totalizadores Energia,ffill_3,0.10826797946839162
+KW Filtr Carbon_Totalizadores Energia,mediana_dia_semana,0.32035796744709677
+KW Filtr Carbon_Totalizadores Energia,mediana_mes,0.33695880321331123
+KW Filtr Carbon_Totalizadores Energia,media_movil_7,0.08178269533241198
+KW Filtr Carbon_Totalizadores Energia,lag_7,0.21249069780754481
+KW Atlas 3_Totalizadores Energia,mediana_train,0.34639667117033673
+KW Atlas 3_Totalizadores Energia,ffill_3,0.1071160578420042
+KW Atlas 3_Totalizadores Energia,mediana_dia_semana,0.34639667117033673
+KW Atlas 3_Totalizadores Energia,mediana_mes,0.34639667117033673
+KW Atlas 3_Totalizadores Energia,media_movil_7,0.09943641808246637
+KW Atlas 3_Totalizadores Energia,lag_7,0.11034244512640193
+KW Toma Agua_Totalizadores Energia,mediana_train,0.6295669612082472
+KW Toma Agua_Totalizadores Energia,ffill_3,0.15986714294666918
+KW Toma Agua_Totalizadores Energia,mediana_dia_semana,0.6453594033966285
+KW Toma Agua_Totalizadores Energia,mediana_mes,0.5166071316663533
+KW Toma Agua_Totalizadores Energia,media_movil_7,0.23520458255370832
+KW Toma Agua_Totalizadores Energia,lag_7,0.34668170708779844
+KW Enfr Agua Cocina_Totalizadores Energia,mediana_train,0.5778667711679324
+KW Enfr Agua Cocina_Totalizadores Energia,ffill_3,0.21428802937861818
+KW Enfr Agua Cocina_Totalizadores Energia,mediana_dia_semana,0.5778667711679324
+KW Enfr Agua Cocina_Totalizadores Energia,mediana_mes,0.6296615081267454
+KW Enfr Agua Cocina_Totalizadores Energia,media_movil_7,0.30474021077069635
+KW Enfr Agua Cocina_Totalizadores Energia,lag_7,0.2538957694059457
+KW Enfluentes Coc_Totalizadores Energia,mediana_train,0.6481481481481481
+KW Enfluentes Coc_Totalizadores Energia,ffill_3,0.30345679012345683
+KW Enfluentes Coc_Totalizadores Energia,mediana_dia_semana,0.6464197530864197
+KW Enfluentes Coc_Totalizadores Energia,mediana_mes,0.5907407407407408
+KW Enfluentes Coc_Totalizadores Energia,media_movil_7,0.36082304526748965
+KW Enfluentes Coc_Totalizadores Energia,lag_7,0.5851851851851851
+KW Enfluente Efl_Totalizadores Energia,mediana_train,0.675593542260209
+KW Enfluente Efl_Totalizadores Energia,ffill_3,0.2288698955365622
+KW Enfluente Efl_Totalizadores Energia,mediana_dia_semana,0.6687321937321937
+KW Enfluente Efl_Totalizadores Energia,mediana_mes,0.5072412155745489
+KW Enfluente Efl_Totalizadores Energia,media_movil_7,0.23840715868493648
+KW Enfluente Efl_Totalizadores Energia,lag_7,0.3786324786324786
+KW Enfluentes Hidr_Totalizadores Energia,mediana_train,0.7178783721993598
+KW Enfluentes Hidr_Totalizadores Energia,ffill_3,0.3662551440329218
+KW Enfluentes Hidr_Totalizadores Energia,mediana_dia_semana,0.7165066300868771
+KW Enfluentes Hidr_Totalizadores Energia,mediana_mes,0.7219935985368083
+KW Enfluentes Hidr_Totalizadores Energia,media_movil_7,0.45043220763385367
+KW Enfluentes Hidr_Totalizadores Energia,lag_7,0.5626428898033836
+KW Obrador Contratistas_Totalizadores Energia,mediana_train,0.5596707818930041
+KW Obrador Contratistas_Totalizadores Energia,ffill_3,0.43072702331961593
+KW Obrador Contratistas_Totalizadores Energia,mediana_dia_semana,0.547782350251486
+KW Obrador Contratistas_Totalizadores Energia,mediana_mes,0.40352080475537266
+KW Obrador Contratistas_Totalizadores Energia,media_movil_7,0.38794173362074597
+KW Obrador Contratistas_Totalizadores Energia,lag_7,0.4183813443072702
+Kw Compresores Aire_Totalizadores Energia,mediana_train,0.5140463208066548
+Kw Compresores Aire_Totalizadores Energia,ffill_3,0.4093531527862621
+Kw Compresores Aire_Totalizadores Energia,mediana_dia_semana,0.48190758463615313
+Kw Compresores Aire_Totalizadores Energia,mediana_mes,0.37549114987518567
+Kw Compresores Aire_Totalizadores Energia,media_movil_7,0.3391871970097721
+Kw Compresores Aire_Totalizadores Energia,lag_7,0.43231747324600106
+Kw Linea Barriles_Totalizadores Energia,mediana_train,0.5454144620811288
+Kw Linea Barriles_Totalizadores Energia,ffill_3,0.40454144620811283
+Kw Linea Barriles_Totalizadores Energia,mediana_dia_semana,0.4898589065255732
+Kw Linea Barriles_Totalizadores Energia,mediana_mes,0.4721119929453263
+Kw Linea Barriles_Totalizadores Energia,media_movil_7,0.4900420970857479
+Kw Linea Barriles_Totalizadores Energia,lag_7,0.4314373897707231
+Agua Planta (Hl)_Consolidado Agua,mediana_train,0.5095906787259591
+Agua Planta (Hl)_Consolidado Agua,ffill_3,0.39753781336319793
+Agua Planta (Hl)_Consolidado Agua,mediana_dia_semana,0.5096811601833676
+Agua Planta (Hl)_Consolidado Agua,mediana_mes,0.33458922307734895
+Agua Planta (Hl)_Consolidado Agua,media_movil_7,0.32326465128326015
+Agua Planta (Hl)_Consolidado Agua,lag_7,0.4263801713028628
+Agua Elaboracion (Hl)_Consolidado Agua,mediana_train,0.6937975753832345
+Agua Elaboracion (Hl)_Consolidado Agua,ffill_3,0.6778236719697528
+Agua Elaboracion (Hl)_Consolidado Agua,mediana_dia_semana,0.7012587552071146
+Agua Elaboracion (Hl)_Consolidado Agua,mediana_mes,0.5864568308640306
+Agua Elaboracion (Hl)_Consolidado Agua,media_movil_7,0.647388765152478
+Agua Elaboracion (Hl)_Consolidado Agua,lag_7,0.8084243281114715
+Agua Bodega (Hl)_Consolidado Agua,mediana_train,0.6112578261477748
+Agua Bodega (Hl)_Consolidado Agua,ffill_3,0.7130564456599056
+Agua Bodega (Hl)_Consolidado Agua,mediana_dia_semana,0.5958151057602981
+Agua Bodega (Hl)_Consolidado Agua,mediana_mes,0.5432302501808158
+Agua Bodega (Hl)_Consolidado Agua,media_movil_7,0.6343474873442381
+Agua Bodega (Hl)_Consolidado Agua,lag_7,0.6834485810382552
+Agua Cocina (Hl)_Consolidado Agua,mediana_train,0.5187274557541733
+Agua Cocina (Hl)_Consolidado Agua,ffill_3,0.6170280571039297
+Agua Cocina (Hl)_Consolidado Agua,mediana_dia_semana,0.52075749575983
+Agua Cocina (Hl)_Consolidado Agua,mediana_mes,0.4671923949758239
+Agua Cocina (Hl)_Consolidado Agua,media_movil_7,0.5943206546790184
+Agua Cocina (Hl)_Consolidado Agua,lag_7,0.7042560769704393
+Agua Dilucion (Hl)_Consolidado Agua,mediana_train,0.5820830475537265
+Agua Dilucion (Hl)_Consolidado Agua,ffill_3,0.6292223936899863
+Agua Dilucion (Hl)_Consolidado Agua,mediana_dia_semana,0.5707840363511659
+Agua Dilucion (Hl)_Consolidado Agua,mediana_mes,0.5236696959304984
+Agua Dilucion (Hl)_Consolidado Agua,media_movil_7,0.567655940405426
+Agua Dilucion (Hl)_Consolidado Agua,lag_7,0.6396747828074988
+Agua Envasado (Hl)_Consolidado Agua,mediana_train,0.5865550210247015
+Agua Envasado (Hl)_Consolidado Agua,ffill_3,0.4728096432153988
+Agua Envasado (Hl)_Consolidado Agua,mediana_dia_semana,0.5678758215664167
+Agua Envasado (Hl)_Consolidado Agua,mediana_mes,0.45831736978651477
+Agua Envasado (Hl)_Consolidado Agua,media_movil_7,0.48700426335395913
+Agua Envasado (Hl)_Consolidado Agua,lag_7,0.4320872920516817
+Planta de agua (Hl)_Consolidado Agua,mediana_train,0.5745845946688828
+Planta de agua (Hl)_Consolidado Agua,ffill_3,0.39969409782066173
+Planta de agua (Hl)_Consolidado Agua,mediana_dia_semana,0.5695536561959584
+Planta de agua (Hl)_Consolidado Agua,mediana_mes,0.3839215081395379
+Planta de agua (Hl)_Consolidado Agua,media_movil_7,0.35713453996165045
+Planta de agua (Hl)_Consolidado Agua,lag_7,0.40796771152032585
+Produccion (Hl)_Consolidado Agua,mediana_train,0.5248827901886195
+Produccion (Hl)_Consolidado Agua,ffill_3,0.42270176677458404
+Produccion (Hl)_Consolidado Agua,mediana_dia_semana,0.5168205637640656
+Produccion (Hl)_Consolidado Agua,mediana_mes,0.3932618405015669
+Produccion (Hl)_Consolidado Agua,media_movil_7,0.4042420444862651
+Produccion (Hl)_Consolidado Agua,lag_7,0.4958824464219341
+Red L1 y L2_Totalizadores Agua,mediana_train,0.5778556738245535
+Red L1 y L2_Totalizadores Agua,ffill_3,0.35754391020211285
+Red L1 y L2_Totalizadores Agua,mediana_dia_semana,0.5669903363515413
+Red L1 y L2_Totalizadores Agua,mediana_mes,0.5314843049493015
+Red L1 y L2_Totalizadores Agua,media_movil_7,0.36892879465467654
+Red L1 y L2_Totalizadores Agua,lag_7,0.42380990831381976
+FC L1 y L2_Totalizadores Agua,mediana_train,0.49640648337804255
+FC L1 y L2_Totalizadores Agua,ffill_3,0.5329037778250365
+FC L1 y L2_Totalizadores Agua,mediana_dia_semana,0.4570985477939577
+FC L1 y L2_Totalizadores Agua,mediana_mes,0.4864846714348075
+FC L1 y L2_Totalizadores Agua,media_movil_7,0.4833798634795916
+FC L1 y L2_Totalizadores Agua,lag_7,0.44235014370335557
+Red Paste L1_Totalizadores Agua,mediana_train,0.5550024845185652
+Red Paste L1_Totalizadores Agua,ffill_3,0.5062568374861733
+Red Paste L1_Totalizadores Agua,mediana_dia_semana,0.5538234767269934
+Red Paste L1_Totalizadores Agua,mediana_mes,0.5061465268859319
+Red Paste L1_Totalizadores Agua,media_movil_7,0.46039104890923355
+Red Paste L1_Totalizadores Agua,lag_7,0.6191845314177746
+Red L3_Totalizadores Agua,mediana_train,0.5699000843827431
+Red L3_Totalizadores Agua,ffill_3,0.42067162213730197
+Red L3_Totalizadores Agua,mediana_dia_semana,0.5648693679893796
+Red L3_Totalizadores Agua,mediana_mes,0.45340137699737193
+Red L3_Totalizadores Agua,media_movil_7,0.4048940429673753
+Red L3_Totalizadores Agua,lag_7,0.47745744583649097
+FC Linea 3_Totalizadores Agua,mediana_train,0.48328926707478437
+FC Linea 3_Totalizadores Agua,ffill_3,0.4906570029718001
+FC Linea 3_Totalizadores Agua,mediana_dia_semana,0.408226968550232
+FC Linea 3_Totalizadores Agua,mediana_mes,0.4321991319778504
+FC Linea 3_Totalizadores Agua,media_movil_7,0.503734447144641
+FC Linea 3_Totalizadores Agua,lag_7,0.3985656492230797
+Red Paste L4_Totalizadores Agua,mediana_train,0.5968226430854738
+Red Paste L4_Totalizadores Agua,ffill_3,0.4042875220649787
+Red Paste L4_Totalizadores Agua,mediana_dia_semana,0.6078412999284284
+Red Paste L4_Totalizadores Agua,mediana_mes,0.48871674189731157
+Red Paste L4_Totalizadores Agua,media_movil_7,0.4948355350078963
+Red Paste L4_Totalizadores Agua,lag_7,0.6722487269689816
+Rinser_Totalizadores Agua,mediana_train,0.28147795730934366
+Rinser_Totalizadores Agua,ffill_3,0.2764217610060889
+Rinser_Totalizadores Agua,mediana_dia_semana,0.28147795730934366
+Rinser_Totalizadores Agua,mediana_mes,0.28147795730934366
+Rinser_Totalizadores Agua,media_movil_7,0.45381512399888835
+Rinser_Totalizadores Agua,lag_7,0.46242105996756483
+FC Barriles_Totalizadores Agua,mediana_train,0.5532048790419607
+FC Barriles_Totalizadores Agua,ffill_3,0.5259555407481445
+FC Barriles_Totalizadores Agua,mediana_dia_semana,0.5220334277305793
+FC Barriles_Totalizadores Agua,mediana_mes,0.5385733059396228
+FC Barriles_Totalizadores Agua,media_movil_7,0.5202463847441359
+FC Barriles_Totalizadores Agua,lag_7,0.5848964406685546
+Red Bodega_Totalizadores Agua,mediana_train,0.4333585285966238
+Red Bodega_Totalizadores Agua,ffill_3,0.43187130819405956
+Red Bodega_Totalizadores Agua,mediana_dia_semana,0.4333585285966238
+Red Bodega_Totalizadores Agua,mediana_mes,0.4290630861398057
+Red Bodega_Totalizadores Agua,media_movil_7,0.3161562626226269
+Red Bodega_Totalizadores Agua,lag_7,0.3725714565661656
+FC CIP Bodega_Totalizadores Agua,mediana_train,0.5920838555875053
+FC CIP Bodega_Totalizadores Agua,ffill_3,0.679122121457888
+FC CIP Bodega_Totalizadores Agua,mediana_dia_semana,0.5878296345449631
+FC CIP Bodega_Totalizadores Agua,mediana_mes,0.5594181883719597
+FC CIP Bodega_Totalizadores Agua,media_movil_7,0.6239845720948723
+FC CIP Bodega_Totalizadores Agua,lag_7,0.9193598597491542
+FC Centec I_Totalizadores Agua,mediana_train,0.5578364570888094
+FC Centec I_Totalizadores Agua,ffill_3,0.42095840800477907
+FC Centec I_Totalizadores Agua,mediana_dia_semana,0.5630301672640382
+FC Centec I_Totalizadores Agua,mediana_mes,0.5198918508562327
+FC Centec I_Totalizadores Agua,media_movil_7,0.46160311741432924
+FC Centec I_Totalizadores Agua,lag_7,0.6782438520509757
+FC Cocina_Totalizadores Agua,mediana_train,0.5899834251619764
+FC Cocina_Totalizadores Agua,ffill_3,0.7104157213985763
+FC Cocina_Totalizadores Agua,mediana_dia_semana,0.5836312235950565
+FC Cocina_Totalizadores Agua,mediana_mes,0.5781255090342605
+FC Cocina_Totalizadores Agua,media_movil_7,0.694643183119785
+FC Cocina_Totalizadores Agua,lag_7,0.7555450722935577
+FC Centec II_Totalizadores Agua,mediana_train,0.3934755634691766
+FC Centec II_Totalizadores Agua,ffill_3,0.23325226172581448
+FC Centec II_Totalizadores Agua,mediana_dia_semana,0.3955359005292234
+FC Centec II_Totalizadores Agua,mediana_mes,0.3126282468963767
+FC Centec II_Totalizadores Agua,media_movil_7,0.26556288138958595
+FC Centec II_Totalizadores Agua,lag_7,0.3409411617969941
+Agua Cond REC_Totalizadores Agua,mediana_train,0.564666733220192
+Agua Cond REC_Totalizadores Agua,ffill_3,0.23182423213869743
+Agua Cond REC_Totalizadores Agua,mediana_dia_semana,0.561987953811853
+Agua Cond REC_Totalizadores Agua,mediana_mes,0.5192680776014106
+Agua Cond REC_Totalizadores Agua,media_movil_7,0.23345077653702978
+Agua Cond REC_Totalizadores Agua,lag_7,0.353422515057735
+Agua Red Servicios_Totalizadores Agua,mediana_train,1.0798857814730838
+Agua Red Servicios_Totalizadores Agua,ffill_3,0.500793650793651
+Agua Red Servicios_Totalizadores Agua,mediana_dia_semana,1.083665070966659
+Agua Red Servicios_Totalizadores Agua,mediana_mes,1.0281976988326202
+Agua Red Servicios_Totalizadores Agua,media_movil_7,0.5585784072594357
+Agua Red Servicios_Totalizadores Agua,lag_7,0.8888972873099864
+Agua Cald_Totalizadores Agua,mediana_train,0.6786210383494632
+Agua Cald_Totalizadores Agua,ffill_3,0.35771675534954783
+Agua Cald_Totalizadores Agua,mediana_dia_semana,0.6727231897329565
+Agua Cald_Totalizadores Agua,mediana_mes,0.6910554674777892
+Agua Cald_Totalizadores Agua,media_movil_7,0.5144690479488192
+Agua Cald_Totalizadores Agua,lag_7,0.746315861662774
+Agua Cist Industrial_Totalizadores Agua,mediana_train,0.8246913580246913
+Agua Cist Industrial_Totalizadores Agua,ffill_3,0.48246913580246914
+Agua Cist Industrial_Totalizadores Agua,mediana_dia_semana,0.8254320987654319
+Agua Cist Industrial_Totalizadores Agua,mediana_mes,0.7790123456790123
+Agua Cist Industrial_Totalizadores Agua,media_movil_7,0.4172815990593769
+Agua Cist Industrial_Totalizadores Agua,lag_7,0.5446913580246913
+Rep Agua Puerto_Totalizadores Agua,mediana_train,0.7655616407051333
+Rep Agua Puerto_Totalizadores Agua,ffill_3,0.29357695949028995
+Rep Agua Puerto_Totalizadores Agua,mediana_dia_semana,0.7741837244455984
+Rep Agua Puerto_Totalizadores Agua,mediana_mes,0.6999822911897814
+Rep Agua Puerto_Totalizadores Agua,media_movil_7,0.5362114953813565
+Rep Agua Puerto_Totalizadores Agua,lag_7,0.7315495265882695
+Agua Helada Cocina_Totalizadores Agua,mediana_train,0.321265412436676
+Agua Helada Cocina_Totalizadores Agua,ffill_3,0.09365090596265065
+Agua Helada Cocina_Totalizadores Agua,mediana_dia_semana,0.321265412436676
+Agua Helada Cocina_Totalizadores Agua,mediana_mes,0.3886572604438017
+Agua Helada Cocina_Totalizadores Agua,media_movil_7,0.07282380438622031
+Agua Helada Cocina_Totalizadores Agua,lag_7,0.1417815109333102
+Entrada Osmosis_Totalizadores Agua,mediana_train,0.5214840902638707
+Entrada Osmosis_Totalizadores Agua,ffill_3,0.1679595485271889
+Entrada Osmosis_Totalizadores Agua,mediana_dia_semana,0.5332965034643096
+Entrada Osmosis_Totalizadores Agua,mediana_mes,0.5269893883939876
+Entrada Osmosis_Totalizadores Agua,media_movil_7,0.17634650987665282
+Entrada Osmosis_Totalizadores Agua,lag_7,0.2552501745582334
+Rechazo Osmosis_Totalizadores Agua,mediana_train,0.4873345575509068
+Rechazo Osmosis_Totalizadores Agua,ffill_3,0.1480878283572933
+Rechazo Osmosis_Totalizadores Agua,mediana_dia_semana,0.4939971526316908
+Rechazo Osmosis_Totalizadores Agua,mediana_mes,0.5132364241057077
+Rechazo Osmosis_Totalizadores Agua,media_movil_7,0.19793897589072135
+Rechazo Osmosis_Totalizadores Agua,lag_7,0.29820733694292445
+Red Administracion_Totalizadores Agua,mediana_train,0.6305441243712847
+Red Administracion_Totalizadores Agua,ffill_3,0.5667581161408322
+Red Administracion_Totalizadores Agua,mediana_dia_semana,0.6093964334705076
+Red Administracion_Totalizadores Agua,mediana_mes,0.5777320530406951
+Red Administracion_Totalizadores Agua,media_movil_7,0.4698020772094847
+Red Administracion_Totalizadores Agua,lag_7,0.5690443529949702
+Filtro de Carbon_Totalizadores Agua,mediana_train,0.7321433349691744
+Filtro de Carbon_Totalizadores Agua,ffill_3,0.4509274868252284
+Filtro de Carbon_Totalizadores Agua,mediana_dia_semana,0.7403423091250037
+Filtro de Carbon_Totalizadores Agua,mediana_mes,0.6540218650958182
+Filtro de Carbon_Totalizadores Agua,media_movil_7,0.5434035252639813
+Filtro de Carbon_Totalizadores Agua,lag_7,0.7241460133712292
+Assa_Totalizadores Agua,mediana_train,0.6156858659479767
+Assa_Totalizadores Agua,ffill_3,0.5829011931529633
+Assa_Totalizadores Agua,mediana_dia_semana,0.6049464026111017
+Assa_Totalizadores Agua,mediana_mes,0.5550233166100573
+Assa_Totalizadores Agua,media_movil_7,0.46208632578977515
+Assa_Totalizadores Agua,lag_7,0.5635962087625953
+FC Lavadora L3_Totalizadores Agua,mediana_train,0.5423333227724445
+FC Lavadora L3_Totalizadores Agua,ffill_3,0.3492716347007764
+FC Lavadora L3_Totalizadores Agua,mediana_dia_semana,0.4905494446412611
+FC Lavadora L3_Totalizadores Agua,mediana_mes,0.4758534878295356
+FC Lavadora L3_Totalizadores Agua,media_movil_7,0.42206194816212883
+FC Lavadora L3_Totalizadores Agua,lag_7,0.497444744949735
+Red Paste L3_Totalizadores Agua,mediana_train,0.6036457561005365
+Red Paste L3_Totalizadores Agua,ffill_3,0.5378715456234835
+Red Paste L3_Totalizadores Agua,mediana_dia_semana,0.6092785575989709
+Red Paste L3_Totalizadores Agua,mediana_mes,0.5250841607430754
+Red Paste L3_Totalizadores Agua,media_movil_7,0.5041938444731603
+Red Paste L3_Totalizadores Agua,lag_7,0.8103188800863218
+FC Lavadora L2_Totalizadores Agua,mediana_train,0.2814653862336273
+FC Lavadora L2_Totalizadores Agua,ffill_3,0.4348261466996164
+FC Lavadora L2_Totalizadores Agua,mediana_dia_semana,0.2814653862336273
+FC Lavadora L2_Totalizadores Agua,mediana_mes,0.2814653862336273
+FC Lavadora L2_Totalizadores Agua,media_movil_7,0.42158360297823205
+FC Lavadora L2_Totalizadores Agua,lag_7,0.44865455806051857
+Glicol Paste L3_Totalizadores Agua,mediana_train,0.13917519380795831
+Glicol Paste L3_Totalizadores Agua,ffill_3,0.13917519380795831
+Glicol Paste L3_Totalizadores Agua,mediana_dia_semana,0.13917519380795831
+Glicol Paste L3_Totalizadores Agua,mediana_mes,0.13917519380795831
+Glicol Paste L3_Totalizadores Agua,media_movil_7,0.18225322998661206
+Glicol Paste L3_Totalizadores Agua,lag_7,0.27835038761591663
+Red Lavadora L3_Totalizadores Agua,mediana_train,0.7125773583847399
+Red Lavadora L3_Totalizadores Agua,ffill_3,0.6267809051326798
+Red Lavadora L3_Totalizadores Agua,mediana_dia_semana,0.663761854231066
+Red Lavadora L3_Totalizadores Agua,mediana_mes,0.650964305454914
+Red Lavadora L3_Totalizadores Agua,media_movil_7,0.5975303903362982
+Red Lavadora L3_Totalizadores Agua,lag_7,0.6105398283166293
+Dilución A90_Totalizadores Agua,mediana_train,0.5941296048391095
+Dilución A90_Totalizadores Agua,ffill_3,0.6599236451980763
+Dilución A90_Totalizadores Agua,mediana_dia_semana,0.5810131660198595
+Dilución A90_Totalizadores Agua,mediana_mes,0.5731748542993522
+Dilución A90_Totalizadores Agua,media_movil_7,0.6074417921807481
+Dilución A90_Totalizadores Agua,lag_7,0.6451169436443868
+Dilución A190_Totalizadores Agua,mediana_train,0.5237324270320417
+Dilución A190_Totalizadores Agua,ffill_3,0.49241329479768786
+Dilución A190_Totalizadores Agua,mediana_dia_semana,0.5219171483622351
+Dilución A190_Totalizadores Agua,mediana_mes,0.5544315992292871
+Dilución A190_Totalizadores Agua,media_movil_7,0.5117571948496804
+Dilución A190_Totalizadores Agua,lag_7,0.6809971098265896
+Red  Bodega Interno_Totalizadores Agua,mediana_train,0.7872145384675742
+Red  Bodega Interno_Totalizadores Agua,ffill_3,0.470450557000446
+Red  Bodega Interno_Totalizadores Agua,mediana_dia_semana,0.7857715618786256
+Red  Bodega Interno_Totalizadores Agua,mediana_mes,0.7512147604639725
+Red  Bodega Interno_Totalizadores Agua,media_movil_7,0.5079282696465218
+Red  Bodega Interno_Totalizadores Agua,lag_7,0.7057954456290633
+Agua Planta CO2_Totalizadores Agua,mediana_train,0.7909887636888066
+Agua Planta CO2_Totalizadores Agua,ffill_3,0.2525222269766557
+Agua Planta CO2_Totalizadores Agua,mediana_dia_semana,0.7920268150049921
+Agua Planta CO2_Totalizadores Agua,mediana_mes,0.7333159004104659
+Agua Planta CO2_Totalizadores Agua,media_movil_7,0.28521963596132754
+Agua Planta CO2_Totalizadores Agua,lag_7,0.46834973612894015
+Retorno Planta CO2_Totalizadores Agua,mediana_train,1.3241186203385513
+Retorno Planta CO2_Totalizadores Agua,ffill_3,0.1340242549864543
+Retorno Planta CO2_Totalizadores Agua,mediana_dia_semana,1.3241186203385513
+Retorno Planta CO2_Totalizadores Agua,mediana_mes,1.330046000836379
+Retorno Planta CO2_Totalizadores Agua,media_movil_7,0.2006973286960196
+Retorno Planta CO2_Totalizadores Agua,lag_7,0.3966544846269932
+Agua Limpieza y Bbba Vacio L2_Totalizadores Agua,mediana_train,0.612048042572919
+Agua Limpieza y Bbba Vacio L2_Totalizadores Agua,ffill_3,0.531382334264421
+Agua Limpieza y Bbba Vacio L2_Totalizadores Agua,mediana_dia_semana,0.6037812294254915
+Agua Limpieza y Bbba Vacio L2_Totalizadores Agua,mediana_mes,0.5410048736019074
+Agua Limpieza y Bbba Vacio L2_Totalizadores Agua,media_movil_7,0.5515684182582259
+Agua Limpieza y Bbba Vacio L2_Totalizadores Agua,lag_7,0.470321673308946
+Agua Enjuagadora L2_Totalizadores Agua,mediana_train,1.053410736275186
+Agua Enjuagadora L2_Totalizadores Agua,ffill_3,0.372177641856528
+Agua Enjuagadora L2_Totalizadores Agua,mediana_dia_semana,1.0589738847766696
+Agua Enjuagadora L2_Totalizadores Agua,mediana_mes,0.9708716551569634
+Agua Enjuagadora L2_Totalizadores Agua,media_movil_7,0.4413911494102025
+Agua Enjuagadora L2_Totalizadores Agua,lag_7,0.6401379660828368
+Agua Lavadora L2_Totalizadores Agua,mediana_train,0.5663937773316567
+Agua Lavadora L2_Totalizadores Agua,ffill_3,0.6945348379123697
+Agua Lavadora L2_Totalizadores Agua,mediana_dia_semana,0.5614540666267318
+Agua Lavadora L2_Totalizadores Agua,mediana_mes,0.5690489168074288
+Agua Lavadora L2_Totalizadores Agua,media_movil_7,0.6440717175478456
+Agua Lavadora L2_Totalizadores Agua,lag_7,0.760978084306075
+Temp Tq Intermedio_Totalizadores Agua,mediana_train,0.7553877919731583
+Temp Tq Intermedio_Totalizadores Agua,ffill_3,0.30894308943089455
+Temp Tq Intermedio_Totalizadores Agua,mediana_dia_semana,0.7670344560588469
+Temp Tq Intermedio_Totalizadores Agua,mediana_mes,0.4743676603432704
+Temp Tq Intermedio_Totalizadores Agua,media_movil_7,0.40539793153033593
+Temp Tq Intermedio_Totalizadores Agua,lag_7,0.5214866434378632
+Conversion Kg/Mj_Consolidado GasVapor,mediana_train,0.6981787582789546
+Conversion Kg/Mj_Consolidado GasVapor,ffill_3,0.31223289791106074
+Conversion Kg/Mj_Consolidado GasVapor,mediana_dia_semana,0.6996845100282191
+Conversion Kg/Mj_Consolidado GasVapor,mediana_mes,0.6879679761797661
+Conversion Kg/Mj_Consolidado GasVapor,media_movil_7,0.3623079279885495
+Conversion Kg/Mj_Consolidado GasVapor,lag_7,0.4761169701175119
+Gas Planta (Mj)_Consolidado GasVapor,mediana_train,0.5579620013345404
+Gas Planta (Mj)_Consolidado GasVapor,ffill_3,0.4935359963028464
+Gas Planta (Mj)_Consolidado GasVapor,mediana_dia_semana,0.545456344237328
+Gas Planta (Mj)_Consolidado GasVapor,mediana_mes,0.545510105281839
+Gas Planta (Mj)_Consolidado GasVapor,media_movil_7,0.5264767169304232
+Gas Planta (Mj)_Consolidado GasVapor,lag_7,0.5182587678857573
+Vapor Elaboracion (Kg)_Consolidado GasVapor,mediana_train,0.5196319411991918
+Vapor Elaboracion (Kg)_Consolidado GasVapor,ffill_3,0.26168998534426063
+Vapor Elaboracion (Kg)_Consolidado GasVapor,mediana_dia_semana,0.5037373101927779
+Vapor Elaboracion (Kg)_Consolidado GasVapor,mediana_mes,0.49240011519099786
+Vapor Elaboracion (Kg)_Consolidado GasVapor,media_movil_7,0.24205825305108428
+Vapor Elaboracion (Kg)_Consolidado GasVapor,lag_7,0.34770051863335516
+Vapor Cocina (Kg)_Consolidado GasVapor,mediana_train,0.4772522382169045
+Vapor Cocina (Kg)_Consolidado GasVapor,ffill_3,0.28620810628039395
+Vapor Cocina (Kg)_Consolidado GasVapor,mediana_dia_semana,0.4870124564646905
+Vapor Cocina (Kg)_Consolidado GasVapor,mediana_mes,0.4430875506902179
+Vapor Cocina (Kg)_Consolidado GasVapor,media_movil_7,0.25347903298610597
+Vapor Cocina (Kg)_Consolidado GasVapor,lag_7,0.33037858697483546
+Vapor Envasado (Kg)_Consolidado GasVapor,mediana_train,0.5532559728382263
+Vapor Envasado (Kg)_Consolidado GasVapor,ffill_3,0.4923758564362505
+Vapor Envasado (Kg)_Consolidado GasVapor,mediana_dia_semana,0.5432579100813938
+Vapor Envasado (Kg)_Consolidado GasVapor,mediana_mes,0.5318509496922319
+Vapor Envasado (Kg)_Consolidado GasVapor,media_movil_7,0.4386290386514884
+Vapor Envasado (Kg)_Consolidado GasVapor,lag_7,0.4562423956436399
+ET Elaboracion (Mj)_Consolidado GasVapor,mediana_train,0.5102156507621769
+ET Elaboracion (Mj)_Consolidado GasVapor,ffill_3,0.4535518232798516
+ET Elaboracion (Mj)_Consolidado GasVapor,mediana_dia_semana,0.5270253531579557
+ET Elaboracion (Mj)_Consolidado GasVapor,mediana_mes,0.5086399520080029
+ET Elaboracion (Mj)_Consolidado GasVapor,media_movil_7,0.3832163856026957
+ET Elaboracion (Mj)_Consolidado GasVapor,lag_7,0.5152809183903376
+ET Envasado (Mj)_Consolidado GasVapor,mediana_train,0.6194056864381572
+ET Envasado (Mj)_Consolidado GasVapor,ffill_3,0.4956188574017736
+ET Envasado (Mj)_Consolidado GasVapor,mediana_dia_semana,0.5902981127912202
+ET Envasado (Mj)_Consolidado GasVapor,mediana_mes,0.5829559378139377
+ET Envasado (Mj)_Consolidado GasVapor,media_movil_7,0.5449621220060497
+ET Envasado (Mj)_Consolidado GasVapor,lag_7,0.5051966330890448
+ET Servicios (Mj)_Consolidado GasVapor,mediana_train,0.556514588339573
+ET Servicios (Mj)_Consolidado GasVapor,ffill_3,0.35957840676496955
+ET Servicios (Mj)_Consolidado GasVapor,mediana_dia_semana,0.560820743806894
+ET Servicios (Mj)_Consolidado GasVapor,mediana_mes,0.431740581796443
+ET Servicios (Mj)_Consolidado GasVapor,media_movil_7,0.30664254785442746
+ET Servicios (Mj)_Consolidado GasVapor,lag_7,0.5401061027200127
+Vapor L3_Consolidado GasVapor,mediana_train,0.4945611974198019
+Vapor L3_Consolidado GasVapor,ffill_3,0.5596646145086704
+Vapor L3_Consolidado GasVapor,mediana_dia_semana,0.46907463055080767
+Vapor L3_Consolidado GasVapor,mediana_mes,0.45985885150459316
+Vapor L3_Consolidado GasVapor,media_movil_7,0.5468613397796508
+Vapor L3_Consolidado GasVapor,lag_7,0.3747549830823028
+M3_Tot_Gas_Totalizadores Gas y Vapor,mediana_train,0.5081469587405659
+M3_Tot_Gas_Totalizadores Gas y Vapor,ffill_3,0.4241087713233831
+M3_Tot_Gas_Totalizadores Gas y Vapor,mediana_dia_semana,0.4682758607872762
+M3_Tot_Gas_Totalizadores Gas y Vapor,mediana_mes,0.517752862166865
+M3_Tot_Gas_Totalizadores Gas y Vapor,media_movil_7,0.46034228141294886
+M3_Tot_Gas_Totalizadores Gas y Vapor,lag_7,0.5485468970400477
+Tot_Vapor_L3_L4_Totalizadores Gas y Vapor,mediana_train,0.4795106267818538
+Tot_Vapor_L3_L4_Totalizadores Gas y Vapor,ffill_3,0.5094903672139175
+Tot_Vapor_L3_L4_Totalizadores Gas y Vapor,mediana_dia_semana,0.45481326547763745
+Tot_Vapor_L3_L4_Totalizadores Gas y Vapor,mediana_mes,0.449411367817288
+Tot_Vapor_L3_L4_Totalizadores Gas y Vapor,media_movil_7,0.4499271176628916
+Tot_Vapor_L3_L4_Totalizadores Gas y Vapor,lag_7,0.36290553852877017
+Tot_Vapor_CIP_Bodega_Totalizadores Gas y Vapor,mediana_train,0.5474573987320951
+Tot_Vapor_CIP_Bodega_Totalizadores Gas y Vapor,ffill_3,0.38742140795892227
+Tot_Vapor_CIP_Bodega_Totalizadores Gas y Vapor,mediana_dia_semana,0.5434180012408479
+Tot_Vapor_CIP_Bodega_Totalizadores Gas y Vapor,mediana_mes,0.35801402294053014
+Tot_Vapor_CIP_Bodega_Totalizadores Gas y Vapor,media_movil_7,0.36862612517871535
+Tot_Vapor_CIP_Bodega_Totalizadores Gas y Vapor,lag_7,0.4616312305304613
+CAUDAL DE GAS CALDERA 1 M3_Totalizadores Gas y Vapor,mediana_train,0.3174899575967926
+CAUDAL DE GAS CALDERA 1 M3_Totalizadores Gas y Vapor,ffill_3,0.40221771175904775
+CAUDAL DE GAS CALDERA 1 M3_Totalizadores Gas y Vapor,mediana_dia_semana,0.3174899575967926
+CAUDAL DE GAS CALDERA 1 M3_Totalizadores Gas y Vapor,mediana_mes,0.32664721218942055
+CAUDAL DE GAS CALDERA 1 M3_Totalizadores Gas y Vapor,media_movil_7,0.3712567937084128
+CAUDAL DE GAS CALDERA 1 M3_Totalizadores Gas y Vapor,lag_7,0.37522813488752293
+CAUDAL DE BIO-GAS M3_Totalizadores Gas y Vapor,mediana_train,0.4042976617019562
+CAUDAL DE BIO-GAS M3_Totalizadores Gas y Vapor,ffill_3,0.12655172051298685
+CAUDAL DE BIO-GAS M3_Totalizadores Gas y Vapor,mediana_dia_semana,0.4381856815527366
+CAUDAL DE BIO-GAS M3_Totalizadores Gas y Vapor,mediana_mes,0.2782331581040949
+CAUDAL DE BIO-GAS M3_Totalizadores Gas y Vapor,media_movil_7,0.16417115431067375
+CAUDAL DE BIO-GAS M3_Totalizadores Gas y Vapor,lag_7,0.22754407978614086
+VAPOR DE CALDERA 3 KG_Totalizadores Gas y Vapor,mediana_train,0.5708967575634243
+VAPOR DE CALDERA 3 KG_Totalizadores Gas y Vapor,ffill_3,0.5091731862102232
+VAPOR DE CALDERA 3 KG_Totalizadores Gas y Vapor,mediana_dia_semana,0.5601519468186135
+VAPOR DE CALDERA 3 KG_Totalizadores Gas y Vapor,mediana_mes,0.4746848761663576
+VAPOR DE CALDERA 3 KG_Totalizadores Gas y Vapor,media_movil_7,0.4091198612609548
+VAPOR DE CALDERA 3 KG_Totalizadores Gas y Vapor,lag_7,0.5769095102428436
+VAPOR DE CALDERA 4 KG_Totalizadores Gas y Vapor,mediana_train,0.4740948184030231
+VAPOR DE CALDERA 4 KG_Totalizadores Gas y Vapor,ffill_3,0.11886874259464834
+VAPOR DE CALDERA 4 KG_Totalizadores Gas y Vapor,mediana_dia_semana,0.475980496593071
+VAPOR DE CALDERA 4 KG_Totalizadores Gas y Vapor,mediana_mes,0.4586762688614541
+VAPOR DE CALDERA 4 KG_Totalizadores Gas y Vapor,media_movil_7,0.09866770014539718
+VAPOR DE CALDERA 4 KG_Totalizadores Gas y Vapor,lag_7,0.12777478760423558
+VAPOR DE LINEA 1 Y 2 KG_Totalizadores Gas y Vapor,mediana_train,0.4525359754659118
+VAPOR DE LINEA 1 Y 2 KG_Totalizadores Gas y Vapor,ffill_3,0.5655484784147204
+VAPOR DE LINEA 1 Y 2 KG_Totalizadores Gas y Vapor,mediana_dia_semana,0.41678068726900996
+VAPOR DE LINEA 1 Y 2 KG_Totalizadores Gas y Vapor,mediana_mes,0.4365274828969097
+VAPOR DE LINEA 1 Y 2 KG_Totalizadores Gas y Vapor,media_movil_7,0.4931455756636223
+VAPOR DE LINEA 1 Y 2 KG_Totalizadores Gas y Vapor,lag_7,0.44779271840842966
+VAPOR DE LINEA 4 KG_Totalizadores Gas y Vapor,mediana_train,1.3379509721161853
+VAPOR DE LINEA 4 KG_Totalizadores Gas y Vapor,ffill_3,0.6326938737280088
+VAPOR DE LINEA 4 KG_Totalizadores Gas y Vapor,mediana_dia_semana,1.3417784580233978
+VAPOR DE LINEA 4 KG_Totalizadores Gas y Vapor,mediana_mes,1.2799039696505399
+VAPOR DE LINEA 4 KG_Totalizadores Gas y Vapor,media_movil_7,1.0790990763686785
+VAPOR DE LINEA 4 KG_Totalizadores Gas y Vapor,lag_7,1.5475660368040909
+VAPOR COCINA 1 KG_Totalizadores Gas y Vapor,mediana_train,0.5050386920943656
+VAPOR COCINA 1 KG_Totalizadores Gas y Vapor,ffill_3,0.13434688497009611
+VAPOR COCINA 1 KG_Totalizadores Gas y Vapor,mediana_dia_semana,0.5051674947652542
+VAPOR COCINA 1 KG_Totalizadores Gas y Vapor,mediana_mes,0.4627321440173439
+VAPOR COCINA 1 KG_Totalizadores Gas y Vapor,media_movil_7,0.1412354450403671
+VAPOR COCINA 1 KG_Totalizadores Gas y Vapor,lag_7,0.20931003942729542
+VAPOR COCINA 2 KG_Totalizadores Gas y Vapor,mediana_train,0.5860005961988687
+VAPOR COCINA 2 KG_Totalizadores Gas y Vapor,ffill_3,0.2144970844421178
+VAPOR COCINA 2 KG_Totalizadores Gas y Vapor,mediana_dia_semana,0.5875674359086216
+VAPOR COCINA 2 KG_Totalizadores Gas y Vapor,mediana_mes,0.4968834067675842
+VAPOR COCINA 2 KG_Totalizadores Gas y Vapor,media_movil_7,0.22708477103124403
+VAPOR COCINA 2 KG_Totalizadores Gas y Vapor,lag_7,0.3971509691866975
+TOT GAS ENTRADA PRINCIPAL M3_Totalizadores Gas y Vapor,mediana_train,0.05766352588079573
+TOT GAS ENTRADA PRINCIPAL M3_Totalizadores Gas y Vapor,ffill_3,0.31730468011604834
+TOT GAS ENTRADA PRINCIPAL M3_Totalizadores Gas y Vapor,mediana_dia_semana,0.05766352588079573
+TOT GAS ENTRADA PRINCIPAL M3_Totalizadores Gas y Vapor,mediana_mes,0.05766352588079573
+TOT GAS ENTRADA PRINCIPAL M3_Totalizadores Gas y Vapor,media_movil_7,0.20603342099417524
+TOT GAS ENTRADA PRINCIPAL M3_Totalizadores Gas y Vapor,lag_7,0.5013428735145151
+TOT AGUA DESAIREADA_Totalizadores Gas y Vapor,mediana_train,0.9381869417240817
+TOT AGUA DESAIREADA_Totalizadores Gas y Vapor,ffill_3,0.3028412083490406
+TOT AGUA DESAIREADA_Totalizadores Gas y Vapor,mediana_dia_semana,0.9493607036136935
+TOT AGUA DESAIREADA_Totalizadores Gas y Vapor,mediana_mes,1.01616176199299
+TOT AGUA DESAIREADA_Totalizadores Gas y Vapor,media_movil_7,0.27376958781067
+TOT AGUA DESAIREADA_Totalizadores Gas y Vapor,lag_7,0.4692668076531981
+Vapor Olla 1 (Ton)_Totalizadores Gas y Vapor,mediana_train,0.7121627800640147
+Vapor Olla 1 (Ton)_Totalizadores Gas y Vapor,ffill_3,0.7267946959304982
+Vapor Olla 1 (Ton)_Totalizadores Gas y Vapor,mediana_dia_semana,0.7247370827617741
+Vapor Olla 1 (Ton)_Totalizadores Gas y Vapor,mediana_mes,0.7154778235025148
+Vapor Olla 1 (Ton)_Totalizadores Gas y Vapor,media_movil_7,0.738370947373005
+Vapor Olla 1 (Ton)_Totalizadores Gas y Vapor,lag_7,0.9753086419753085
+(Vapor Olla 2 (Ton)_Totalizadores Gas y Vapor,mediana_train,0.7228607918263091
+(Vapor Olla 2 (Ton)_Totalizadores Gas y Vapor,ffill_3,0.917624521072797
+(Vapor Olla 2 (Ton)_Totalizadores Gas y Vapor,mediana_dia_semana,0.7058322690506599
+(Vapor Olla 2 (Ton)_Totalizadores Gas y Vapor,mediana_mes,0.7113133248190722
+(Vapor Olla 2 (Ton)_Totalizadores Gas y Vapor,media_movil_7,0.8185988465203026
+(Vapor Olla 2 (Ton)_Totalizadores Gas y Vapor,lag_7,0.8991060025542783
+Vapor_L5 (KG)_Totalizadores Gas y Vapor,mediana_train,0.5450822251907048
+Vapor_L5 (KG)_Totalizadores Gas y Vapor,ffill_3,0.4201252904343082
+Vapor_L5 (KG)_Totalizadores Gas y Vapor,mediana_dia_semana,0.5631150108063615
+Vapor_L5 (KG)_Totalizadores Gas y Vapor,mediana_mes,0.5133830720800107
+Vapor_L5 (KG)_Totalizadores Gas y Vapor,media_movil_7,0.522633710893399
+Vapor_L5 (KG)_Totalizadores Gas y Vapor,lag_7,0.5050647464066129
+Aire Planta (M3)_Consolidado Aire,mediana_train,0.6594893525444571
+Aire Planta (M3)_Consolidado Aire,ffill_3,0.5750813791952775
+Aire Planta (M3)_Consolidado Aire,mediana_dia_semana,0.6356182618865328
+Aire Planta (M3)_Consolidado Aire,mediana_mes,0.6332891036134723
+Aire Planta (M3)_Consolidado Aire,media_movil_7,0.5841241927821378
+Aire Planta (M3)_Consolidado Aire,lag_7,0.5366553604273342
+Aire Elaboracion (m3)_Consolidado Aire,mediana_train,0.5822456879983964
+Aire Elaboracion (m3)_Consolidado Aire,ffill_3,0.5577926264595999
+Aire Elaboracion (m3)_Consolidado Aire,mediana_dia_semana,0.5879598921085607
+Aire Elaboracion (m3)_Consolidado Aire,mediana_mes,0.5480047853217208
+Aire Elaboracion (m3)_Consolidado Aire,media_movil_7,0.3684595325208372
+Aire Elaboracion (m3)_Consolidado Aire,lag_7,0.4162320216114069
+Aire Envasado (M3)_Consolidado Aire,mediana_train,0.5763388766145832
+Aire Envasado (M3)_Consolidado Aire,ffill_3,0.5112221126638528
+Aire Envasado (M3)_Consolidado Aire,mediana_dia_semana,0.5389039343811652
+Aire Envasado (M3)_Consolidado Aire,mediana_mes,0.503296503246663
+Aire Envasado (M3)_Consolidado Aire,media_movil_7,0.514636204920694
+Aire Envasado (M3)_Consolidado Aire,lag_7,0.33439466811766083
+Tot Aire Expulsion_Consolidado Aire,mediana_train,0.40255215567751995
+Tot Aire Expulsion_Consolidado Aire,ffill_3,0.18709950613341458
+Tot Aire Expulsion_Consolidado Aire,mediana_dia_semana,0.4045698646388571
+Tot Aire Expulsion_Consolidado Aire,mediana_mes,0.44865892789053846
+Tot Aire Expulsion_Consolidado Aire,media_movil_7,0.21283804702622108
+Tot Aire Expulsion_Consolidado Aire,lag_7,0.24612827505447904
+Totalizador_Aire_L2_Totalizadores Aire,mediana_train,0.48713503275765685
+Totalizador_Aire_L2_Totalizadores Aire,ffill_3,0.4090670385158693
+Totalizador_Aire_L2_Totalizadores Aire,mediana_dia_semana,0.4462560763510665
+Totalizador_Aire_L2_Totalizadores Aire,mediana_mes,0.4803946670403926
+Totalizador_Aire_L2_Totalizadores Aire,media_movil_7,0.41433828237218145
+Totalizador_Aire_L2_Totalizadores Aire,lag_7,0.30189287534751685
+Totalizador_Aire_L3_Totalizadores Aire,mediana_train,0.43554812783354846
+Totalizador_Aire_L3_Totalizadores Aire,ffill_3,0.32926148254438153
+Totalizador_Aire_L3_Totalizadores Aire,mediana_dia_semana,0.47278750897411587
+Totalizador_Aire_L3_Totalizadores Aire,mediana_mes,0.383490001034598
+Totalizador_Aire_L3_Totalizadores Aire,media_movil_7,0.46291916977169606
+Totalizador_Aire_L3_Totalizadores Aire,lag_7,0.3653981362770005
+Totaliador_Aire_L4_Totalizadores Aire,mediana_train,0.9856729055258469
+Totaliador_Aire_L4_Totalizadores Aire,ffill_3,0.418623462291763
+Totaliador_Aire_L4_Totalizadores Aire,mediana_dia_semana,0.98823515657666
+Totaliador_Aire_L4_Totalizadores Aire,mediana_mes,0.9691626229616427
+Totaliador_Aire_L4_Totalizadores Aire,media_movil_7,0.6355454711813644
+Totaliador_Aire_L4_Totalizadores Aire,lag_7,0.7741240014524329
+Totalizador_Aire_L5_Totalizadores Aire,mediana_train,0.4688267704812553
+Totalizador_Aire_L5_Totalizadores Aire,ffill_3,0.30917415633980955
+Totalizador_Aire_L5_Totalizadores Aire,mediana_dia_semana,0.42659838548769285
+Totalizador_Aire_L5_Totalizadores Aire,mediana_mes,0.40716022763355786
+Totalizador_Aire_L5_Totalizadores Aire,media_movil_7,0.4276983401720555
+Totalizador_Aire_L5_Totalizadores Aire,lag_7,0.32419320258370893
+Totalizador_Aire_Bodega_Totalizadores Aire,mediana_train,0.5735836533507372
+Totalizador_Aire_Bodega_Totalizadores Aire,ffill_3,0.36588123102004566
+Totalizador_Aire_Bodega_Totalizadores Aire,mediana_dia_semana,0.5874584166369173
+Totalizador_Aire_Bodega_Totalizadores Aire,mediana_mes,0.48953045193195954
+Totalizador_Aire_Bodega_Totalizadores Aire,media_movil_7,0.3654245673605722
+Totalizador_Aire_Bodega_Totalizadores Aire,lag_7,0.5189561841074039
+Totalizador_Aire_Cocina_Totalizadores Aire,mediana_train,0.7776804324699016
+Totalizador_Aire_Cocina_Totalizadores Aire,ffill_3,0.5800849091179335
+Totalizador_Aire_Cocina_Totalizadores Aire,mediana_dia_semana,0.7834533420314155
+Totalizador_Aire_Cocina_Totalizadores Aire,mediana_mes,0.7384067710971436
+Totalizador_Aire_Cocina_Totalizadores Aire,media_movil_7,0.7000126344010408
+Totalizador_Aire_Cocina_Totalizadores Aire,lag_7,0.924546451392094
+Totalizador Sistema Kaeser_Totalizadores Aire,mediana_train,0.5700160578588679
+Totalizador Sistema Kaeser_Totalizadores Aire,ffill_3,0.48324555130811375
+Totalizador Sistema Kaeser_Totalizadores Aire,mediana_dia_semana,0.5278549294910609
+Totalizador Sistema Kaeser_Totalizadores Aire,mediana_mes,0.4458694681987428
+Totalizador Sistema Kaeser_Totalizadores Aire,media_movil_7,0.4973502782334184
+Totalizador Sistema Kaeser_Totalizadores Aire,lag_7,0.5419295561540374
+Totalizador_L2_Barriles_Totalizadores CO2,mediana_train,0.0
+Totalizador_L2_Barriles_Totalizadores CO2,ffill_3,0.0
+Totalizador_L2_Barriles_Totalizadores CO2,mediana_dia_semana,0.0
+Totalizador_L2_Barriles_Totalizadores CO2,mediana_mes,0.0
+Totalizador_L2_Barriles_Totalizadores CO2,media_movil_7,0.0
+Totalizador_L2_Barriles_Totalizadores CO2,lag_7,0.0
+Totalizador_L3_Totalizadores CO2,mediana_train,0.49048218682521755
+Totalizador_L3_Totalizadores CO2,ffill_3,0.3488725318378315
+Totalizador_L3_Totalizadores CO2,mediana_dia_semana,0.4649643217232889
+Totalizador_L3_Totalizadores CO2,mediana_mes,0.5257839917262747
+Totalizador_L3_Totalizadores CO2,media_movil_7,0.44402556546498595
+Totalizador_L3_Totalizadores CO2,lag_7,0.40678860891502555
+Totaliador_Latas_Totalizadores CO2,mediana_train,1.1254242480816088
+Totaliador_Latas_Totalizadores CO2,ffill_3,0.6550438250063427
+Totaliador_Latas_Totalizadores CO2,mediana_dia_semana,1.1274778720817238
+Totaliador_Latas_Totalizadores CO2,mediana_mes,0.8466196583037735
+Totaliador_Latas_Totalizadores CO2,media_movil_7,0.8320352578678373
+Totaliador_Latas_Totalizadores CO2,lag_7,1.057219038865672
+Totalizador_Bodega_Totalizadores CO2,mediana_train,0.647122825425881
+Totalizador_Bodega_Totalizadores CO2,ffill_3,0.7197598711840082
+Totalizador_Bodega_Totalizadores CO2,mediana_dia_semana,0.6428555593824673
+Totalizador_Bodega_Totalizadores CO2,mediana_mes,0.5321688238405331
+Totalizador_Bodega_Totalizadores CO2,media_movil_7,0.5346573777907677
+Totalizador_Bodega_Totalizadores CO2,lag_7,0.7848944618485079
+Totalizador_Tq_Pulmon_Totalizadores CO2,mediana_train,0.6763844918894378
+Totalizador_Tq_Pulmon_Totalizadores CO2,ffill_3,0.46506074249345475
+Totalizador_Tq_Pulmon_Totalizadores CO2,mediana_dia_semana,0.6662735231863366
+Totalizador_Tq_Pulmon_Totalizadores CO2,mediana_mes,0.5714663034653833
+Totalizador_Tq_Pulmon_Totalizadores CO2,media_movil_7,0.5820317316576367
+Totalizador_Tq_Pulmon_Totalizadores CO2,lag_7,0.5759320725964389
+Totalizador_Filtracion_Totalizadores CO2,mediana_train,0.5752123742991323
+Totalizador_Filtracion_Totalizadores CO2,ffill_3,0.6362447800803965
+Totalizador_Filtracion_Totalizadores CO2,mediana_dia_semana,0.5737488454383431
+Totalizador_Filtracion_Totalizadores CO2,mediana_mes,0.507047704536289
+Totalizador_Filtracion_Totalizadores CO2,media_movil_7,0.530746836454599
+Totalizador_Filtracion_Totalizadores CO2,lag_7,0.6517516814320468
+Totalizador Bba P1_Totalizadores Efluentes,mediana_train,0.5407810436078644
+Totalizador Bba P1_Totalizadores Efluentes,ffill_3,0.510654708372602
+Totalizador Bba P1_Totalizadores Efluentes,mediana_dia_semana,0.5341158903266048
+Totalizador Bba P1_Totalizadores Efluentes,mediana_mes,0.5162689510674754
+Totalizador Bba P1_Totalizadores Efluentes,media_movil_7,0.5261130872141342
+Totalizador Bba P1_Totalizadores Efluentes,lag_7,0.6258392133455098
+Totalizador Bba P2_Totalizadores Efluentes,mediana_train,0.7513657484198673
+Totalizador Bba P2_Totalizadores Efluentes,ffill_3,0.44126423415503774
+Totalizador Bba P2_Totalizadores Efluentes,mediana_dia_semana,0.7545624530521352
+Totalizador Bba P2_Totalizadores Efluentes,mediana_mes,0.6503188373306028
+Totalizador Bba P2_Totalizadores Efluentes,media_movil_7,0.47059667968717905
+Totalizador Bba P2_Totalizadores Efluentes,lag_7,0.5840409490575589
+Totalizador Bba P4_Totalizadores Efluentes,mediana_train,0.8545195127182675
+Totalizador Bba P4_Totalizadores Efluentes,ffill_3,0.5266491873503404
+Totalizador Bba P4_Totalizadores Efluentes,mediana_dia_semana,0.8545222417294036
+Totalizador Bba P4_Totalizadores Efluentes,mediana_mes,0.8574790203332846
+Totalizador Bba P4_Totalizadores Efluentes,media_movil_7,0.6222400532611005
+Totalizador Bba P4_Totalizadores Efluentes,lag_7,0.8151564660166475
+Totalizador Bba Envasado_Totalizadores Efluentes,mediana_train,0.7896057547493488
+Totalizador Bba Envasado_Totalizadores Efluentes,ffill_3,0.46848585741053456
+Totalizador Bba Envasado_Totalizadores Efluentes,mediana_dia_semana,0.788227214206313
+Totalizador Bba Envasado_Totalizadores Efluentes,mediana_mes,0.7925913137238799
+Totalizador Bba Envasado_Totalizadores Efluentes,media_movil_7,0.3011510072475603
+Totalizador Bba Envasado_Totalizadores Efluentes,lag_7,0.4035061384699095
+Totalizador Bba P51_Totalizadores Efluentes,mediana_train,1.6402166097560267
+Totalizador Bba P51_Totalizadores Efluentes,ffill_3,1.1493057193010034
+Totalizador Bba P51_Totalizadores Efluentes,mediana_dia_semana,1.640214280931879
+Totalizador Bba P51_Totalizadores Efluentes,mediana_mes,1.7242207899953716
+Totalizador Bba P51_Totalizadores Efluentes,media_movil_7,1.476303800169699
+Totalizador Bba P51_Totalizadores Efluentes,lag_7,1.8908154086649727
+Tot  Trasiego_Totalizadores Glicol,mediana_train,0.5560128749754918
+Tot  Trasiego_Totalizadores Glicol,ffill_3,0.4777894255277433
+Tot  Trasiego_Totalizadores Glicol,mediana_dia_semana,0.5599202993268414
+Tot  Trasiego_Totalizadores Glicol,mediana_mes,0.6585820207829554
+Tot  Trasiego_Totalizadores Glicol,media_movil_7,0.47585314311856364
+Tot  Trasiego_Totalizadores Glicol,lag_7,0.5799056924384028

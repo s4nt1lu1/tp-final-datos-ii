@@ -1,0 +1,25 @@
+paso,particion,valores_modificados,pct_valores,columnas_afectadas,top_columnas
+aplicar_decisiones_eda,sin_etiqueta,20,0.0019470404984423676,2,"Tot L3, L4 y Planta de CO2_Totalizadores Glicol (12); Vapor_L5 (KG)_Totalizadores Gas y Vapor (8)"
+aplicar_decisiones_eda,test,0,0.0,0,
+aplicar_decisiones_eda,train,684,0.0026702269692923898,2,"Vapor_L5 (KG)_Totalizadores Gas y Vapor (348); Tot L3, L4 y Planta de CO2_Totalizadores Glicol (336)"
+aplicar_decisiones_eda,validation,0,0.0,0,
+descartar_no_informativas,sin_etiqueta,0,0.0,0,
+descartar_no_informativas,test,0,0.0,0,
+descartar_no_informativas,train,0,0.0,0,
+descartar_no_informativas,validation,0,0.0,0,
+descartar_duplicadas,sin_etiqueta,0,0.0,0,
+descartar_duplicadas,test,0,0.0,0,
+descartar_duplicadas,train,0,0.0,0,
+descartar_duplicadas,validation,0,0.0,0,
+filtrar_por_nulos,sin_etiqueta,0,0.0,0,
+filtrar_por_nulos,test,0,0.0,0,
+filtrar_por_nulos,train,0,0.0,0,
+filtrar_por_nulos,validation,0,0.0,0,
+outliers_univariados,sin_etiqueta,120,0.014044943820224719,67,Totalizador Bba P51_Totalizadores Efluentes (8); CO 2 Linea 4 / Hl_Consolidado KPI (7); Agua Enjuagadora L2_Totalizadores Agua (7); Aire Cocina / Hl_Consolidado KPI (4); EE Planta / Hl_Consolidado KPI (3)
+outliers_univariados,test,656,0.014368004906148016,66,CO 2 Linea 4 / Hl_Consolidado KPI (110); Totalizador_L2_Barriles_Totalizadores CO2 (44); Red  Bodega Interno_Totalizadores Agua (32); EE Bodega / Hl_Consolidado KPI (21); Agua Elab / Hl_Consolidado KPI (21)
+outliers_univariados,train,2314,0.01086048454469507,115,TOT AGUA DESAIREADA_Totalizadores Gas y Vapor (154); Agua Enjuagadora L2_Totalizadores Agua (135); Totalizador Bba P51_Totalizadores Efluentes (114); Agua Planta CO2_Totalizadores Agua (73); ET Linea 2/Hl_Consolidado KPI (67)
+outliers_univariados,validation,774,0.016952493593534398,66,Totalizador Bba P51_Totalizadores Efluentes (86); CO 2 Linea 4 / Hl_Consolidado KPI (75); EE Eflu / Hl_Consolidado KPI (34); ET Elab/Hl_Consolidado KPI (26); Aire Planta / Hl_Consolidado KPI (23)
+imputar_nulos,sin_etiqueta,562,0.06577715355805243,107,Agua Linea 5/Hl_Consolidado KPI (12); ET Linea 5/Hl_Consolidado KPI (12); Aire L5 / Hl_Consolidado KPI (12); ET Linea 4/Hl_Consolidado KPI (8); Aire L4 / Hl_Consolidado KPI (8)
+imputar_nulos,test,1089,0.023851764242065837,55,Agua Linea 5/Hl_Consolidado KPI (87); ET Linea 5/Hl_Consolidado KPI (87); Aire L5 / Hl_Consolidado KPI (87); ET Linea 3/Hl_Consolidado KPI (42); EE Linea 3 / Hl_Consolidado KPI (40)
+imputar_nulos,train,17629,0.08273962058704815,132,Meta EE Planta_Consolidado KPI (348); Meta Agua Planta_Consolidado KPI (348); Meta ET Planta_Consolidado KPI (348); Meta Aire Planta_Consolidado KPI (348); Meta Agua Elab_Consolidado KPI (348)
+imputar_nulos,validation,1527,0.03344503581050003,62,Agua Linea 5/Hl_Consolidado KPI (106); ET Linea 5/Hl_Consolidado KPI (106); Aire L5 / Hl_Consolidado KPI (106); EE Linea 4 / Hl_Consolidado KPI (56); Agua Linea 3/Hl_Consolidado KPI (56)

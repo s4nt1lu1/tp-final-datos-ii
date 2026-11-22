@@ -1,0 +1,162 @@
+{
+  "generado_utc": "2026-11-22T02:31:10+00:00",
+  "script": "src/preprocessing_pipeline.py",
+  "semilla": 42,
+  "config": {
+    "proporciones": [
+      0.7,
+      0.15,
+      0.15
+    ],
+    "columnas_obligatorias": [
+      "Frio (Kw)_Consolidado EE"
+    ],
+    "hojas_preferidas_duplicados": [
+      "_Totalizadores "
+    ],
+    "proteger_de_filtro_nulos": [
+      "^Meta "
+    ],
+    "dias_recientes": 60,
+    "max_nulos_train": 0.3,
+    "dias_bloque": 7,
+    "patron_kpi_por_hl": "/\\s*H[lL]",
+    "patron_produccion": "^H[lL] ",
+    "min_cobertura_no_aplica": 0.95,
+    "factor_error_grueso": 5.0,
+    "cuantil_error_grueso": 0.99,
+    "metodo_outliers": "iqr",
+    "tratamiento_outliers": "winsorizar",
+    "k_iqr": 3.0,
+    "z_mad": 5.0,
+    "percentiles": [
+      0.005,
+      0.995
+    ],
+    "frac_ceros_legitimos": 0.05,
+    "recortar_inferior": false,
+    "metodos_imputacion": [
+      "mediana_train",
+      "ffill_3",
+      "mediana_dia_semana",
+      "mediana_mes",
+      "media_movil_7",
+      "lag_7"
+    ],
+    "frac_enmascarar": 0.1,
+    "min_enmascarados": 30,
+    "max_largo_racha_simulada": 30,
+    "politica_no_aplica": "cero",
+    "umbral_indicador": 0.05,
+    "lof_vecinos": [
+      10,
+      20,
+      35,
+      50
+    ],
+    "lof_umbral": 1.5,
+    "lof_varianza_pca": 0.9,
+    "tratamiento_lof": "reportar"
+  },
+  "pasos_omitidos": [],
+  "entrada": {
+    "archivo": "data/processed/dataset_trabajo.csv",
+    "sha256": "bd015abb722ba2151d64ae9f229364cd61861b8682ffe846084d215aa083ae78",
+    "dias": 1172,
+    "columnas": 419
+  },
+  "decisiones_eda": {
+    "archivo": "results/eda/resumen.json",
+    "generado_utc": "2026-11-22T02:30:07+00:00",
+    "sha256_decisiones": "441c807ab2af0957515b5245d2c00b2b27d5bbc4f9e0377099de740073355977",
+    "columnas_descartadas": 95,
+    "columnas_unificadas": 3
+  },
+  "cortes": {
+    "train": [
+      "2020-07-01",
+      "2022-10-26"
+    ],
+    "validation": [
+      "2022-10-27",
+      "2023-04-29"
+    ],
+    "test": [
+      "2023-04-30",
+      "2023-10-24"
+    ]
+  },
+  "fin_ajuste": "2022-10-26",
+  "pasos": {
+    "aplicar_decisiones_eda": {
+      "columnas_entrada": 419,
+      "columnas_salida": 321,
+      "fin_ajuste": "2022-10-26",
+      "decisiones": {
+        "conservar": 321,
+        "descartar": 95,
+        "unificar": 3
+      }
+    },
+    "descartar_no_informativas": {
+      "columnas_entrada": 321,
+      "columnas_salida": 296,
+      "fin_ajuste": "2022-10-26",
+      "decisiones": {
+        "conservar": 296,
+        "descartar": 25
+      }
+    },
+    "descartar_duplicadas": {
+      "columnas_entrada": 296,
+      "columnas_salida": 296,
+      "fin_ajuste": "2022-10-26",
+      "decisiones": {
+        "conservar": 296
+      }
+    },
+    "filtrar_por_nulos": {
+      "columnas_entrada": 296,
+      "columnas_salida": 267,
+      "fin_ajuste": "2022-10-26",
+      "decisiones": {
+        "conservar": 267,
+        "descartar": 29
+      }
+    },
+    "outliers_univariados": {
+      "columnas_entrada": 267,
+      "columnas_salida": 267,
+      "fin_ajuste": "2022-10-26"
+    },
+    "imputar_nulos": {
+      "columnas_entrada": 267,
+      "columnas_salida": 269,
+      "fin_ajuste": "2022-10-26"
+    }
+  },
+  "causalidad_ok": true,
+  "columnas_con_nulos_al_final": [],
+  "lof": {
+    "ejecutado": true,
+    "n_neighbors_elegido": 35,
+    "componentes_pca": 57,
+    "dias_anomalos": {
+      "sin_etiqueta": 9,
+      "test": 119,
+      "train": 15,
+      "validation": 80
+    },
+    "tratamiento": "reportar",
+    "dias_excluidos_de_train": []
+  },
+  "salida": {
+    "columnas_predictoras": 269,
+    "sha256": {
+      "historial_completo.csv": "b46f1a303d112380c1fa3ac682afebb41ae9264db756583a607b94497a9368d0",
+      "train.csv": "650e978ede6604c9bef549af9dfb6fc8498f62c92d8bf4b667cab1f3631eb53e",
+      "validation.csv": "3056e2e1c88e22fa589be883818de9d8c131c55c852ce8dbef72655b3c5d9be7",
+      "test.csv": "ebe046ac697f33728f050ce251a4f32eaa2a98c475c89aa6873a7539a5dddb22"
+    }
+  }
+}

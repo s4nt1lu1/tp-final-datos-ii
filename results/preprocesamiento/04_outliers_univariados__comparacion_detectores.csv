@@ -1,0 +1,4 @@
+detector,valores_extremos_train,pct_valores_train,columnas_afectadas,elegido
+iqr,2115,0.010531714652777087,98,True
+mad,3724,0.018543785043471334,124,False
+percentil,933,0.00464590532909741,220,False
