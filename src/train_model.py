@@ -3,7 +3,8 @@
 Entradas:
     * `data/processed/historial_completo.csv` (SHA-256 verificado), de
       `src/preprocessing_pipeline.py`.
-    * `results/seleccion/resumen.json`: subconjuntos de `src/seleccion_variables.py`.
+    * `results/seleccion/resumen.json`: subconjuntos de la selección (etapa 3 de
+      `src/preprocessing_pipeline.py`).
       Las candidatas se reconstruyen con ese módulo y se exige que la configuración y la
       entrada coincidan con las de esa selección.
 
@@ -74,10 +75,8 @@ from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
-from src import eda
-from src import limpieza_horaria as lh
+from src import auxiliar_functions as af
 from src import preprocessing_pipeline as pp
-from src import seleccion_variables as sv
 from src.auxiliar_functions import DATA_DIR, PROJECT_ROOT, RESULTS_DIR, SEMILLA, huella
 
 RESUMEN_SELECCION = RESULTS_DIR / "seleccion" / "resumen.json"
@@ -161,25 +160,25 @@ def _normalizar(valor):
     return json.loads(json.dumps(valor, default=str))
 
 
-def cargar_datos(cfg_sel: Optional[sv.ConfigSeleccion] = None) -> Dict[str, object]:
+def cargar_datos(cfg_sel: Optional[pp.ConfigSeleccion] = None) -> Dict[str, object]:
     """Historial, candidatas y subconjuntos de la selección, verificando que coincidan."""
-    cfg_sel = cfg_sel or sv.ConfigSeleccion()
+    cfg_sel = cfg_sel or pp.ConfigSeleccion()
     with open(RESUMEN_SELECCION, encoding="utf-8") as f:
         seleccion = json.load(f)
-    historial = sv.cargar_preprocesado()
-    if huella(sv.CARPETA_PREPROCESADO / "historial_completo.csv") != seleccion["entrada_sha256"]:
-        raise ValueError("La selección se hizo con otro historial. Volver a correr python -m src.seleccion_variables.")
+    historial = pp.cargar_preprocesado()
+    if huella(pp.CARPETA_PREPROCESADO / "historial_completo.csv") != seleccion["entrada_sha256"]:
+        raise ValueError("La selección se hizo con otro historial. Volver a correr python -m src.preprocessing_pipeline --etapas seleccion.")
     if _normalizar(asdict(cfg_sel)) != seleccion["config"]:
         raise ValueError("La configuración de candidatas no coincide con la de la selección. "
-                         "Volver a correr python -m src.seleccion_variables.")
-    candidatas = sv.construir_candidatas(historial, cfg_sel)
+                         "Volver a correr python -m src.preprocessing_pipeline --etapas seleccion.")
+    candidatas = pp.construir_candidatas(historial, cfg_sel)
     subconjuntos = {}
     for nombre, columnas in seleccion["subconjuntos"].items():
         faltan = [c for c in columnas if c not in candidatas.columns]
         if faltan:
             raise ValueError(f"El subconjunto '{nombre}' tiene columnas que no están en las candidatas: {faltan[:5]}")
         subconjuntos[nombre] = columnas
-    datos = sv.particiones(historial, candidatas)
+    datos = pp.particiones(historial, candidatas)
     return {"historial": historial, "candidatas": candidatas, "subconjuntos": subconjuntos,
             "seleccion": seleccion, "train": datos["train"], "validation": datos["validation"]}
 
@@ -189,13 +188,13 @@ def particion_test(historial: pd.DataFrame, candidatas: pd.DataFrame) -> Tuple[p
     filas = historial.index[historial["particion"] == "test"]
     X = candidatas.loc[filas]
     completas = X.notna().all(axis=1)
-    return X[completas], historial.loc[filas[completas], sv.COL_Y]
+    return X[completas], historial.loc[filas[completas], pp.COL_Y]
 
 
 def baselines(X: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
     """Persistencia (frío de D) y media de los últimos 7 cierres, sobre las mismas filas."""
     return pd.DataFrame([
-        {"modelo": "Persistencia", **medir(y, X[sv.COL_FRIO])},
+        {"modelo": "Persistencia", **medir(y, X[pp.COL_FRIO])},
         {"modelo": "Media móvil de 7 días", **medir(y, X["frio_media_7"])},
     ])
 
@@ -210,7 +209,7 @@ def baselines(X: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
 # Para agregar una opción, sumar una entrada; para quitarla, sacarla de ConfigModelado.objetivos.
 OBJETIVOS: Dict[str, Tuple[Optional[str], Optional[str]]] = {
     "nivel": (None, None),                         # y tal cual (modelado anterior)
-    "cambio": (sv.COL_FRIO, "resta"),             # y − frío de D
+    "cambio": (pp.COL_FRIO, "resta"),             # y − frío de D
     "cambio_media7": ("frio_media_7", "resta"),    # y − media de los últimos 7 cierres
     "cociente_media7": ("frio_media_7", "cociente"),  # y / media de los últimos 7 cierres
 }
@@ -223,7 +222,7 @@ class ObjetivoRelativo(BaseEstimator, RegressorMixin):
     así que la transformación no usa información futura.
     """
 
-    def __init__(self, estimador=None, base: str = sv.COL_FRIO, operacion: str = "resta"):
+    def __init__(self, estimador=None, base: str = pp.COL_FRIO, operacion: str = "resta"):
         self.estimador = estimador
         self.base = base
         self.operacion = operacion
@@ -508,28 +507,28 @@ def ajustar_preprocesamiento(historial: pd.DataFrame) -> Pipeline:
     with open(RESULTS_DIR / "preprocesamiento" / "resumen.json", encoding="utf-8") as f:
         config = json.load(f)["config"]
     cfg = pp.Config(**{k: tuple(v) if isinstance(v, list) else v for k, v in config.items()})
-    X, y, cortes, _ = pp.cargar_datos_diarios(lh.DEFAULT_INPUT_CSV, lh.DEFAULT_CHECKSUMS_JSON, cfg)
+    X, y, cortes, _ = pp.cargar_datos_diarios(af.DEFAULT_INPUT_CSV, af.DEFAULT_CHECKSUMS_JSON, cfg)
     fin_train = cortes["train"][1]
-    pipeline = Pipeline(pp.construir_pasos(cfg, eda.cargar_decisiones()))
+    pipeline = Pipeline(pp.construir_pasos(cfg, pp.cargar_decisiones()))
     pipeline.fit(X.loc[:fin_train], y.reindex(X.loc[:fin_train].index))
     reconstruido = pipeline.transform(X)
-    predictoras = [c for c in historial.columns if c not in sv.COLUMNAS_NO_PREDICTORAS]
+    predictoras = [c for c in historial.columns if c not in pp.COLUMNAS_NO_PREDICTORAS]
     pd.testing.assert_frame_equal(reconstruido[predictoras], historial[predictoras],
                                   check_freq=False, check_names=False, check_dtype=False)
     return pipeline
 
 
-def columnas_requeridas(columnas_modelo: List[str], predictoras: List[str], cfg_sel: sv.ConfigSeleccion,
-                        creadas: sv.VariablesCreadas) -> List[str]:
+def columnas_requeridas(columnas_modelo: List[str], predictoras: List[str], cfg_sel: pp.ConfigSeleccion,
+                        creadas: pp.VariablesCreadas) -> List[str]:
     """Mediciones del Excel que hacen falta para calcular las predictoras del modelo."""
     binning = {alias: col for alias, col, _ in cfg_sel.binning}
     interaccion = dict(cfg_sel.variables_interaccion)
-    necesarias = {sv.COL_FRIO}  # también se usa para validar y limpiar cada jornada
+    necesarias = {pp.COL_FRIO}  # también se usa para validar y limpiar cada jornada
     for c in columnas_modelo:
         if c in predictoras:
             necesarias.add(c.removesuffix(pp.SUFIJO_INDICADOR))
         elif c.startswith("frio_"):
-            necesarias.add(sv.COL_FRIO)
+            necesarias.add(pp.COL_FRIO)
         elif c.startswith("bin_"):
             necesarias.add(binning[c.split("_")[1]])
         elif c.startswith("int_"):
@@ -539,7 +538,7 @@ def columnas_requeridas(columnas_modelo: List[str], predictoras: List[str], cfg_
             necesarias.update(creadas.topes_[c][:2])
         elif c in creadas.indicadores_produccion_:
             necesarias.add(creadas.indicadores_produccion_[c])
-        elif sv.familia_de(c) not in ("calendario", "ciclo anual"):
+        elif pp.familia_de(c) not in ("calendario", "ciclo anual"):
             raise ValueError(f"No están definidos los insumos de la predictora '{c}'.")
     return sorted(necesarias)
 
@@ -566,8 +565,8 @@ def exportar_datos_finales(d: Dict[str, object], columnas: List[str], X_te: pd.D
     historial, candidatas = d["historial"], d["candidatas"]
     X_tr, X_val = d["train"][0], d["validation"][0]
     filas = X_tr.index.append(X_val.index).append(X_te.index)
-    final_df = candidatas.loc[filas, columnas].join(historial.loc[filas, [sv.COL_Y, "particion"]])
-    carpeta_datos = sv.CARPETA_PREPROCESADO
+    final_df = candidatas.loc[filas, columnas].join(historial.loc[filas, [pp.COL_Y, "particion"]])
+    carpeta_datos = pp.CARPETA_PREPROCESADO
     final_df.to_csv(carpeta_datos / "dataset_final.csv", index=True, encoding="utf-8", lineterminator="\n",
                     date_format="%Y-%m-%d")
     with open(RUTA_CHECKSUMS, encoding="utf-8") as f:
@@ -583,7 +582,7 @@ def escribir_linaje(d: Dict[str, object], columnas: List[str], X_te: pd.DataFram
     """data/processed/data_lineage.json: scripts, fechas, transformaciones y huellas."""
     candidatas = d["candidatas"]
     X_tr, X_val = d["train"][0], d["validation"][0]
-    carpeta_datos = sv.CARPETA_PREPROCESADO
+    carpeta_datos = pp.CARPETA_PREPROCESADO
     ruta_final = carpeta_datos / "dataset_final.csv"
     ruta_modelo = CARPETA_MODELOS / f"modelo_{version}.pkl"
     final_df = pd.read_csv(ruta_final, index_col=0)
@@ -600,9 +599,9 @@ def escribir_linaje(d: Dict[str, object], columnas: List[str], X_te: pd.DataFram
         "generado_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "version_modelo": version,
         "etapas": [
-            {"etapa": "Limpieza horaria y unificación de los Excel", "script": "src/limpieza_horaria.py",
+            {"etapa": "Limpieza horaria y unificación de los Excel", "script": "src/auxiliar_functions.py",
              "salida": "data/processed/dataset_trabajo.csv", "sha256": res_eda["entrada"]["sha256"]},
-            {"etapa": "Decisiones estructurales sobre las columnas (EDA)", "script": "src/eda.py",
+            {"etapa": "Decisiones estructurales sobre las columnas (EDA)", "script": "src/preprocessing_pipeline.py (etapa eda)",
              "fecha_utc": res_eda["generado_utc"], "salida": "results/eda/decisiones_columnas.csv",
              "sha256": res_eda["sha256_decisiones"], "transformaciones": res_eda["conteo_por_categoria"],
              "columnas": f"{res_eda['entrada']['columnas']} -> {res_eda['columnas_salida']}"},
@@ -611,7 +610,7 @@ def escribir_linaje(d: Dict[str, object], columnas: List[str], X_te: pd.DataFram
              "transformaciones": {n: f"{p['columnas_entrada']} -> {p['columnas_salida']}"
                                   for n, p in res_prep["pasos"].items()},
              "salidas": {f"data/processed/{n}": h for n, h in res_prep["salida"]["sha256"].items()}},
-            {"etapa": "Variables creadas y selección", "script": "src/seleccion_variables.py",
+            {"etapa": "Variables creadas y selección", "script": "src/preprocessing_pipeline.py (etapa seleccion)",
              "fecha_utc": res_sel["generado_utc"], "candidatas": len(candidatas.columns),
              "subconjuntos": {n: len(c) for n, c in res_sel["subconjuntos"].items()}},
             {"etapa": "Modelado, reentrenamiento con Train + Validation y evaluación en Test",
@@ -631,8 +630,7 @@ def escribir_linaje(d: Dict[str, object], columnas: List[str], X_te: pd.DataFram
     return linaje
 
 
-PIPELINE_REGISTRADO = ("src/limpieza_horaria.py, src/eda.py, src/preprocessing_pipeline.py, "
-                       "src/seleccion_variables.py, src/train_model.py")
+PIPELINE_REGISTRADO = "src/auxiliar_functions.py, src/preprocessing_pipeline.py, src/train_model.py"
 
 
 def guardar_bundle(final, columnas: List[str], d: Dict[str, object], version: str = VERSION) -> Path:
@@ -640,14 +638,14 @@ def guardar_bundle(final, columnas: List[str], d: Dict[str, object], version: st
     pronosticar un Excel nuevo (preprocesamiento y variables creadas ajustados con Train)."""
     historial = d["historial"]
     X_tr = d["train"][0]
-    cfg_sel = sv.ConfigSeleccion()
-    _, creadas = sv.construir_candidatas_y_ajuste(historial, cfg_sel)
+    cfg_sel = pp.ConfigSeleccion()
+    _, creadas = pp.construir_candidatas_y_ajuste(historial, cfg_sel)
     pipeline = ajustar_preprocesamiento(historial)
-    predictoras = [c for c in historial.columns if c not in sv.COLUMNAS_NO_PREDICTORAS]
+    predictoras = [c for c in historial.columns if c not in pp.COLUMNAS_NO_PREDICTORAS]
 
     # Calibración de la limpieza horaria (primer año), la misma que usa la limpieza de entrenamiento.
-    crudo, *_ = lh.unificar_archivos_excel(lh.get_default_excel_sources())
-    df_mad_ee, _, umbral_salto = lh.calibrar_limpieza(crudo)
+    crudo, *_ = af.unificar_archivos_excel(af.get_default_excel_sources())
+    df_mad_ee, _, umbral_salto = af.calibrar_limpieza(crudo)
 
     bundle = {
         "tipo": "v2", "version": version, "modelo": final, "columnas": list(columnas),

@@ -1,70 +1,534 @@
-"""Fase 2. Preprocesamiento previo a la selección de variables.
+"""Fase 2. Decisiones estructurales (EDA), preprocesamiento y selección de variables.
 
-Parte del dataset horario que genera `src/limpieza_horaria.py`
-(`data/processed/dataset_trabajo.csv`), toma el cierre diario 23:59, arma el
-target D+1 y la división cronológica, y aplica una secuencia de pasos
-independientes sobre las predictoras:
+Parte del dataset horario que genera `src/auxiliar_functions.py`
+(`data/processed/dataset_trabajo.csv`) y tiene tres etapas, en este orden:
 
-    0. aplicar_decisiones_eda    : columnas que la EDA excluye o unifica por la estructura
-                                   de la planilla (metadatos, componentes y proxies del frío,
-                                   columnas calculadas por diferencia, renombradas y copias en
-                                   toda la serie). Ver `src/eda.py`. No estima nada.
-    1. descartar_no_informativas : columnas vacías o constantes en Train.
-    2. descartar_duplicadas      : columnas idénticas a otra en Train.
-    3. filtrar_por_nulos         : clasificación de nulos y descarte de las no utilizables.
-    4. outliers_univariados      : errores de medición -> NaN, extremos -> winsorización.
-    5. imputar_nulos             : método elegido por columna con enmascaramiento en Train.
-    6. (análisis) LOF            : días anómalos en el espacio multivariado.
+Etapa 1. Decisiones estructurales sobre las columnas (EDA) -> `results/eda/`
+    Decide, antes de cualquier ajuste estadístico, qué columnas no deben llegar al
+    preprocesamiento y cuáles son la misma medición con otro nombre:
+        1. metadatos        : identificadores, columnas sin encabezado y la hora del último dato.
+        2. componentes_frio : `Frio (Kw)` es la suma exacta de 7 compresores Mycom, 3 grupos de
+                              condensadores y 2 bombas de glicol; su reparto cambia por rotación.
+        3. proxies_frio     : medidores que contienen al frío (Sala de Máquinas, Servicios,
+                              Planta y KW Gral Planta).
+        4. residuales       : columnas calculadas por diferencia, con valores negativos.
+        5. renombradas      : la misma medición con otro nombre según el Excel; se unen.
+        6. copias           : columnas idénticas en toda la serie; se conserva una.
+    Dependen de la estructura de la planilla y no de `y` ni de parámetros estimados, así que
+    pueden tomarse con la serie completa sin fuga de información.
+
+Etapa 2. Preprocesamiento ajustado con Train -> `data/processed/` y `results/preprocesamiento/`
+    Toma el cierre diario 23:59, arma el target D+1 y la división cronológica, y aplica
+    pasos independientes sobre las predictoras:
+        0. aplicar_decisiones_eda    : las decisiones de la etapa 1. No estima nada.
+        1. descartar_no_informativas : columnas vacías o constantes en Train.
+        2. descartar_duplicadas      : columnas idénticas a otra en Train.
+        3. filtrar_por_nulos         : clasificación de nulos y descarte de las no utilizables.
+        4. outliers_univariados      : errores de medición -> NaN, extremos -> winsorización.
+        5. imputar_nulos             : método elegido por columna con enmascaramiento en Train.
+        6. (análisis) LOF            : días anómalos en el espacio multivariado.
+    Salida sin escalar: historial_completo.csv, train.csv, validation.csv y test.csv.
+
+Etapa 3. Variables creadas y selección -> `results/seleccion/`
+    Candidatas: predictoras del preprocesamiento + rezagos, medias móviles y diferencias
+    del frío + calendario + variables creadas (ciclo anual, binning, interacciones, ratios
+    entre áreas y eficiencia contra la meta). Métodos ajustados solo con Train (Mutual
+    Information, Ridge, Lasso y forward) y comparación de los subconjuntos en Validation.
 
 Reglas contra la fuga de información (data leakage):
     * Todo `fit` recibe SOLO filas con fecha <= último día de Train.
-    * Todo `transform` es causal: la fila del día t depende solo de filas con
-      fecha <= t y de lo aprendido en `fit`. Por eso se puede transformar la
-      serie completa de una vez. `verificar_causalidad` lo comprueba.
-    * El target `y` nunca se transforma; solo se usa en Train para el reporte.
-
-Cada paso deja un reporte por columna (`reporte_`) y tablas adicionales
-(`tablas_`) que se exportan a `results/preprocesamiento/`.
-Para agregar, quitar o reordenar pasos, editar `construir_pasos()` o usar
-`--omitir` desde la terminal.
-
-Salida (sin escalar) en `data/processed/`: historial_completo.csv, train.csv,
-validation.csv y test.csv. El escalado de Ridge y Lasso vive dentro de su Pipeline
-de sklearn en `src/train_model.py` y se ajusta solo con los datos de entrenamiento.
+    * Todo `transform` es causal: la fila del día t depende solo de filas con fecha <= t y
+      de lo aprendido en `fit`. `verificar_causalidad` lo comprueba.
+    * El target `y` nunca se transforma. Test no se lee en ninguna etapa.
+    * La validación interna usa TimeSeriesSplit con `gap=1`, y el escalado vive dentro de
+      cada Pipeline, ajustado en cada bloque de ajuste.
 
 Uso desde la raíz del proyecto:
-    python -m src.preprocessing_pipeline --completo   # Excel -> limpieza -> EDA -> preprocesamiento
-    python -m src.preprocessing_pipeline              # solo el preprocesamiento (ya existen las
-                                                      # salidas de src.limpieza_horaria y src.eda)
+    python -m src.preprocessing_pipeline                      # las tres etapas
+    python -m src.preprocessing_pipeline --completo           # antes, la limpieza horaria de los Excel
+    python -m src.preprocessing_pipeline --etapas eda         # solo una etapa
     python -m src.preprocessing_pipeline --omitir outliers_univariados --tratamiento-lof excluir_train
 """
 
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 import re
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
+from itertools import combinations
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
+from joblib import Parallel, delayed
+from scipy.optimize import nnls
 from scipy.stats import mannwhitneyu
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.feature_selection import mutual_info_regression
+from sklearn.linear_model import LassoCV, Ridge, RidgeCV
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import TimeSeriesSplit, cross_val_score
 from sklearn.neighbors import LocalOutlierFactor
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-from src import eda
-from src import limpieza_horaria as lh
+from src import auxiliar_functions as af
 from src.auxiliar_functions import DATA_DIR, PROJECT_ROOT, RESULTS_DIR, SEMILLA, huella
 
-COL_FECHA = lh.DEFAULT_DATE_COL
-COL_FRIO = lh.DEFAULT_TARGET_COL
-COL_Y = lh.DEFAULT_TARGET_NAME
+COL_FECHA = af.DEFAULT_DATE_COL
+COL_FRIO = af.DEFAULT_TARGET_COL
+COL_Y = af.DEFAULT_TARGET_NAME
+ETAPAS = ("eda", "preprocesamiento", "seleccion")
+NOMBRES_PASOS = ("aplicar_decisiones_eda", "descartar_no_informativas", "descartar_duplicadas",
+                 "filtrar_por_nulos", "outliers_univariados", "imputar_nulos")
+
+
+# ###########################################################################
+# ETAPA 1. DECISIONES ESTRUCTURALES SOBRE LAS COLUMNAS (EDA)
+# ###########################################################################
+CARPETA_EDA = RESULTS_DIR / "eda"
+RESUMEN_EDA = CARPETA_EDA / "resumen.json"
+CLAVE_ENTRADA = "data/processed/dataset_trabajo.csv"
+
+
+@dataclass
+class ConfigEDA:
+    # 1. Metadatos sin significado físico
+    patrones_metadatos: Tuple[str, ...] = (
+        r"^Id_",                   # identificadores de fila de cada hoja
+        r"^\.?\d*_",               # columnas sin encabezado en el Excel ("_Auxiliar", ".3_Auxiliar")
+        r"^Ultimo Dato del Dia_",  # hora del último registro, no una medición
+    )
+
+    # 2. Componentes del frío: Frio (Kw) = suma de estos medidores (se verifica)
+    grupos_componentes_frio: Tuple[Tuple[str, str], ...] = (
+        ("Compresores Mycom", r"^KW Mycom \d+_Totalizadores Energia$"),
+        ("Condensadores", r"^KW Cond .*_Totalizadores Energia$"),
+        ("Bombas de glicol", r"^KW Bba Glicol .*_Totalizadores Energia$"),
+    )
+    tolerancia_identidad_kw: float = 50.0  # |frío − suma| aceptable en una lectura horaria
+
+    # 3. Medidores que contienen al frío (se verifica que superen al frío casi todos los días)
+    proxies_frio: Tuple[str, ...] = (
+        "Sala Maq (Kw)_Consolidado EE",
+        "Servicios (Kw)_Consolidado EE",
+        "Planta (Kw)_Consolidado EE",
+        "KW Gral Planta_Consolidado EE",
+        "KW Gral Planta_Totalizadores Energia",
+    )
+
+    # 4. Columnas calculadas por diferencia (total menos áreas)
+    columnas_residuales: Tuple[str, ...] = (
+        "Resto Serv (Kw)_Consolidado EE",
+        "Restos Planta (Kw)_Consolidado EE",
+        "Agua Servicios (Hl)_Consolidado Agua",
+        "Aire Servicios (M3)_Consolidado Aire",
+    )
+
+    # 5. Renombradas entre archivos Excel
+    similitud_nombres: float = 0.85    # difflib sobre el nombre normalizado
+    max_solape_renombradas: int = 3    # días con ambas columnas presentes
+    rango_ratio_nivel: Tuple[float, float] = (0.67, 1.5)  # continuidad de nivel esperada
+    # Pares con salto de nivel que el grupo confirmó como la misma medición
+    renombradas_confirmadas: Tuple[str, ...] = ("Tot L3, L4 y Planta de CO2_Totalizadores Glicol",)
+
+    # 6. Copias exactas: qué versión se conserva
+    columnas_obligatorias: Tuple[str, ...] = (COL_FRIO,)
+    hojas_preferidas: Tuple[str, ...] = (r"_Totalizadores ",)
+    decimales_copias: int = 6
+
+
+# ===========================================================================
+# Carga
+# ===========================================================================
+def cargar_datos_eda(input_csv: Path = af.DEFAULT_INPUT_CSV,
+                 checksums_path: Path = af.DEFAULT_CHECKSUMS_JSON) -> Dict[str, object]:
+    """Horario numérico y cierres diarios (23:59) de `dataset_trabajo.csv`, con su SHA-256 verificado."""
+    with open(checksums_path, encoding="utf-8") as f:
+        registrado = af._sha_registrado(json.load(f), CLAVE_ENTRADA)
+    sha = huella(input_csv)
+    if registrado is None or sha != registrado:
+        raise ValueError("dataset_trabajo.csv no coincide con el SHA-256 registrado en checksums.json.")
+    horario, _ = af.load_cleaned_data(input_csv)
+    diario, _ = af.aggregate_daily_data(horario)
+    X = diario.set_index(COL_FECHA).sort_index().apply(pd.to_numeric, errors="coerce")
+    columnas = [c for c in horario.columns if c not in (COL_FECHA, "HORA")]
+    horario = horario.sort_values([COL_FECHA, "HORA"]).reset_index(drop=True)
+    horario[columnas] = horario[columnas].apply(pd.to_numeric, errors="coerce")
+    return {"horario": horario, "diario": X, "sha256": sha}
+
+
+def _normalizar_nombre(nombre: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", nombre.lower())
+
+
+def _hoja(columna: str) -> str:
+    return columna.rsplit("_", 1)[-1]
+
+
+# ===========================================================================
+# 1. Metadatos
+# ===========================================================================
+def columnas_metadatos(columnas: List[str], cfg: ConfigEDA) -> Dict[str, str]:
+    salida = {}
+    for c in columnas:
+        patron = next((p for p in cfg.patrones_metadatos if re.search(p, c)), None)
+        if patron:
+            salida[c] = f"Metadato (patrón {patron})"
+    return salida
+
+
+# ===========================================================================
+# 2. El frío como suma de componentes
+# ===========================================================================
+def componentes_frio(columnas: List[str], cfg: ConfigEDA) -> Dict[str, str]:
+    """Columna -> grupo, para cada componente del frío presente en el dataset."""
+    salida = {}
+    for grupo, patron in cfg.grupos_componentes_frio:
+        for c in columnas:
+            if re.search(patron, c):
+                salida[c] = grupo
+    return salida
+
+
+def verificar_identidad_frio(X: pd.DataFrame, horario: pd.DataFrame, cfg: ConfigEDA) -> Dict[str, object]:
+    """Comprueba que Frio (Kw) sea la suma de sus componentes.
+
+    * Ajuste no negativo del frío diario sobre los 12 componentes: si es una suma,
+      todos los coeficientes valen 1 y el R² es 1.
+    * Diferencia `frío − suma` en cada lectura horaria.
+    """
+    comp = componentes_frio(list(X.columns), cfg)
+    columnas = list(comp)
+    ok = X[columnas + [COL_FRIO]].notna().all(axis=1)
+    A, b = X.loc[ok, columnas].to_numpy(float), X.loc[ok, COL_FRIO].to_numpy(float)
+    coef, _ = nnls(A, b)
+    pred = A @ coef
+    r2 = 1 - ((b - pred) ** 2).sum() / ((b - b.mean()) ** 2).sum()
+
+    suma_diaria = X[columnas].sum(axis=1, min_count=len(columnas))
+    dif_diaria = (X[COL_FRIO] - suma_diaria).dropna()
+    suma_horaria = horario[columnas].sum(axis=1, min_count=len(columnas))
+    dif_horaria = (horario[COL_FRIO] - suma_horaria).dropna()
+
+    coeficientes = pd.DataFrame({"grupo": [comp[c] for c in columnas], "coeficiente": coef},
+                                index=[c.rsplit("_", 1)[0] for c in columnas])
+    return {
+        "columnas": columnas,
+        "coeficientes": coeficientes,
+        "r2": float(r2),
+        "mae_ajuste_kw": float(np.abs(b - pred).mean()),
+        "dias_evaluados": int(ok.sum()),
+        "dif_diaria_mediana_abs_kw": float(dif_diaria.abs().median()),
+        "pct_dias_dif_menor_tolerancia": float((dif_diaria.abs() <= cfg.tolerancia_identidad_kw).mean()),
+        "pct_horas_dif_menor_tolerancia": float((dif_horaria.abs() <= cfg.tolerancia_identidad_kw).mean()),
+        "horas_evaluadas": int(len(dif_horaria)),
+    }
+
+
+def composicion_frio(X: pd.DataFrame, cfg: ConfigEDA) -> pd.DataFrame:
+    """Participación de cada grupo de componentes en el frío, por año calendario."""
+    comp = componentes_frio(list(X.columns), cfg)
+    partes = pd.DataFrame({g: X[[c for c, gr in comp.items() if gr == g]].sum(axis=1, min_count=1)
+                           for g, _ in cfg.grupos_componentes_frio})
+    ok = X[COL_FRIO] > 0
+    participacion = partes[ok].div(X.loc[ok, COL_FRIO], axis=0)
+    tabla = participacion.groupby(participacion.index.year).median().mul(100)
+    tabla.insert(0, "días", participacion.groupby(participacion.index.year).size())
+    tabla.index.name = "año"
+    return tabla
+
+
+def rotacion_mycom(X: pd.DataFrame, frac_umbral: float = 0.05) -> Dict[str, pd.DataFrame]:
+    """Qué compresores funcionan cada día (consumo > frac_umbral × su P95) y cuánto suman."""
+    mycom = sorted([c for c in X.columns if re.search(r"^KW Mycom \d+_", c)],
+                   key=lambda c: int(re.search(r"\d+", c).group()))
+    funciona = pd.DataFrame({c.split("_")[0]: X[c] > frac_umbral * X[c].quantile(0.95) for c in mycom})
+    trimestre = X.index.to_period("Q")
+    pct_dias = funciona.groupby(trimestre).mean().mul(100).round(0)
+    pct_dias.index = pct_dias.index.astype(str)
+    suma = X[mycom].sum(axis=1, min_count=1)
+    resumen = pd.DataFrame({
+        "compresores funcionando (media)": funciona.sum(axis=1).groupby(trimestre).mean(),
+        "Σ Mycom (kW/día, mediana)": suma.groupby(trimestre).median(),
+        "Σ Mycom / Frío (mediana)": (suma / X[COL_FRIO].where(X[COL_FRIO] > 0)).groupby(trimestre).median(),
+    })
+    resumen.index = resumen.index.astype(str)
+    apagados = (X[mycom].fillna(0) == 0).all(axis=1)
+    return {"pct_dias_funcionando": pct_dias, "resumen_trimestral": resumen,
+            "dias_todos_apagados": X.index[apagados]}
+
+
+def verificar_proxies(X: pd.DataFrame, cfg: ConfigEDA) -> pd.DataFrame:
+    """Para cada medidor que contiene al frío: qué parte es frío y cuánto se parece al frío del día."""
+    filas = []
+    for c in cfg.proxies_frio:
+        if c not in X.columns:
+            continue
+        ok = X[[c, COL_FRIO]].notna().all(axis=1) & (X[c] > 0)
+        filas.append({
+            "columna": c,
+            "frío / columna (mediana)": float((X.loc[ok, COL_FRIO] / X.loc[ok, c]).median()),
+            "% días columna ≥ frío": float((X.loc[ok, c] >= X.loc[ok, COL_FRIO]).mean() * 100),
+            "Spearman con frío de D": float(X[c].corr(X[COL_FRIO], method="spearman")),
+        })
+    return pd.DataFrame(filas).set_index("columna")
+
+
+# ===========================================================================
+# 4. Residuales y calidad del acumulado
+# ===========================================================================
+def calidad_acumulado(horario: pd.DataFrame, columnas: List[str]) -> pd.DataFrame:
+    """% de lecturas horarias en que el acumulado baja (sin contar el reinicio de las 00:00)
+    y % de lecturas negativas. Un medidor real nunca es negativo."""
+    valores = horario[columnas]
+    bajadas = valores.groupby(horario[COL_FECHA]).diff()[horario["HORA"] != "00:00"]
+    return pd.DataFrame({
+        "% horas con bajada": (bajadas < -1e-6).sum() / bajadas.notna().sum() * 100,
+        "% lecturas negativas": (valores < 0).mean() * 100,
+    })
+
+
+# ===========================================================================
+# 5. Renombradas
+# ===========================================================================
+def columnas_por_archivo(archivos: List[Tuple[str, Path]]) -> pd.DataFrame:
+    """Matriz hoja/columna x archivo con True si el encabezado existe en ese Excel.
+
+    Lee solo la primera fila de cada hoja (modo de solo lectura de openpyxl).
+    """
+    import openpyxl
+
+    filas = []
+    for etiqueta, ruta in archivos:
+        libro = openpyxl.load_workbook(ruta, read_only=True, data_only=True)
+        for hoja in libro.worksheets:
+            encabezado = next(hoja.iter_rows(min_row=1, max_row=1, values_only=True), ())
+            for nombre in encabezado:
+                nombre = str(nombre).strip() if nombre is not None else ""
+                if nombre and nombre.upper() not in ("DIA", "HORA"):
+                    filas.append({"hoja": hoja.title.strip(), "columna": nombre, "archivo": etiqueta})
+        libro.close()
+    tabla = pd.DataFrame(filas).drop_duplicates()
+    matriz = pd.crosstab([tabla["hoja"], tabla["columna"]], tabla["archivo"]).astype(bool)
+    return matriz[[e for e, _ in archivos]]
+
+
+def detectar_renombradas(X: pd.DataFrame, cfg: ConfigEDA) -> pd.DataFrame:
+    """Pares de nombre casi igual con períodos complementarios (toda la serie)."""
+    presente = X.notna()
+    columnas = [c for c in X.columns if presente[c].any() and not presente[c].all()]
+    candidatos = []
+    for i, a in enumerate(columnas):
+        for b in columnas[i + 1:]:
+            if _hoja(a) != _hoja(b):
+                continue
+            if (presente[a] & presente[b]).sum() > cfg.max_solape_renombradas:
+                continue
+            sim = difflib.SequenceMatcher(None, _normalizar_nombre(a), _normalizar_nombre(b)).ratio()
+            if sim >= cfg.similitud_nombres:
+                candidatos.append((sim, a, b))
+
+    usadas, filas = set(), []
+    for sim, a, b in sorted(candidatos, reverse=True):
+        if a in usadas or b in usadas:
+            continue
+        usadas.update((a, b))
+        vieja, nueva = sorted((a, b), key=lambda c: X[c].last_valid_index())
+        ratio = X[nueva].dropna().head(30).median() / X[vieja].dropna().tail(30).median()
+        continuidad = cfg.rango_ratio_nivel[0] <= ratio <= cfg.rango_ratio_nivel[1]
+        if continuidad:
+            control = "Nivel continuo"
+        elif nueva in cfg.renombradas_confirmadas:
+            control = "Salto de nivel: el grupo confirmó que es la misma medición"
+        else:
+            control = "Salto de nivel: a confirmar"
+        filas.append({
+            "vieja": vieja, "nueva": nueva, "similitud": round(sim, 3),
+            "dias_solapados": int((presente[a] & presente[b]).sum()),
+            "inicio_vieja": X[vieja].first_valid_index().date(),
+            "fin_vieja": X[vieja].last_valid_index().date(),
+            "inicio_nueva": X[nueva].first_valid_index().date(),
+            "ratio_nivel_nueva_vs_vieja": round(float(ratio), 3),
+            "control": control,
+            "unificar": continuidad or nueva in cfg.renombradas_confirmadas,
+        })
+    return pd.DataFrame(filas, columns=["vieja", "nueva", "similitud", "dias_solapados", "inicio_vieja",
+                                        "fin_vieja", "inicio_nueva", "ratio_nivel_nueva_vs_vieja",
+                                        "control", "unificar"])
+
+
+def unificar(X: pd.DataFrame, pares: Dict[str, str]) -> pd.DataFrame:
+    """Completa la columna nueva con la vieja y descarta la vieja."""
+    X = X.copy()
+    for vieja, nueva in pares.items():
+        X[nueva] = X[nueva].combine_first(X[vieja])
+    return X.drop(columns=list(pares))
+
+
+# ===========================================================================
+# 6. Copias exactas
+# ===========================================================================
+def detectar_copias(X: pd.DataFrame, cfg: ConfigEDA) -> pd.DataFrame:
+    """Columnas con los mismos valores y los mismos nulos en toda la serie.
+
+    Las columnas sin variación (por ejemplo, siempre 0) no se comparan: coinciden entre
+    sí sin ser la misma medición. Las descarta el preprocesamiento como constantes en Train.
+    """
+    def prioridad(c):
+        if c in cfg.columnas_obligatorias:
+            return 0
+        return 1 if any(re.search(p, c) for p in cfg.hojas_preferidas) else 2
+
+    redondeado = X.round(cfg.decimales_copias)
+    con_variacion = [c for c in X.columns if redondeado[c].nunique(dropna=True) > 1]
+    huellas = {c: pd.util.hash_pandas_object(redondeado[c], index=False).sum() for c in con_variacion}
+    orden = sorted(con_variacion, key=lambda c: (prioridad(c), X.columns.get_loc(c)))
+    representantes: Dict[int, List[str]] = {}
+    filas = []
+    for c in orden:
+        original = next((r for r in representantes.get(huellas[c], [])
+                         if redondeado[r].equals(redondeado[c])), None)
+        if original is None:
+            representantes.setdefault(huellas[c], []).append(c)
+        elif X[c].notna().any():
+            filas.append({"columna": c, "copia_de": original,
+                          "hoja_descartada": _hoja(c), "hoja_conservada": _hoja(original)})
+    return pd.DataFrame(filas, columns=["columna", "copia_de", "hoja_descartada", "hoja_conservada"])
+
+
+# ===========================================================================
+# Decisiones
+# ===========================================================================
+def decidir_columnas(datos: Dict[str, object], cfg: ConfigEDA) -> Dict[str, object]:
+    """Aplica las seis reglas en orden y devuelve la tabla de decisiones y sus evidencias."""
+    X: pd.DataFrame = datos["diario"]
+    horario: pd.DataFrame = datos["horario"]
+    columnas = list(X.columns)
+    decision: Dict[str, Tuple[str, str]] = {}  # columna -> (categoría, motivo)
+
+    for c, motivo in columnas_metadatos(columnas, cfg).items():
+        decision[c] = ("metadatos", motivo)
+
+    identidad = verificar_identidad_frio(X, horario, cfg)
+    if not (identidad["r2"] > 0.999 and np.allclose(identidad["coeficientes"]["coeficiente"], 1, atol=0.02)):
+        raise ValueError("Frio (Kw) ya no es la suma de sus componentes: revisar antes de descartarlos.")
+    for c, grupo in componentes_frio(columnas, cfg).items():
+        decision.setdefault(c, ("componentes_frio",
+                                f"Componente del frío ({grupo}): Frio (Kw) es la suma exacta de 12 medidores"))
+
+    proxies = verificar_proxies(X, cfg)
+    for c, fila in proxies.iterrows():
+        decision.setdefault(c, ("proxies_frio",
+                                f"Contiene al frío (frío = {fila['frío / columna (mediana)']:.0%} de la columna, "
+                                f"Spearman {fila['Spearman con frío de D']:.3f} con el frío de D)"))
+
+    residuales = [c for c in cfg.columnas_residuales if c in columnas]
+    calidad = calidad_acumulado(horario, residuales)
+    for c in residuales:
+        decision.setdefault(c, ("residuales",
+                                f"Calculada por diferencia: {calidad.loc[c, '% lecturas negativas']:.1f} % de "
+                                f"lecturas negativas y {calidad.loc[c, '% horas con bajada']:.1f} % de horas con bajada"))
+
+    restantes = X[[c for c in columnas if c not in decision]]
+    renombradas = detectar_renombradas(restantes, cfg)
+    pares = {f["vieja"]: f["nueva"] for _, f in renombradas.iterrows() if f["unificar"]}
+    for _, f in renombradas.iterrows():
+        if f["unificar"]:
+            decision[f["vieja"]] = ("renombradas", f"Misma medición que '{f['nueva']}' ({f['control']}); "
+                                                   f"se une a ella")
+
+    unificado = unificar(restantes, pares)
+    copias = detectar_copias(unificado, cfg)
+    for _, f in copias.iterrows():
+        decision[f["columna"]] = ("copias", f"Copia exacta de '{f['copia_de']}' en toda la serie")
+
+    tabla = pd.DataFrame([{
+        "columna": c,
+        "hoja": _hoja(c),
+        "decision": ("unificar" if decision.get(c, ("",))[0] == "renombradas"
+                     else "descartar" if c in decision else "conservar"),
+        "categoria": decision.get(c, ("", ""))[0],
+        "motivo": decision.get(c, ("", ""))[1],
+        "unida_en": pares.get(c, ""),
+    } for c in columnas])
+    return {"tabla": tabla, "pares": pares, "identidad": identidad, "proxies": proxies,
+            "calidad_residuales": calidad, "renombradas": renombradas, "copias": copias}
+
+
+def ejecutar_eda(cfg: Optional[ConfigEDA] = None, salida: Path = CARPETA_EDA,
+                 datos: Optional[Dict[str, object]] = None) -> Dict[str, object]:
+    """Calcula las decisiones y exporta la tabla y el resumen que lee el preprocesamiento."""
+    cfg = cfg or ConfigEDA()
+    datos = datos or cargar_datos_eda()
+    res = decidir_columnas(datos, cfg)
+    tabla = res["tabla"]
+
+    salida = Path(salida)
+    salida.mkdir(parents=True, exist_ok=True)
+    ruta_tabla = salida / "decisiones_columnas.csv"
+    tabla.to_csv(ruta_tabla, index=False, encoding="utf-8", lineterminator="\n")
+
+    identidad = {k: v for k, v in res["identidad"].items() if k not in ("coeficientes", "columnas")}
+    identidad["coeficientes"] = res["identidad"]["coeficientes"]["coeficiente"].round(4).to_dict()
+    resumen = {
+        "generado_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "script": "src/preprocessing_pipeline.py (etapa eda)",
+        "config": asdict(cfg),
+        "entrada": {"archivo": CLAVE_ENTRADA, "sha256": datos["sha256"],
+                    "dias": int(len(datos["diario"])), "columnas": int(datos["diario"].shape[1])},
+        "identidad_frio": identidad,
+        "conteo_por_categoria": tabla.loc[tabla["categoria"] != "", "categoria"].value_counts().to_dict(),
+        "columnas_salida": int((tabla["decision"] == "conservar").sum()),
+        "descartar": tabla.loc[tabla["decision"] == "descartar", "columna"].tolist(),
+        "unificar": res["pares"],
+        "sha256_decisiones": huella(ruta_tabla),
+    }
+    with open(salida / "resumen.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(resumen, f, indent=2, ensure_ascii=False, default=str)
+        f.write("\n")
+
+    print("=" * 78)
+    print("EDA: DECISIONES ESTRUCTURALES SOBRE LAS COLUMNAS")
+    print("=" * 78)
+    print(f"Entrada        : {resumen['entrada']['dias']} días x {resumen['entrada']['columnas']} columnas")
+    print(f"Identidad frío : R² = {identidad['r2']:.6f} | {identidad['pct_horas_dif_menor_tolerancia']:.1%} "
+          f"de las horas con |frío − suma| <= {cfg.tolerancia_identidad_kw:.0f} kW")
+    for categoria, n in resumen["conteo_por_categoria"].items():
+        print(f"  {categoria:<18}: {n}")
+    print(f"Columnas que pasan al preprocesamiento: {resumen['columnas_salida']}")
+    print("=" * 78)
+    return {**res, "resumen": resumen, "datos": datos}
+
+
+def cargar_decisiones(ruta: Path = RESUMEN_EDA,
+                      checksums_path: Path = af.DEFAULT_CHECKSUMS_JSON) -> Dict[str, object]:
+    """Lee las decisiones de la EDA y verifica que correspondan al dataset_trabajo.csv vigente."""
+    if not Path(ruta).exists():
+        raise FileNotFoundError(f"No existe {ruta}. Correr antes: python -m src.preprocessing_pipeline --etapas eda")
+    with open(ruta, encoding="utf-8") as f:
+        resumen = json.load(f)
+    with open(checksums_path, encoding="utf-8") as f:
+        registrado = af._sha_registrado(json.load(f), CLAVE_ENTRADA)
+    if resumen["entrada"]["sha256"] != registrado:
+        raise ValueError("Las decisiones de la EDA se tomaron con otra versión de dataset_trabajo.csv. "
+                         "Volver a correr: python -m src.preprocessing_pipeline --etapas eda")
+    ruta_tabla = Path(ruta).parent / "decisiones_columnas.csv"
+    if huella(ruta_tabla) != resumen["sha256_decisiones"]:
+        raise ValueError(f"{ruta_tabla.name} cambió después de generar el resumen de la EDA.")
+    resumen["tabla"] = pd.read_csv(ruta_tabla, keep_default_na=False)
+    return resumen
+
+
+# ###########################################################################
+# ETAPA 2. PREPROCESAMIENTO AJUSTADO CON TRAIN
+# ###########################################################################
 SUFIJO_INDICADOR = "__imputado"
 
 
@@ -81,7 +545,7 @@ class Config:
     #    EDA y se leen de results/eda/resumen.json.
 
     # 2. Duplicadas en Train: qué copia se conserva
-    columnas_obligatorias: Tuple[str, ...] = (lh.DEFAULT_TARGET_COL,)
+    columnas_obligatorias: Tuple[str, ...] = (af.DEFAULT_TARGET_COL,)
     hojas_preferidas_duplicados: Tuple[str, ...] = (r"_Totalizadores ",)
 
     # 3. Nulos
@@ -288,7 +752,7 @@ class PasoAuditable(BaseEstimator, TransformerMixin):
 # Paso 0. Decisiones estructurales de la EDA
 # ---------------------------------------------------------------------------
 class AplicarDecisionesEDA(PasoAuditable):
-    """Aplica las decisiones de `src/eda.py`: descarta las columnas que la EDA excluye y
+    """Aplica las decisiones de la etapa 1 (EDA): descarta las columnas que la EDA excluye y
     completa cada columna renombrada con su nombre viejo.
 
     No estima nada: las decisiones dependen de la estructura de la planilla (nombres, hojas,
@@ -795,7 +1259,7 @@ def construir_pasos(cfg: Config, decisiones: Optional[Dict[str, object]] = None
     cada paso solo necesita las columnas que le deja el anterior.
 
     `decisiones` son las de la EDA; si no se pasan, se leen de results/eda/."""
-    decisiones = decisiones if decisiones is not None else eda.cargar_decisiones()
+    decisiones = decisiones if decisiones is not None else cargar_decisiones()
     return [
         ("aplicar_decisiones_eda", AplicarDecisionesEDA(decisiones)),
         ("descartar_no_informativas", DescartarNoInformativas(cfg)),
@@ -809,15 +1273,15 @@ def construir_pasos(cfg: Config, decisiones: Optional[Dict[str, object]] = None
 def cargar_datos_diarios(input_csv: Path, checksums_path: Path, cfg: Config):
     """Cierres diarios, target D+1 y fechas de corte (reutiliza la Parte F del pipeline)."""
     with open(checksums_path, encoding="utf-8") as f:
-        registrado = lh._sha_registrado(json.load(f), "data/processed/dataset_trabajo.csv")
+        registrado = af._sha_registrado(json.load(f), "data/processed/dataset_trabajo.csv")
     sha = huella(input_csv)
     if registrado is None or sha != registrado:
         raise ValueError("dataset_trabajo.csv no coincide con el SHA-256 registrado en checksums.json.")
 
-    horario, _ = lh.load_cleaned_data(input_csv)
-    diario, _ = lh.aggregate_daily_data(horario)
-    etiquetadas, _ = lh.prepare_target(diario)
-    *_, info = lh.temporal_split(etiquetadas[[COL_FECHA, COL_FRIO, COL_Y]], *cfg.proporciones)
+    horario, _ = af.load_cleaned_data(input_csv)
+    diario, _ = af.aggregate_daily_data(horario)
+    etiquetadas, _ = af.prepare_target(diario)
+    *_, info = af.temporal_split(etiquetadas[[COL_FECHA, COL_FRIO, COL_Y]], *cfg.proporciones)
     cortes = {p: (pd.Timestamp(info[p]["date_start"]), pd.Timestamp(info[p]["date_end"]))
               for p in ("train", "validation", "test")}
 
@@ -874,11 +1338,11 @@ def _particion(indice: pd.DatetimeIndex, y: pd.Series, cortes) -> pd.Series:
     return particion
 
 
-def ejecutar(
+def ejecutar_preprocesamiento(
     cfg: Optional[Config] = None,
     omitir: Tuple[str, ...] = (),
-    input_csv: Path = lh.DEFAULT_INPUT_CSV,
-    checksums_path: Path = lh.DEFAULT_CHECKSUMS_JSON,
+    input_csv: Path = af.DEFAULT_INPUT_CSV,
+    checksums_path: Path = af.DEFAULT_CHECKSUMS_JSON,
     salida_datos: Path = DATA_DIR / "processed",
     salida_auditoria: Path = RESULTS_DIR / "preprocesamiento",
 ) -> Dict[str, object]:
@@ -886,7 +1350,7 @@ def ejecutar(
     X, y, cortes, sha_entrada = cargar_datos_diarios(Path(input_csv), Path(checksums_path), cfg)
     fin_train = cortes["train"][1]
 
-    decisiones = eda.cargar_decisiones(checksums_path=Path(checksums_path))
+    decisiones = cargar_decisiones(checksums_path=Path(checksums_path))
     todos = construir_pasos(cfg, decisiones)
     pasos = [(n, p) for n, p in todos if n not in omitir]
     desconocidos = set(omitir) - {n for n, _ in todos}
@@ -1012,27 +1476,814 @@ def _imprimir_resumen(resumen: Dict[str, object], pipeline: Pipeline) -> None:
     print("=" * 78)
 
 
+# ###########################################################################
+# ETAPA 3. VARIABLES CREADAS Y SELECCIÓN DE VARIABLES
+# ###########################################################################
+COL_BODEGA = "Hl Producido Bodega_Consolidado Produccion"
+COL_ENVASADA = "Hl Cerveza Envasada_Consolidado Produccion"
+COL_MOSTO = "Hl de Mosto_Consolidado Produccion"  # entrada a fermentación
+COLUMNAS_NO_PREDICTORAS = ("y", "particion", "lof_score", "anomalo_lof")
+COLUMNAS_CALENDARIO = ("mes", "dia_semana_sin", "dia_semana_cos", "fin_de_semana", "mes_sin", "mes_cos")
+# Prefijo del nombre -> familia. Los nombres los genera este módulo; ninguna
+# columna del preprocesamiento empieza con estos prefijos.
+PREFIJOS_FAMILIA = (
+    ("frio_", "derivada del frío"),
+    ("anio_", "ciclo anual"),
+    ("bin_", "binning"),
+    ("int_", "interacción"),
+    ("maq_", "maquinaria"),
+    ("ratio_", "ratio entre áreas"),
+    ("sin_produccion_", "ratio entre áreas"),
+    ("efic_", "eficiencia vs meta"),
+)
+CARPETA_PREPROCESADO = DATA_DIR / "processed"
+RESUMEN_PREPROCESADO = RESULTS_DIR / "preprocesamiento" / "resumen.json"
+
+
+@dataclass
+class ConfigSeleccion:
+    # Variables derivadas del frío (en días calendario, siempre hacia atrás)
+    rezagos_frio: Tuple[int, ...] = (1, 2, 3, 4, 5, 6, 7, 14)
+    ventanas_media_frio: Tuple[int, ...] = (2, 3, 5, 7, 10, 14, 21, 28)
+    ventanas_mediana_frio: Tuple[int, ...] = (3, 7, 14)
+    ventanas_desvio_frio: Tuple[int, ...] = (3, 7, 14)
+    ventanas_extremos_frio: Tuple[int, ...] = (3, 7, 14)  # mínimo y máximo de la ventana
+    spans_media_exponencial_frio: Tuple[int, ...] = (3, 7, 14)
+    diferencias_frio: Tuple[int, ...] = (1, 2, 3, 7)  # frío de D menos frío de D-k
+    max_arrastre_dias: int = 3  # días sin cierre que un rezago puede cubrir con el cierre anterior
+    incluir_calendario: bool = True
+
+    # Variables circulares anuales: seno y coseno de 2*pi*k*(fracción del año).
+    # k = 1 es el ciclo anual; k = 2 (semestral) permite estaciones asimétricas.
+    # () = no se crean.
+    armonicos_anuales: Tuple[int, ...] = (1, 2)
+
+    # Binning: (alias, columna, intervalos). Los cortes son cuantiles de Train y cada
+    # intervalo es un indicador 0/1. Si más de `frac_ceros_intervalo_propio` de Train
+    # son ceros (días sin producción), el cero es un intervalo aparte y los cuantiles
+    # se calculan sobre los valores positivos. () = sin binning.
+    binning: Tuple[Tuple[str, str, int], ...] = (
+        ("frio", COL_FRIO, 5),
+        ("bodega", COL_BODEGA, 4),
+        ("envasada", COL_ENVASADA, 4),
+        ("mosto", COL_MOSTO, 4),
+    )
+    frac_ceros_intervalo_propio: float = 0.05
+
+    # Interacciones: producto de cada par de estas variables, estandarizadas con la
+    # media y el desvío de Train (centrar reduce la colinealidad con los efectos
+    # principales). Si `interacciones_con_ciclo_anual`, también cada una por el seno y
+    # el coseno anual (k = 1): con los dos, el modelo elige la fase. () = sin interacciones.
+    variables_interaccion: Tuple[Tuple[str, str], ...] = (
+        ("frio", COL_FRIO),
+        ("bodega", COL_BODEGA),
+        ("envasada", COL_ENVASADA),
+        ("mosto", COL_MOSTO),
+    )
+    interacciones_con_ciclo_anual: bool = True
+
+    # Maquinaria funcionando: (grupo, patrón de columnas). Un equipo funciona el día D si
+    # su consumo de ese día supera `frac_umbral_funcionando` x su percentil 95 de Train.
+    # Por grupo se crean: un indicador por equipo, cuántos funcionan, la carga media por
+    # equipo encendido, el cambio en la cantidad respecto del día anterior y la media de
+    # esa cantidad en los últimos `ventana_maquinaria` cierres. () = no se crean.
+    # Por defecto no se crean: la EDA excluye los compresores Mycom y los condensadores
+    # porque son componentes del frío (Frio (Kw) es su suma) y su reparto cambia por rotación.
+    # Para recrearlos habría que conservar esas columnas en la etapa 1 (EDA) y usar, por ejemplo,
+    # (("mycom", r"^KW Mycom \d+_"), ("cond", r"^KW Cond ")).
+    patrones_maquinaria: Tuple[Tuple[str, str], ...] = ()
+    frac_umbral_funcionando: float = 0.05
+    ventana_maquinaria: int = 7
+
+    # Ratios entre áreas (consigna 2.2): (nombre, numerador, denominador), con valores del día D.
+    # Si el denominador es <= 0 (día sin producción) el ratio vale 0, y para los denominadores de
+    # producción el indicador `sin_produccion_<columna>` marca esos días. No se suma un épsilon al
+    # denominador: con producción 0 daría valores del orden de 10^9 que dominan cualquier modelo.
+    # Con denominadores chicos el cociente tiene colas extremas: se recorta a los percentiles
+    # `percentiles_ratios` de Train (sobre los días con denominador > 0).
+    ratios: Tuple[Tuple[str, str, str], ...] = (
+        ("ratio_bodega_elaboracion_kw", "Bodega (Kw)_Consolidado EE", "Elaboracion (Kw)_Consolidado EE"),
+        ("ratio_frio_elaboracion_kw", COL_FRIO, "Elaboracion (Kw)_Consolidado EE"),
+        ("ratio_frio_envasado_kw", COL_FRIO, "Envasado (Kw)_Consolidado EE"),
+        ("ratio_frio_por_hl_mosto", COL_FRIO, COL_MOSTO),
+        ("ratio_mosto_envasada", COL_MOSTO, COL_ENVASADA),
+        ("ratio_agua_bodega_por_hl", "Agua Bodega (Hl)_Consolidado Agua", COL_BODEGA),
+        ("ratio_agua_elab_por_hl_mosto", "Agua Elaboracion (Hl)_Consolidado Agua", COL_MOSTO),
+        ("ratio_et_elab_por_hl_mosto", "ET Elaboracion (Mj)_Consolidado GasVapor", COL_MOSTO),
+    )
+    # Eficiencia energética contra la meta (consigna 2.2): consumo por Hl / meta por Hl.
+    # Mayor a 1 = el día consumió por hectolitro más de lo que fija la meta.
+    eficiencias: Tuple[Tuple[str, str, str], ...] = (
+        ("efic_frio_vs_meta", "EE Frio / Hl_Consolidado KPI", "Meta EE Frio_Consolidado KPI"),
+        ("efic_planta_vs_meta", "EE Planta / Hl_Consolidado KPI", "Meta EE Planta_Consolidado KPI"),
+        ("efic_bodega_vs_meta", "EE Bodega / Hl_Consolidado KPI", "Meta EE Bodega_Consolidado KPI"),
+        ("efic_elaboracion_vs_meta", "EE Elaboracion / Hl_Consolidado KPI",
+         "Meta EE Elaboracion_Consolidado KPI"),
+    )
+    percentiles_ratios: Tuple[float, float] = (0.005, 0.995)
+    patron_produccion: str = r"^H[lL] "
+
+    # Filtro de redundancia (ajustado con Train). Las candidatas se ordenan por |Spearman| con y y
+    # se descarta cada una que tenga |Spearman| >= umbral con otra ya conservada. None = sin filtro.
+    # Desactivado: con 0.90 deja 265 de 360 candidatas pero empeora todos los modelos en Validation
+    # (results/comparacion_variantes/): quita ventanas del frío útiles y el ciclo anual.
+    umbral_redundancia: Optional[float] = None
+    proteger_de_redundancia: Tuple[str, ...] = (COL_FRIO,)  # siempre se conservan, y primero
+
+    # Validación interna en Train
+    n_splits: int = 5
+    gap: int = 1
+
+    # Ridge (para rankings, curvas k y forward)
+    alphas_ridge: Tuple[float, ...] = tuple(np.logspace(-2, 4, 25).round(4))
+
+    # Curva k -> MAE para métodos de ranking
+    grilla_k: Tuple[int, ...] = (1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 60, 80, 120)
+    regla_un_error_estandar: bool = True
+
+    # Mutual information
+    mi_vecinos: int = 3
+
+    # Lasso
+    lasso_alphas: int = 60
+    lasso_max_iter: int = 50_000
+
+    # Forward
+    forward_max_variables: int = 25
+    forward_tolerancia_kw: float = 5.0  # mejora mínima de MAE interno para seguir agregando
+
+    # Comparación en Validation
+    estimadores_validacion: Tuple[str, ...] = ("ridge", "random_forest")
+
+
+# ===========================================================================
+# 1. Candidatas
+# ===========================================================================
+def cargar_preprocesado(carpeta: Path = CARPETA_PREPROCESADO,
+                        resumen: Path = RESUMEN_PREPROCESADO) -> pd.DataFrame:
+    """Lee el historial preprocesado y verifica su SHA-256 contra el resumen de auditoría."""
+    ruta = carpeta / "historial_completo.csv"
+    with open(resumen, encoding="utf-8") as f:
+        esperado = json.load(f)["salida"]["sha256"]["historial_completo.csv"]
+    if huella(ruta) != esperado:
+        raise ValueError("historial_completo.csv no coincide con el SHA-256 del preprocesamiento. "
+                         "Volver a correr python -m src.preprocessing_pipeline.")
+    return pd.read_csv(ruta, index_col=0, parse_dates=True).sort_index()
+
+
+def variables_frio(frio: pd.Series, cfg: ConfigSeleccion) -> pd.DataFrame:
+    """Rezagos, ventanas móviles y diferencias del frío. Solo usan días <= D.
+
+    Familias (cada una configurable en `ConfigSeleccion`):
+        frio_lag_k        frío de D-k
+        frio_media_v      media de D-v+1 a D
+        frio_mediana_v    mediana de la ventana (robusta a un día atípico)
+        frio_desvio_v     desvío estándar de la ventana (variabilidad reciente)
+        frio_min_v/max_v  extremos de la ventana
+        frio_ewm_s        media exponencial con span s (pesa más los días recientes)
+        frio_diff_k       frío de D menos frío de D-k (tendencia)
+
+    Hay días calendario sin cierre (los descartó la limpieza):
+      * Rezagos y diferencias se miden en días calendario. Un día faltante toma el
+        último cierre anterior disponible (hasta `max_arrastre_dias`), que es lo que
+        se conocería en ese momento.
+      * Las ventanas (medias, medianas, desvíos, extremos y exponenciales) usan los
+        últimos `v` cierres observados. Con un día faltante, la ventana de 7 cierres
+        abarca 8 días calendario, pero nunca queda vacía.
+    """
+    frio = frio.sort_index()
+    arrastrada = frio.asfreq("D").ffill(limit=cfg.max_arrastre_dias)
+
+    def ventana(v):
+        return frio.rolling(v, min_periods=max(2, v // 2))
+
+    nuevas = {}
+    for k in cfg.rezagos_frio:
+        nuevas[f"frio_lag_{k}"] = arrastrada.shift(k).reindex(frio.index)
+    for v in cfg.ventanas_media_frio:
+        nuevas[f"frio_media_{v}"] = ventana(v).mean()
+    for v in cfg.ventanas_mediana_frio:
+        nuevas[f"frio_mediana_{v}"] = ventana(v).median()
+    for v in cfg.ventanas_desvio_frio:
+        nuevas[f"frio_desvio_{v}"] = ventana(v).std()
+    for v in cfg.ventanas_extremos_frio:
+        nuevas[f"frio_min_{v}"] = ventana(v).min()
+        nuevas[f"frio_max_{v}"] = ventana(v).max()
+    for s in cfg.spans_media_exponencial_frio:
+        nuevas[f"frio_ewm_{s}"] = frio.ewm(span=s, min_periods=2).mean()
+    for k in cfg.diferencias_frio:
+        nuevas[f"frio_diff_{k}"] = frio - arrastrada.shift(k).reindex(frio.index)
+    return pd.DataFrame(nuevas, index=frio.index)
+
+
+def variables_calendario(indice: pd.DatetimeIndex) -> pd.DataFrame:
+    """Mes (1-12), día de la semana y mes con codificación cíclica, y fin de semana.
+    Se conocen en D. `mes` como número sirve a los árboles; seno y coseno, a los
+    modelos lineales (diciembre y enero quedan cerca)."""
+    dia = indice.day_of_week.to_numpy()
+    mes = indice.month.to_numpy()
+    return pd.DataFrame({
+        "mes": mes,
+        "dia_semana_sin": np.sin(2 * np.pi * dia / 7),
+        "dia_semana_cos": np.cos(2 * np.pi * dia / 7),
+        "fin_de_semana": (dia >= 5).astype(int),
+        "mes_sin": np.sin(2 * np.pi * (mes - 1) / 12),
+        "mes_cos": np.cos(2 * np.pi * (mes - 1) / 12),
+    }, index=indice)
+
+
+def fraccion_del_anio(indice: pd.DatetimeIndex) -> np.ndarray:
+    """Posición del día en su año, en [0, 1): 1 de enero = 0. Contempla años bisiestos."""
+    dias_del_anio = np.where(indice.is_leap_year, 366, 365)
+    return (indice.day_of_year.to_numpy() - 1) / dias_del_anio
+
+
+def variables_ciclo_anual(indice: pd.DatetimeIndex, armonicos: Tuple[int, ...] = (1, 2)) -> pd.DataFrame:
+    """Variables circulares anuales: seno y coseno de 2*pi*k*t, con t la fracción del año.
+
+    A diferencia de `mes_sin`/`mes_cos` (constantes dentro de cada mes), varían día a
+    día y el 31 de diciembre queda pegado al 1 de enero. Con seno y coseno juntos, un
+    modelo lineal representa una onda anual con cualquier fase: a*sin + b*cos =
+    A*cos(2*pi*t - fase). El armónico 2 agrega una onda semestral, que permite que la
+    subida y la bajada de la estación no sean simétricas. Se conocen en D.
+    """
+    t = fraccion_del_anio(indice)
+    nuevas = {}
+    for k in armonicos:
+        nuevas[f"anio_sin_{k}"] = np.sin(2 * np.pi * k * t)
+        nuevas[f"anio_cos_{k}"] = np.cos(2 * np.pi * k * t)
+    return pd.DataFrame(nuevas, index=indice)
+
+
+class VariablesCreadas(BaseEstimator, TransformerMixin):
+    """Binning, interacciones, ratios, eficiencias y maquinaria, con parámetros aprendidos en Train.
+
+    `fit` recibe las candidatas de las fechas de Train y guarda:
+      * `cortes_`: para cada variable del binning, si el cero es un intervalo propio
+        y los cuantiles que separan los intervalos.
+      * `escala_`: media y desvío de cada variable de las interacciones.
+      * `topes_`: para cada ratio y eficiencia, los percentiles de Train a los que se recorta.
+      * `umbrales_`: para cada grupo de maquinaria, el consumo diario a partir del
+        cual se considera que cada equipo funcionó.
+    `transform` es causal: la fila del día D usa solo los valores de D (y, para el
+    cambio y la media de equipos funcionando, de días anteriores) y lo aprendido en
+    `fit`. `reporte_` describe cada variable creada.
+    """
+
+    def __init__(self, cfg: ConfigSeleccion):
+        self.cfg = cfg
+
+    def fit(self, X: pd.DataFrame, y=None):
+        cfg, filas = self.cfg, []
+        self.cortes_ = {}
+        for alias, columna, n in cfg.binning:
+            v = X[columna].dropna()
+            cero_propio = bool((v <= 0).mean() > cfg.frac_ceros_intervalo_propio)
+            valores = v[v > 0] if cero_propio else v
+            n_cuantiles = n - 1 if cero_propio else n
+            cortes = np.unique(np.quantile(valores, np.linspace(0, 1, n_cuantiles + 1)[1:-1]))
+            self.cortes_[alias] = (cero_propio, cortes)
+            limites = np.r_[-np.inf, cortes, np.inf]
+            if cero_propio:
+                filas.append({"variable": f"bin_{alias}_cero", "familia": "binning", "origen": columna,
+                              "definicion": f"{alias} <= 0 (sin actividad)",
+                              "pct_dias_train": 100 * float((v <= 0).mean())})
+            for i in range(len(cortes) + 1):
+                inf, sup = limites[i], limites[i + 1]
+                dentro = (valores >= inf) & (valores < sup)
+                texto = (f"{alias} < {sup:,.0f}" if i == 0 else f"{alias} >= {inf:,.0f}"
+                         if i == len(cortes) else f"{inf:,.0f} <= {alias} < {sup:,.0f}")
+                filas.append({"variable": f"bin_{alias}_q{i + 1}", "familia": "binning", "origen": columna,
+                              "definicion": texto + (" (y > 0)" if cero_propio else ""),
+                              "pct_dias_train": 100 * float(dentro.sum() / len(v))})
+
+        self.escala_ = {}
+        for alias, columna in cfg.variables_interaccion:
+            desvio = float(X[columna].std())
+            self.escala_[alias] = (columna, float(X[columna].mean()), desvio if desvio > 0 else 1.0)
+        for a, b in self._pares():
+            filas.append({"variable": f"int_{a}_x_{b}", "familia": "interacción",
+                          "origen": " × ".join(self._origen(n) for n in (a, b)),
+                          "definicion": f"z({a}) × " + (b if b.startswith("anio_") else f"z({b})"),
+                          "pct_dias_train": np.nan})
+
+        self.topes_ = {}
+        cocientes = list(cfg.ratios) + list(cfg.eficiencias)
+        faltan = sorted({c for _, num, den in cocientes for c in (num, den)} - set(X.columns))
+        if faltan:
+            raise ValueError(f"Ratios/eficiencias: faltan columnas en las candidatas: {faltan}")
+        for nombre, num, den in cocientes:
+            valido = X[den] > 0
+            crudo = X.loc[valido, num] / X.loc[valido, den]
+            inf, sup = crudo.quantile(list(cfg.percentiles_ratios))
+            self.topes_[nombre] = (num, den, float(inf), float(sup))
+            es_eficiencia = nombre in {n for n, _, _ in cfg.eficiencias}
+            filas.append({"variable": nombre,
+                          "familia": "eficiencia vs meta" if es_eficiencia else "ratio entre áreas",
+                          "origen": f"{num} / {den}",
+                          "definicion": f"{num.split('_')[0]} / {den.split('_')[0]} (0 si el denominador <= 0; "
+                                        f"recortado a [{inf:,.3g}; {sup:,.3g}])",
+                          "pct_dias_train": 100 * float(valido.mean())})
+        self.indicadores_produccion_ = {}
+        for den in dict.fromkeys(den for _, _, den in cfg.ratios):
+            if re.search(cfg.patron_produccion, den):
+                alias = re.sub(r"[^a-z0-9]+", "_", den.split("_")[0].lower()).strip("_")
+                self.indicadores_produccion_[f"sin_produccion_{alias}"] = den
+                filas.append({"variable": f"sin_produccion_{alias}", "familia": "ratio entre áreas",
+                              "origen": den, "definicion": f"1 si {den.split('_')[0]} <= 0 (día sin producción)",
+                              "pct_dias_train": 100 * float((X[den] <= 0).mean())})
+
+        self.umbrales_ = {}
+        for grupo, patron in cfg.patrones_maquinaria:
+            columnas = [c for c in X.columns if re.search(patron, c)]
+            if not columnas:
+                raise ValueError(f"Maquinaria '{grupo}': ninguna columna coincide con {patron!r}.")
+            self.umbrales_[grupo] = {c: cfg.frac_umbral_funcionando * float(X[c].quantile(0.95))
+                                     for c in columnas}
+            for i, (columna, umbral) in enumerate(self.umbrales_[grupo].items(), 1):
+                filas.append({"variable": f"maq_{grupo}_{i}", "familia": "maquinaria", "origen": columna,
+                              "definicion": f"1 si {columna.split('_')[0]} > {umbral:,.0f} "
+                                            f"({cfg.frac_umbral_funcionando:.0%} de su P95 en Train)",
+                              "pct_dias_train": 100 * float((X[columna] > umbral).mean())})
+            todas = " + ".join(c.split("_")[0] for c in columnas)
+            v = cfg.ventana_maquinaria
+            for variable, definicion in [
+                (f"maq_n_{grupo}", f"cantidad de equipos funcionando (0 a {len(columnas)})"),
+                (f"maq_carga_{grupo}", "consumo total del grupo / equipos funcionando (0 si ninguno)"),
+                (f"maq_delta_n_{grupo}", "equipos funcionando hoy − el día anterior (arranques y paradas)"),
+                (f"maq_n_{grupo}_media_{v}", f"media de equipos funcionando en los últimos {v} cierres"),
+            ]:
+                filas.append({"variable": variable, "familia": "maquinaria", "origen": todas,
+                              "definicion": definicion, "pct_dias_train": np.nan})
+        self.reporte_ = pd.DataFrame(filas)
+        self.columnas_ = self.reporte_["variable"].tolist()
+        return self
+
+    def _pares(self) -> List[Tuple[str, str]]:
+        alias = [a for a, _ in self.cfg.variables_interaccion]
+        pares = list(combinations(alias, 2))
+        if self.cfg.interacciones_con_ciclo_anual:
+            pares += [(a, f"anio_{f}_1") for a in alias for f in ("sin", "cos")]
+        return pares
+
+    def _origen(self, nombre: str) -> str:
+        return self.escala_[nombre][0] if nombre in self.escala_ else nombre
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        nuevas = {}
+        for alias, columna, _ in self.cfg.binning:
+            cero_propio, cortes = self.cortes_[alias]
+            v = X[columna].to_numpy(float)
+            falta = np.isnan(v)
+            intervalo = np.digitize(v, cortes)  # 0 .. len(cortes)
+            if cero_propio:
+                nuevas[f"bin_{alias}_cero"] = np.where(falta, np.nan, (v <= 0).astype(float))
+            for i in range(len(cortes) + 1):
+                en_i = (intervalo == i) & ~(cero_propio & (v <= 0))
+                nuevas[f"bin_{alias}_q{i + 1}"] = np.where(falta, np.nan, en_i.astype(float))
+
+        z = {alias: (X[col] - media) / desvio for alias, (col, media, desvio) in self.escala_.items()}
+        ciclo = variables_ciclo_anual(X.index, (1,))
+        for a, b in self._pares():
+            nuevas[f"int_{a}_x_{b}"] = z[a] * (ciclo[b] if b in ciclo else z[b])
+
+        for nombre, (num, den, inf, sup) in self.topes_.items():
+            d = X[den]
+            nuevas[nombre] = (X[num] / d.where(d > 0)).clip(inf, sup).where(d > 0, 0.0)
+        for nombre, den in self.indicadores_produccion_.items():
+            nuevas[nombre] = (X[den] <= 0).astype(float).where(X[den].notna())
+
+        v = self.cfg.ventana_maquinaria
+        for grupo, umbrales in self.umbrales_.items():
+            funciona = pd.DataFrame({c: (X[c] > u).astype(float) for c, u in umbrales.items()})
+            for i, columna in enumerate(umbrales, 1):
+                nuevas[f"maq_{grupo}_{i}"] = funciona[columna]
+            n = funciona.sum(axis=1)
+            nuevas[f"maq_n_{grupo}"] = n
+            total = X[list(umbrales)].clip(lower=0).sum(axis=1)
+            nuevas[f"maq_carga_{grupo}"] = (total / n.where(n > 0)).fillna(0.0)
+            # Igual que los rezagos del frío: un día sin cierre toma el cierre anterior.
+            anterior = n.asfreq("D").ffill(limit=self.cfg.max_arrastre_dias).shift(1).reindex(n.index)
+            nuevas[f"maq_delta_n_{grupo}"] = n - anterior
+            nuevas[f"maq_n_{grupo}_media_{v}"] = n.rolling(v, min_periods=max(2, v // 2)).mean()
+        return pd.DataFrame(nuevas, index=X.index)[self.columnas_]
+
+    def get_feature_names_out(self, input_features=None):
+        return np.asarray(self.columnas_, dtype=object)
+
+
+def fin_de_ajuste(historial: pd.DataFrame) -> pd.Timestamp:
+    """Último día de Train: todo parámetro de las variables creadas se estima hasta acá."""
+    return historial.index[historial["particion"] == "train"].max()
+
+
+def candidatas_directas(historial: pd.DataFrame, cfg: ConfigSeleccion) -> pd.DataFrame:
+    """Predictoras del preprocesamiento + derivadas del frío + calendario + ciclo anual.
+    Ninguna necesita parámetros estimados con datos."""
+    base = historial.drop(columns=[c for c in COLUMNAS_NO_PREDICTORAS if c in historial])
+    partes = [base, variables_frio(historial[COL_FRIO], cfg)]
+    if cfg.incluir_calendario:
+        partes.append(variables_calendario(historial.index))
+    if cfg.armonicos_anuales:
+        partes.append(variables_ciclo_anual(historial.index, cfg.armonicos_anuales))
+    return pd.concat(partes, axis=1)
+
+
+def construir_candidatas_y_ajuste(historial: pd.DataFrame, cfg: ConfigSeleccion
+                                  ) -> Tuple[pd.DataFrame, Optional[VariablesCreadas]]:
+    """Como `construir_candidatas`, y además devuelve el `VariablesCreadas` ajustado
+    (None si no hay variables creadas) para inspeccionar cortes, escalas y topes."""
+    directas = candidatas_directas(historial, cfg)
+    if not (cfg.binning or cfg.variables_interaccion or cfg.patrones_maquinaria
+            or cfg.ratios or cfg.eficiencias):
+        return directas, None
+    creadas = VariablesCreadas(cfg).fit(directas.loc[:fin_de_ajuste(historial)])
+    return pd.concat([directas, creadas.transform(directas)], axis=1), creadas
+
+
+def construir_candidatas(historial: pd.DataFrame, cfg: ConfigSeleccion) -> pd.DataFrame:
+    """Matriz de candidatas para todo el historial (incluye días sin etiqueta).
+    El binning y las interacciones se ajustan con las fechas de Train."""
+    return construir_candidatas_y_ajuste(historial, cfg)[0]
+
+
+def familia_de(columna: str) -> str:
+    """Familia de una candidata, para tablas y resúmenes."""
+    for prefijo, familia in PREFIJOS_FAMILIA:
+        if columna.startswith(prefijo):
+            return familia
+    return "calendario" if columna in COLUMNAS_CALENDARIO else "preprocesamiento"
+
+
+def filtrar_redundantes(X_tr: pd.DataFrame, y_tr: pd.Series, cfg: ConfigSeleccion
+                        ) -> Tuple[List[str], pd.DataFrame]:
+    """Columnas que pasan el filtro de redundancia (en el orden original) y reporte por columna.
+
+    Solo usa Train. Orden de preferencia: las protegidas, después mayor |Spearman| con y. Una
+    candidata se descarta si su |Spearman| con alguna ya conservada es >= `umbral_redundancia`.
+    Las constantes en Train se descartan: no tienen variación para aprender.
+    """
+    if cfg.umbral_redundancia is None:
+        return list(X_tr.columns), pd.DataFrame(columns=["columna", "decision"])
+    constantes = set(X_tr.columns[X_tr.nunique(dropna=True) <= 1])
+    rho_y = X_tr.corrwith(y_tr, method="spearman").abs()
+    posicion = {c: i for i, c in enumerate(X_tr.columns)}
+    orden = sorted([c for c in X_tr.columns if c not in constantes],
+                   key=lambda c: (c not in cfg.proteger_de_redundancia, -rho_y.get(c, 0), posicion[c]))
+    corr = X_tr[orden].rank().corr().abs()  # Spearman = Pearson sobre rangos
+    conservadas, filas = [], []
+    for c in orden:
+        representante = None
+        if c not in cfg.proteger_de_redundancia:
+            representante = next((k for k in conservadas if corr.at[c, k] >= cfg.umbral_redundancia), None)
+        if representante is None:
+            conservadas.append(c)
+        filas.append({"columna": c, "familia": familia_de(c),
+                      "decision": "descartar" if representante else "conservar",
+                      "redundante_con": representante or "",
+                      "spearman_con_representante": float(corr.at[c, representante]) if representante else np.nan,
+                      "spearman_con_y": float(rho_y.get(c, np.nan))})
+    filas += [{"columna": c, "familia": familia_de(c), "decision": "descartar",
+               "redundante_con": "(constante en Train)", "spearman_con_representante": np.nan,
+               "spearman_con_y": np.nan} for c in X_tr.columns if c in constantes]
+    elegidas = set(conservadas)
+    return [c for c in X_tr.columns if c in elegidas], pd.DataFrame(filas)
+
+
+def particiones(historial: pd.DataFrame, candidatas: pd.DataFrame):
+    """Train y Validation con filas completas. Test no se devuelve."""
+    salida = {}
+    for nombre in ("train", "validation"):
+        filas = historial.index[historial["particion"] == nombre]
+        X = candidatas.loc[filas]
+        completas = X.notna().all(axis=1)
+        salida[nombre] = (X[completas], historial.loc[filas[completas], COL_Y],
+                          int((~completas).sum()))
+    return salida
+
+
+# ===========================================================================
+# 2. Utilidades de evaluación (siempre dentro de Train)
+# ===========================================================================
+def validacion_interna(cfg: ConfigSeleccion) -> TimeSeriesSplit:
+    return TimeSeriesSplit(n_splits=cfg.n_splits, gap=cfg.gap)
+
+
+def modelo_ridge(alpha: float):
+    return make_pipeline(StandardScaler(), Ridge(alpha=alpha, random_state=SEMILLA))
+
+
+def mae_interno(X: pd.DataFrame, y: pd.Series, columnas: List[str], alpha: float,
+                cfg: ConfigSeleccion) -> Tuple[float, float]:
+    """MAE medio y error estándar entre bloques de la validación temporal interna."""
+    puntajes = -cross_val_score(modelo_ridge(alpha), X[columnas], y,
+                                cv=validacion_interna(cfg), scoring="neg_mean_absolute_error")
+    return float(puntajes.mean()), float(puntajes.std(ddof=1) / np.sqrt(len(puntajes)))
+
+
+def elegir_alpha_ridge(X: pd.DataFrame, y: pd.Series, cfg: ConfigSeleccion) -> float:
+    """Alpha de Ridge elegido con la validación temporal interna sobre todas las candidatas."""
+    modelo = make_pipeline(StandardScaler(),
+                           RidgeCV(alphas=cfg.alphas_ridge, cv=validacion_interna(cfg),
+                                   scoring="neg_mean_absolute_error"))
+    return float(modelo.fit(X, y)[-1].alpha_)
+
+
+def elegir_k(ranking: List[str], X: pd.DataFrame, y: pd.Series, alpha: float,
+             cfg: ConfigSeleccion) -> Tuple[List[str], pd.DataFrame]:
+    """Recorre los primeros k del ranking y elige k con la regla de un error estándar."""
+    grilla = sorted({k for k in cfg.grilla_k if k <= len(ranking)} | {len(ranking)})
+    filas = []
+    for k in grilla:
+        mae, ee = mae_interno(X, y, ranking[:k], alpha, cfg)
+        filas.append({"k": k, "mae_interno": mae, "error_estandar": ee})
+    curva = pd.DataFrame(filas)
+    mejor = curva.loc[curva["mae_interno"].idxmin()]
+    if cfg.regla_un_error_estandar:
+        umbral = mejor["mae_interno"] + mejor["error_estandar"]
+        k = int(curva.loc[curva["mae_interno"] <= umbral, "k"].min())
+    else:
+        k = int(mejor["k"])
+    curva["elegido"] = curva["k"] == k
+    return ranking[:k], curva
+
+
+@dataclass
+class Resultado:
+    metodo: str
+    columnas: List[str]
+    tabla: pd.DataFrame  # puntaje por candidata
+    curva: Optional[pd.DataFrame] = None  # k -> MAE interno o recorrido de forward
+    detalle: Dict[str, object] = field(default_factory=dict)
+
+
+# ===========================================================================
+# 3. Métodos de selección (independientes entre sí)
+# ===========================================================================
+def metodo_mutual_information(X, y, alpha, cfg) -> Resultado:
+    """Ranking por información mutua (no lineal, no considera redundancia)."""
+    mi = mutual_info_regression(X, y, n_neighbors=cfg.mi_vecinos, random_state=SEMILLA)
+    tabla = pd.DataFrame({"columna": X.columns, "puntaje": mi}).sort_values(
+        "puntaje", ascending=False, kind="stable").reset_index(drop=True)
+    columnas, curva = elegir_k(tabla["columna"].tolist(), X, y, alpha, cfg)
+    return Resultado("mutual_information", columnas, tabla, curva)
+
+
+def metodo_ridge(X, y, alpha, cfg) -> Resultado:
+    """Ranking por |coeficiente| de Ridge sobre variables estandarizadas."""
+    modelo = modelo_ridge(alpha).fit(X, y)
+    coef = modelo[-1].coef_
+    tabla = pd.DataFrame({"columna": X.columns, "coeficiente": coef, "puntaje": np.abs(coef)}).sort_values(
+        "puntaje", ascending=False, kind="stable").reset_index(drop=True)
+    columnas, curva = elegir_k(tabla["columna"].tolist(), X, y, alpha, cfg)
+    return Resultado("ridge", columnas, tabla, curva, {"alpha": alpha})
+
+
+def metodo_lasso(X, y, alpha, cfg) -> Resultado:
+    """LassoCV con validación temporal: se conservan los coeficientes no nulos."""
+    modelo = make_pipeline(StandardScaler(), LassoCV(
+        alphas=cfg.lasso_alphas, cv=validacion_interna(cfg), max_iter=cfg.lasso_max_iter,
+        random_state=SEMILLA, n_jobs=-1)).fit(X, y)
+    lasso = modelo[-1]
+    tabla = pd.DataFrame({"columna": X.columns, "coeficiente": lasso.coef_,
+                          "puntaje": np.abs(lasso.coef_)}).sort_values(
+        "puntaje", ascending=False, kind="stable").reset_index(drop=True)
+    columnas = tabla.loc[tabla["puntaje"] > 0, "columna"].tolist()
+    curva = pd.DataFrame({"alpha": lasso.alphas_,
+                          "rmse_interno": lasso.mse_path_.mean(axis=1) ** 0.5,
+                          "n_no_nulos": [np.nan] * len(lasso.alphas_)})
+    curva["elegido"] = np.isclose(curva["alpha"], lasso.alpha_)
+    return Resultado("lasso", columnas, tabla, curva, {"alpha": float(lasso.alpha_)})
+
+
+def metodo_forward(X, y, alpha, cfg) -> Resultado:
+    """Agrega de a una la variable que más baja el MAE interno de Ridge.
+    Se detiene si la mejora es menor a `forward_tolerancia_kw` o al llegar al máximo."""
+    elegidas: List[str] = []
+    restantes = list(X.columns)
+    recorrido, mae_actual = [], np.inf
+    with Parallel(n_jobs=-1, max_nbytes=None) as paralelo:
+        while restantes and len(elegidas) < cfg.forward_max_variables:
+            resultados = paralelo(delayed(mae_interno)(X, y, elegidas + [c], alpha, cfg)
+                                  for c in restantes)
+            maes = pd.Series([r[0] for r in resultados], index=restantes)
+            mejor = maes.idxmin()
+            mejora = mae_actual - maes[mejor]
+            if mejora < cfg.forward_tolerancia_kw:
+                recorrido.append({"paso": len(elegidas) + 1, "candidata": mejor,
+                                  "mae_interno": maes[mejor], "mejora_kw": mejora,
+                                  "agregada": False})
+                break
+            elegidas.append(mejor)
+            restantes.remove(mejor)
+            mae_actual = maes[mejor]
+            recorrido.append({"paso": len(elegidas), "candidata": mejor,
+                              "mae_interno": mae_actual, "mejora_kw": mejora, "agregada": True})
+    curva = pd.DataFrame(recorrido)
+    tabla = pd.DataFrame({"columna": X.columns,
+                          "orden_entrada": [elegidas.index(c) + 1 if c in elegidas else np.nan
+                                            for c in X.columns]}).sort_values("orden_entrada")
+    tabla["puntaje"] = -tabla["orden_entrada"]
+    return Resultado("forward", elegidas, tabla, curva)
+
+
+# Para agregar un método: función (X_train, y_train, alpha_ridge, cfg) -> Resultado.
+METODOS: Dict[str, Callable[..., Resultado]] = {
+    "mutual_information": metodo_mutual_information,
+    "ridge": metodo_ridge,
+    "lasso": metodo_lasso,
+    "forward": metodo_forward,
+}
+
+
+# ===========================================================================
+# 4. Comparación en Validation
+# ===========================================================================
+def crear_estimador(nombre: str, alpha: float):
+    if nombre == "ridge":
+        return modelo_ridge(alpha)
+    if nombre == "random_forest":
+        return RandomForestRegressor(n_estimators=300, max_depth=10, min_samples_leaf=5,
+                                     n_jobs=-1, random_state=SEMILLA)
+    raise ValueError(f"Estimador desconocido: {nombre}")
+
+
+def subconjuntos_a_comparar(resultados: Dict[str, Resultado], todas: List[str]) -> Dict[str, List[str]]:
+    """Cada método, el consenso (elegidas por al menos dos métodos) y todas las candidatas."""
+    subconjuntos = {r.metodo: r.columnas for r in resultados.values()}
+    votos = pd.Series([c for r in resultados.values() for c in r.columnas]).value_counts()
+    consenso = [c for c in todas if votos.get(c, 0) >= 2]
+    if consenso:
+        subconjuntos["consenso_2_metodos"] = consenso
+    subconjuntos["todas"] = list(todas)
+    return subconjuntos
+
+
+def comparar_en_validation(subconjuntos, X_tr, y_tr, X_val, y_val, alpha, cfg) -> pd.DataFrame:
+    filas = []
+    for nombre, columnas in subconjuntos.items():
+        fila = {"subconjunto": nombre, "columnas": len(columnas)}
+        for est in cfg.estimadores_validacion:
+            modelo = crear_estimador(est, alpha).fit(X_tr[columnas], y_tr)
+            fila[f"mae_val_{est}"] = mean_absolute_error(y_val, modelo.predict(X_val[columnas]))
+        filas.append(fila)
+    tabla = pd.DataFrame(filas)
+    cols_mae = [f"mae_val_{e}" for e in cfg.estimadores_validacion]
+    tabla["mae_val_promedio"] = tabla[cols_mae].mean(axis=1)
+    return tabla.sort_values(["mae_val_promedio", "columnas"]).reset_index(drop=True)
+
+
+def baselines_validation(X_val: pd.DataFrame, y_val: pd.Series) -> pd.DataFrame:
+    """Persistencia (frío de D) y media de 7 días (D-6..D), sobre las mismas filas."""
+    return pd.DataFrame([
+        {"subconjunto": "baseline_persistencia", "columnas": 0,
+         "mae_val_promedio": mean_absolute_error(y_val, X_val[COL_FRIO])},
+        {"subconjunto": "baseline_media_7", "columnas": 0,
+         "mae_val_promedio": mean_absolute_error(y_val, X_val["frio_media_7"])},
+    ])
+
+
+# ===========================================================================
+# Orquestación
+# ===========================================================================
+def seleccionar(X_tr: pd.DataFrame, y_tr: pd.Series, X_val: pd.DataFrame, y_val: pd.Series,
+                cfg: ConfigSeleccion, metodos: Optional[List[str]] = None):
+    """Alpha de Ridge, métodos, subconjuntos y comparación en Validation, sin exportar.
+    Sirve para repetir la selección sobre otro conjunto de candidatas."""
+    metodos = metodos or list(METODOS)
+    alpha = elegir_alpha_ridge(X_tr, y_tr, cfg)
+    resultados = {m: METODOS[m](X_tr, y_tr, alpha, cfg) for m in metodos}
+    subconjuntos = subconjuntos_a_comparar(resultados, list(X_tr.columns))
+    comparacion = comparar_en_validation(subconjuntos, X_tr, y_tr, X_val, y_val, alpha, cfg)
+    return alpha, resultados, subconjuntos, comparacion
+
+
+def ejecutar_seleccion(cfg: Optional[ConfigSeleccion] = None, metodos: Optional[List[str]] = None,
+                       salida: Path = RESULTS_DIR / "seleccion") -> Dict[str, object]:
+    cfg = cfg or ConfigSeleccion()
+    metodos = metodos or list(METODOS)
+    historial = cargar_preprocesado()
+    candidatas, creadas = construir_candidatas_y_ajuste(historial, cfg)
+    datos = particiones(historial, candidatas)
+    X_tr, y_tr, descartadas_tr = datos["train"]
+    X_val, y_val, descartadas_val = datos["validation"]
+    if X_tr.index.max() >= X_val.index.min():
+        raise ValueError("Validation debe empezar después de Train.")
+
+    n_candidatas = X_tr.shape[1]
+    por_familia_inicial = pd.Series([familia_de(c) for c in X_tr.columns]).value_counts()
+    columnas, redundancia = filtrar_redundantes(X_tr, y_tr, cfg)
+    X_tr, X_val = X_tr[columnas], X_val[columnas]
+
+    alpha, resultados, subconjuntos, comparacion = seleccionar(X_tr, y_tr, X_val, y_val, cfg, metodos)
+    ganador = comparacion.iloc[0]["subconjunto"]
+    # Los baselines usan el frío y su media de 7 cierres, aunque el filtro las haya quitado.
+    tabla_final = pd.concat([comparacion, baselines_validation(candidatas.loc[X_val.index], y_val)],
+                            ignore_index=True)
+
+    # Matriz de qué método eligió cada variable.
+    elegidas = sorted({c for r in resultados.values() for c in r.columnas},
+                      key=lambda c: list(X_tr.columns).index(c))
+    votos = pd.DataFrame({m: [c in r.columnas for c in elegidas] for m, r in resultados.items()},
+                         index=elegidas)
+    votos["n_metodos"] = votos.sum(axis=1)
+    votos = votos.sort_values("n_metodos", ascending=False, kind="stable")
+
+    salida = Path(salida)
+    salida.mkdir(parents=True, exist_ok=True)
+
+    def guardar(df, nombre, index=False):
+        df.to_csv(salida / nombre, index=index, encoding="utf-8", lineterminator="\n")
+
+    for m, r in resultados.items():
+        guardar(r.tabla, f"{m}__ranking.csv")
+        if r.curva is not None:
+            guardar(r.curva, f"{m}__curva.csv")
+    guardar(votos.assign(familia=votos.index.map(familia_de)), "votos_por_variable.csv", index=True)
+    guardar(tabla_final, "comparacion_validation.csv")
+    guardar(redundancia, "filtro_redundancia.csv")
+    if creadas is not None:
+        guardar(creadas.reporte_, "variables_creadas.csv")
+    por_familia = pd.Series([familia_de(c) for c in X_tr.columns]).value_counts()
+    elegidas_por_familia = {m: pd.Series([familia_de(c) for c in r.columnas], dtype=object)
+                            .value_counts().to_dict() for m, r in resultados.items()}
+
+    resumen = {
+        "generado_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "script": "src/preprocessing_pipeline.py (etapa seleccion)",
+        "semilla": SEMILLA,
+        "config": asdict(cfg),
+        "entrada_sha256": huella(CARPETA_PREPROCESADO / "historial_completo.csv"),
+        "filas": {"train": len(X_tr), "validation": len(X_val),
+                  "train_descartadas_por_historia_incompleta": descartadas_tr,
+                  "validation_descartadas_por_historia_incompleta": descartadas_val},
+        "fechas": {"train": [str(X_tr.index.min().date()), str(X_tr.index.max().date())],
+                   "validation": [str(X_val.index.min().date()), str(X_val.index.max().date())]},
+        "candidatas": n_candidatas,
+        "candidatas_por_familia": {k: int(v) for k, v in por_familia_inicial.items()},
+        "candidatas_tras_filtro_redundancia": X_tr.shape[1],
+        "candidatas_tras_filtro_por_familia": {k: int(v) for k, v in por_familia.items()},
+        "alpha_ridge": alpha,
+        "metodos": {m: {"n_columnas": len(r.columnas), "por_familia": elegidas_por_familia[m],
+                        "columnas": r.columnas, **r.detalle}
+                    for m, r in resultados.items()},
+        "subconjuntos": subconjuntos,
+        "ganador": ganador,
+        "columnas_ganador": subconjuntos[ganador],
+        "criterio": "Menor MAE promedio en Validation entre los estimadores; empate: menos columnas.",
+    }
+    with open(salida / "resumen.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(resumen, f, indent=2, ensure_ascii=False, default=str)
+        f.write("\n")
+
+    print("=" * 78)
+    print("SELECCIÓN DE VARIABLES")
+    print("=" * 78)
+    print(f"Candidatas: {n_candidatas} -> {X_tr.shape[1]} tras el filtro de redundancia | "
+          f"Train: {len(X_tr)} filas | Validation: {len(X_val)} filas")
+    print("  " + " | ".join(f"{f}: {n}" for f, n in por_familia.items()))
+    print(f"Alpha de Ridge (validación temporal interna): {alpha}")
+    for m, r in resultados.items():
+        print(f"  {m:<20}: {len(r.columnas):>3} variables")
+    print(tabla_final.round(1).to_string(index=False))
+    print(f"Ganador: {ganador}")
+    print("=" * 78)
+    return {"resultados": resultados, "comparacion": tabla_final, "votos": votos,
+            "subconjuntos": subconjuntos, "ganador": ganador, "alpha": alpha,
+            "X_train": X_tr, "y_train": y_tr, "X_val": X_val, "y_val": y_val, "resumen": resumen}
+
+
+# ###########################################################################
+# Línea de comandos
+# ###########################################################################
 def main() -> None:
-    nombres = [n for n, _ in construir_pasos(Config())]
-    parser = argparse.ArgumentParser(description="Preprocesamiento previo a la selección de variables.")
-    parser.add_argument("--omitir", nargs="*", default=[], choices=nombres,
-                        help="Pasos a omitir.")
+    parser = argparse.ArgumentParser(description="Fase 2: decisiones de la EDA, preprocesamiento y selección.")
+    parser.add_argument("--etapas", nargs="*", choices=list(ETAPAS), default=list(ETAPAS),
+                        help="Etapas a correr, en orden (por defecto, las tres).")
+    parser.add_argument("--completo", action="store_true",
+                        help="Corre antes la limpieza horaria de los Excel (verificando sus SHA-256).")
+    parser.add_argument("--omitir", nargs="*", default=[], choices=list(NOMBRES_PASOS),
+                        help="Pasos del preprocesamiento a omitir.")
     parser.add_argument("--metodo-outliers", choices=list(DETECTORES_UNIVARIADOS), default="iqr")
     parser.add_argument("--tratamiento-outliers", choices=["winsorizar", "nan", "ninguno"],
                         default="winsorizar")
     parser.add_argument("--max-nulos-train", type=float, default=0.30)
     parser.add_argument("--tratamiento-lof", choices=["reportar", "excluir_train"], default="reportar")
-    parser.add_argument("--completo", action="store_true",
-                        help="Corre antes la limpieza horaria de los Excel (verificando sus SHA-256) y la EDA.")
+    parser.add_argument("--metodos", nargs="*", choices=list(METODOS), default=list(METODOS),
+                        help="Métodos de selección de variables.")
     args = parser.parse_args()
     if args.completo:
-        lh.run_cleaning_pipeline()
-        eda.ejecutar()
-    cfg = Config(metodo_outliers=args.metodo_outliers,
-                 tratamiento_outliers=args.tratamiento_outliers,
-                 max_nulos_train=args.max_nulos_train,
-                 tratamiento_lof=args.tratamiento_lof)
-    ejecutar(cfg, omitir=tuple(args.omitir))
+        af.run_cleaning_pipeline()
+    if "eda" in args.etapas:
+        ejecutar_eda()
+    if "preprocesamiento" in args.etapas:
+        cfg = Config(metodo_outliers=args.metodo_outliers,
+                     tratamiento_outliers=args.tratamiento_outliers,
+                     max_nulos_train=args.max_nulos_train,
+                     tratamiento_lof=args.tratamiento_lof)
+        ejecutar_preprocesamiento(cfg, omitir=tuple(args.omitir))
+    if "seleccion" in args.etapas:
+        ejecutar_seleccion(metodos=args.metodos)
 
 
 if __name__ == "__main__":

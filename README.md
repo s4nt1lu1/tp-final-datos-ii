@@ -98,26 +98,26 @@ Los Excel no se versionan. La limpieza horaria los comprueba contra los SHA-256 
 `data/checksums.json`. Cada etapa verifica el SHA-256 de la salida de la anterior.
 
 ```bash
-python -m src.limpieza_horaria --verificar-hashes   # Excel -> data/processed/dataset_trabajo.csv
-python -m src.eda                                   # decisiones sobre las columnas -> results/eda/
-python -m src.preprocessing_pipeline                # Fase 2 -> data/processed/ y results/preprocesamiento/
-python -m src.seleccion_variables                   # Fase 2.3 -> results/seleccion/
-python -m src.train_model                           # Fase 3 -> results/modelado/ y results/experiment_logs.csv
+python -m src.auxiliar_functions --verificar-hashes   # Excel -> data/processed/dataset_trabajo.csv
+python -m src.preprocessing_pipeline                  # Fase 2: EDA, preprocesamiento y selección
+python -m src.train_model                             # Fase 3 -> results/modelado/ y results/experiment_logs.csv
 ```
 
-`python -m src.preprocessing_pipeline --completo` corre las tres primeras etapas
-seguidas. La semilla de todas las particiones y estimadores es `SEMILLA = 42`
-(`src/auxiliar_functions.py`).
+`python -m src.preprocessing_pipeline --completo` corre antes la limpieza horaria, así que
+deja todo listo hasta la selección en un solo comando. Con `--etapas` se corre una sola
+etapa (`eda`, `preprocesamiento` o `seleccion`). La semilla de todas las particiones y
+estimadores es `SEMILLA = 42` (`src/auxiliar_functions.py`).
 
 | Script | Qué hace |
 | --- | --- |
-| `src/limpieza_horaria.py` | Une los tres libros, repara la secuencia horaria, calibra con el primer año los umbrales del cierre 23:59 y descarta días incompletos, totales imposibles y días sin reinicio del totalizador. |
-| `src/eda.py` | Decisiones que dependen de la estructura de la planilla y no de `y`: metadatos, componentes y proxies del frío (`Frio (Kw)` es la suma de los compresores Mycom, los condensadores y las bombas de glicol), columnas calculadas por diferencia, renombradas y copias. |
-| `src/preprocessing_pipeline.py` | Cierre diario, objetivo D+1, división 70/15/15 y pasos `fit`/`transform` ajustados solo con Train: columnas no informativas, duplicadas, nulos, outliers e imputación. Los CSV quedan sin escalar. |
-| `src/seleccion_variables.py` | Candidatas (ventanas del frío, calendario, ciclo anual, binning, interacciones, ratios entre áreas y eficiencia contra la meta) y cuatro métodos de selección ajustados con Train. |
+| `src/auxiliar_functions.py` | Rutas, semilla y SHA-256 de los Excel. Limpieza horaria: une los tres libros, repara la secuencia horaria, calibra con el primer año los umbrales del cierre 23:59 y descarta días incompletos, totales imposibles y días sin reinicio del totalizador. `comparar_variantes()` (`--comparar-variantes`): variantes probadas solo en Validation (filtro de redundancia y objetivo relativo). |
+| `src/preprocessing_pipeline.py` | Tres etapas. **EDA:** decisiones que dependen de la estructura de la planilla y no de `y` (metadatos, componentes y proxies del frío, columnas calculadas por diferencia, renombradas y copias). **Preprocesamiento:** cierre diario, objetivo D+1, división 70/15/15 y pasos `fit`/`transform` ajustados solo con Train (columnas no informativas, duplicadas, nulos, outliers e imputación); los CSV quedan sin escalar. **Selección:** candidatas (ventanas del frío, calendario, ciclo anual, binning, interacciones, ratios y eficiencia contra la meta) y cuatro métodos ajustados con Train. |
 | `src/train_model.py` | Dos baselines, Optuna para Ridge, Lasso, Random Forest, XGBoost y LightGBM con validación temporal en Train, elección por MAE de Validation, evaluación única en Test y registro del modelo. |
-| `src/comparar_variantes.py` | Variantes probadas solo en Validation (filtro de redundancia y objetivo relativo). |
 | `src/predict.py` | Pronóstico de un Excel nuevo con el modelo del registro. |
+
+Los resultados de cada etapa quedan en `results/` (`eda/`, `preprocesamiento/`, `seleccion/`
+y `modelado/`). No se versionan: los regeneran estos comandos y las notebooks los muestran.
+Solo se versiona `results/experiment_logs.csv`.
 
 Las notebooks `notebooks/eda.ipynb`, `preprocesamiento.ipynb`, `seleccion.ipynb` y
 `modelado.ipynb` muestran cada decisión con sus números. `notebooks/v1/` guarda, como
@@ -138,8 +138,8 @@ junto a los dos baselines y registra la versión en `models/` (.pkl y
 
 `--regenerar-registro` reajusta la configuración registrada desde el código del commit
 actual, comprueba que predice exactamente lo mismo que el modelo evaluado
-(`results/modelado/predicciones_modelo_final.csv`) y actualiza el .pkl, su SHA-256 y el
-commit del registro, sin volver a leer Test.
+(`results/modelado/predicciones_modelo_final.csv`, que escribe `--evaluar-test`) y
+actualiza el .pkl, su SHA-256 y el commit del registro, sin volver a leer Test.
 
 Cada corrida de `python -m src.train_model` agrega sus trials, candidatos y baselines a
 `results/experiment_logs.csv` (`--sin-log` lo evita).
@@ -155,29 +155,3 @@ En Test, los baselines de `v2.0.0` dan 3.367,8 kW (persistencia) y 3.013,8 kW (m
 móvil de 7 días). El .pkl de `v1.0.0` sigue en `models/`, pero su código ya no está en
 esta rama: `python -m src.predict archivo.xlsx --version v1.0.0` indica que hay que hacer
 checkout del tag `v1.0.0`.
-
-## 5. Pendiente: estructura de `src/` según la consigna
-
-La consigna pide que `src/` tenga cuatro scripts: `preprocessing_pipeline.py`,
-`train_model.py`, `predict.py` y `auxiliar_functions.py`. Hoy el pipeline está repartido
-en más módulos. El código funciona y está verificado, pero falta reorganizarlo así:
-
-| Módulo actual | Destino según la consigna |
-| --- | --- |
-| `src/limpieza_horaria.py` | `src/preprocessing_pipeline.py` |
-| `src/eda.py` | `src/preprocessing_pipeline.py` |
-| `src/preprocessing_pipeline.py` | `src/preprocessing_pipeline.py` |
-| `src/seleccion_variables.py` | `src/preprocessing_pipeline.py` (la selección es parte de la Fase 2) |
-| `src/train_model.py` | `src/train_model.py` |
-| `src/comparar_variantes.py` | `src/train_model.py` |
-| `src/predict.py` | `src/predict.py` |
-| `src/auxiliar_functions.py` | `src/auxiliar_functions.py` |
-
-Al hacerlo:
-
-- El .pkl guarda referencias a las clases por módulo (por ejemplo,
-  `src.seleccion_variables.VariablesCreadas`). Si una clase cambia de módulo, el .pkl
-  actual deja de cargarse. Después de mover el código hay que correr
-  `python -m src.train_model --regenerar-registro`, que comprueba que el modelo
-  regenerado predice lo mismo, y commitear el .pkl y el registro nuevos.
-- Actualizar los imports de las notebooks y los comandos de este README.

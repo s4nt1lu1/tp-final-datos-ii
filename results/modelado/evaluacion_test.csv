@@ -1,4 +1,0 @@
-modelo,mae,rmse,r2
-Persistencia,3367.842105,4412.381048,0.397084
-Media móvil de 7 días,3013.758563,3889.459204,0.531522
-Random Forest (final),2836.720499,3698.834713,0.576318

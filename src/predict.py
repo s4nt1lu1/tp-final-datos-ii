@@ -6,10 +6,10 @@ Uso desde la raíz del proyecto:
     python -m src.predict archivo.xlsx --historial archivo_anterior.xlsx --desde 2024-07-01
 
 Cadena completa (todo se reutiliza de los pipelines de entrenamiento, nada se reimplementa):
-    Excel -> limpieza horaria de src/limpieza_horaria.py (con la calibración del primer año de
+    Excel -> limpieza horaria de src/auxiliar_functions.py (con la calibración del primer año de
              entrenamiento) -> cierre diario 23:59
           -> pipeline de src/preprocessing_pipeline.py (decisiones de la EDA y pasos ajustados
-             en Train) -> candidatas de src/seleccion_variables.py (variables creadas ajustadas
+             en Train) -> candidatas de src/preprocessing_pipeline.py (variables creadas ajustadas
              en Train) -> columnas elegidas -> modelo
 
 El modelo, el pipeline ajustado y la calibración se guardan juntos en el .pkl que indica
@@ -31,8 +31,8 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from src import limpieza_horaria as lh
-from src import seleccion_variables as sv
+from src import auxiliar_functions as af
+from src import preprocessing_pipeline as pp
 from src.auxiliar_functions import huella
 
 REGISTRY = RAIZ / "models" / "model_registry.json"
@@ -139,7 +139,7 @@ def _leer_excel(filepath, requeridas):
         raise ValueError(f"Se esperaba un archivo Excel (.xlsx), no '{ruta.suffix}'.")
 
     _validar_hojas(ruta, requeridas)
-    tabla, *_ = lh.unificar_archivos_excel([("entrada", ruta)])
+    tabla, *_ = af.unificar_archivos_excel([("entrada", ruta)])
     _validar_columnas(tabla, requeridas, ruta)
     return tabla
 
@@ -170,11 +170,11 @@ def _jornadas_limpias(ruta, bundle, requeridas, historial=None, desde=None):
     # Aplicamos la calibración guardada al entrenar, también sobre el historial previo.
     df_mad_ee = bundle["df_mad_ee"]
     umbral_salto = bundle["umbral_salto"]
-    df_trabajo, df_casos = lh.evaluar_casos_especiales_y_reparar_pico_01(
-        df_unificado, df_mad_ee, target_col=lh.COL_TARGET
+    df_trabajo, df_casos = af.evaluar_casos_especiales_y_reparar_pico_01(
+        df_unificado, df_mad_ee, target_col=af.COL_TARGET
     )
-    df_horario, dias_descartados, _ = lh.filtrar_dias_invalidos(
-        df_trabajo, df_mad_ee, df_casos, target_col=lh.COL_TARGET, umbral_salto=umbral_salto
+    df_horario, dias_descartados, _ = af.filtrar_dias_invalidos(
+        df_trabajo, df_mad_ee, df_casos, target_col=af.COL_TARGET, umbral_salto=umbral_salto
     )
     for dia in dias_descartados.itertuples(index=False):
         if pd.Timestamp(dia.DIA) >= inicio:
@@ -185,7 +185,7 @@ def _jornadas_limpias(ruta, bundle, requeridas, historial=None, desde=None):
     df_horario = df_horario.drop(columns=["_archivo_origen"], errors="ignore")
 
     # Cierre diario 23:59.
-    df_diario, _ = lh.aggregate_daily_data(df_horario)
+    df_diario, _ = af.aggregate_daily_data(df_horario)
     return df_diario, inicio
 
 
@@ -221,7 +221,7 @@ def load_and_preprocess(filepath, bundle, *, historial=None, desde=None):
               "no usa; se completan con la imputación aprendida en Train.", file=sys.stderr)
 
     X_proc = bundle["pipeline"].transform(X_dia)
-    directas = sv.candidatas_directas(X_proc, bundle["cfg_seleccion"])
+    directas = pp.candidatas_directas(X_proc, bundle["cfg_seleccion"])
     candidatas = pd.concat([directas, bundle["variables_creadas"].transform(directas)], axis=1)
     candidatas = candidatas.loc[candidatas.index >= inicio]
     if candidatas.empty:
