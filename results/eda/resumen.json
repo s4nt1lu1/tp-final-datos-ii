@@ -1,0 +1,196 @@
+{
+  "generado_utc": "2026-11-22T02:30:07+00:00",
+  "script": "src/eda.py",
+  "config": {
+    "patrones_metadatos": [
+      "^Id_",
+      "^\\.?\\d*_",
+      "^Ultimo Dato del Dia_"
+    ],
+    "grupos_componentes_frio": [
+      [
+        "Compresores Mycom",
+        "^KW Mycom \\d+_Totalizadores Energia$"
+      ],
+      [
+        "Condensadores",
+        "^KW Cond .*_Totalizadores Energia$"
+      ],
+      [
+        "Bombas de glicol",
+        "^KW Bba Glicol .*_Totalizadores Energia$"
+      ]
+    ],
+    "tolerancia_identidad_kw": 50.0,
+    "proxies_frio": [
+      "Sala Maq (Kw)_Consolidado EE",
+      "Servicios (Kw)_Consolidado EE",
+      "Planta (Kw)_Consolidado EE",
+      "KW Gral Planta_Consolidado EE",
+      "KW Gral Planta_Totalizadores Energia"
+    ],
+    "columnas_residuales": [
+      "Resto Serv (Kw)_Consolidado EE",
+      "Restos Planta (Kw)_Consolidado EE",
+      "Agua Servicios (Hl)_Consolidado Agua",
+      "Aire Servicios (M3)_Consolidado Aire"
+    ],
+    "similitud_nombres": 0.85,
+    "max_solape_renombradas": 3,
+    "rango_ratio_nivel": [
+      0.67,
+      1.5
+    ],
+    "renombradas_confirmadas": [
+      "Tot L3, L4 y Planta de CO2_Totalizadores Glicol"
+    ],
+    "columnas_obligatorias": [
+      "Frio (Kw)_Consolidado EE"
+    ],
+    "hojas_preferidas": [
+      "_Totalizadores "
+    ],
+    "decimales_copias": 6
+  },
+  "entrada": {
+    "archivo": "data/processed/dataset_trabajo.csv",
+    "sha256": "bd015abb722ba2151d64ae9f229364cd61861b8682ffe846084d215aa083ae78",
+    "dias": 1172,
+    "columnas": 419
+  },
+  "identidad_frio": {
+    "r2": 0.9999985992001905,
+    "mae_ajuste_kw": 5.045250925112433,
+    "dias_evaluados": 1172,
+    "dif_diaria_mediana_abs_kw": 0.0,
+    "pct_dias_dif_menor_tolerancia": 0.9931740614334471,
+    "pct_horas_dif_menor_tolerancia": 0.9983273025192873,
+    "horas_evaluadas": 29294,
+    "coeficientes": {
+      "KW Mycom 1": 1.0004,
+      "KW Mycom 2": 1.0013,
+      "KW Mycom 3": 1.0001,
+      "KW Mycom 4": 1.0013,
+      "KW Mycom 5": 0.9991,
+      "KW Mycom 6": 0.9983,
+      "KW Mycom 7": 1.0,
+      "KW Cond 5. 6 y 9": 1.0022,
+      "KW Cond 7. 8 y 11": 1.0015,
+      "KW Cond 11. 12 y 13": 0.9961,
+      "KW Bba Glicol Sala MAq": 1.0006,
+      "KW Bba Glicol Bod": 1.0006
+    }
+  },
+  "conteo_por_categoria": {
+    "metadatos": 42,
+    "copias": 32,
+    "componentes_frio": 12,
+    "proxies_frio": 5,
+    "residuales": 4,
+    "renombradas": 3
+  },
+  "columnas_salida": 321,
+  "descartar": [
+    "Meta Agua Linea 3_Consolidado KPI",
+    "Meta EE Linea 5_Consolidado KPI",
+    "Meta EE Eflu_Consolidado KPI",
+    "Meta EE Agua_Consolidado KPI",
+    "Meta Aire Envasado_Consolidado KPI",
+    "Meta Aire L3_Consolidado KPI",
+    "Meta Aire L4_Consolidado KPI",
+    "Hl Cerveza L2_Consolidado Produccion",
+    "Hl Cerveza L3_Consolidado Produccion",
+    "Hl Cerveza L4_Consolidado Produccion",
+    "Hl Cerveza L5_Consolidado Produccion",
+    "Cocimientos Diarios_Consolidado Produccion",
+    "Id_Totalizadores Produccion",
+    "Planta (Kw)_Consolidado EE",
+    "Servicios (Kw)_Consolidado EE",
+    "Sala Maq (Kw)_Consolidado EE",
+    "Resto Serv (Kw)_Consolidado EE",
+    "Restos Planta (Kw)_Consolidado EE",
+    "KW Gral Planta_Consolidado EE",
+    "KW Gral Planta_Totalizadores Energia",
+    "KW Mycom 1_Totalizadores Energia",
+    "KW Mycom 2_Totalizadores Energia",
+    "KW Mycom 3_Totalizadores Energia",
+    "KW Mycom 4_Totalizadores Energia",
+    "KW Mycom 5_Totalizadores Energia",
+    "KW Mycom 6_Totalizadores Energia",
+    "KW Mycom 7_Totalizadores Energia",
+    "KW Bba Glicol Sala MAq_Totalizadores Energia",
+    "KW Cond 5. 6 y 9_Totalizadores Energia",
+    "KW Cond 7. 8 y 11_Totalizadores Energia",
+    "KW Cond 11. 12 y 13_Totalizadores Energia",
+    "KW Bba Glicol Bod_Totalizadores Energia",
+    "Id_Totalizadores Energia",
+    "Agua Servicios (Hl)_Consolidado Agua",
+    "Red L1 y L2_Consolidado Agua",
+    "FC L1 y L2_Consolidado Agua",
+    "FC Lavadora L2_Consolidado Agua",
+    "Red L3_Consolidado Agua",
+    "FC Lavadora L3_Consolidado Agua",
+    "Red Paste L4_Consolidado Agua",
+    "FC Barriles_Consolidado Agua",
+    "Id_Totalizadores Agua",
+    "Vapor Servicio (Kg)_Consolidado GasVapor",
+    "Tot_Vapor_L3_L4_Consolidado GasVapor",
+    "VAPOR DE LINEA 1 Y 2 KG_Consolidado GasVapor",
+    "VAPOR DE LINEA 4 KG_Consolidado GasVapor",
+    "Vapor_L5 (KG)_Consolidado GasVapor",
+    "Tot_Vapor_CIP_Bodega_Consolidado GasVapor",
+    "Id_Totalizadores Gas y Vapor",
+    "Aire Producido (M3)_Consolidado Aire",
+    "Aire Servicios (M3)_Consolidado Aire",
+    "Totalizador_Aire_Bodega_Consolidado Aire",
+    "Totalizador_Aire_Cocina_Consolidado Aire",
+    "Totalizador_Aire_L2_Consolidado Aire",
+    "Totalizador_Aire_L3_Consolidado Aire",
+    "Totaliador_Aire_L4_Consolidado Aire",
+    "Totalizador_Aire_L5_Consolidado Aire",
+    "Id_Totalizadores Aire",
+    "Id_Totalizadores CO2",
+    "Id_Totalizadores Efluentes",
+    "Id_Totalizadores Glicol",
+    "_Auxiliar",
+    ".1_Auxiliar",
+    ".2_Auxiliar",
+    ".3_Auxiliar",
+    ".4_Auxiliar",
+    ".5_Auxiliar",
+    ".6_Auxiliar",
+    ".8_Auxiliar",
+    ".9_Auxiliar",
+    ".10_Auxiliar",
+    ".11_Auxiliar",
+    ".12_Auxiliar",
+    ".13_Auxiliar",
+    ".14_Auxiliar",
+    ".15_Auxiliar",
+    ".16_Auxiliar",
+    ".17_Auxiliar",
+    ".18_Auxiliar",
+    ".19_Auxiliar",
+    ".20_Auxiliar",
+    ".21_Auxiliar",
+    ".22_Auxiliar",
+    ".23_Auxiliar",
+    ".24_Auxiliar",
+    ".25_Auxiliar",
+    ".26_Auxiliar",
+    ".27_Auxiliar",
+    ".28_Auxiliar",
+    ".29_Auxiliar",
+    ".30_Auxiliar",
+    "Ultimo Dato del Dia_Seguimiento Dia",
+    ".7_Auxiliar",
+    ".31_Auxiliar",
+    "_Consolidado KPI"
+  ],
+  "unificar": {
+    "Tot L3. L4 y Planta de CO2_Totalizadores Glicol": "Tot L3, L4 y Planta de CO2_Totalizadores Glicol",
+    "Vapor _Vapor_L5 (KG)_Totalizadores Gas y Vapor": "Vapor_L5 (KG)_Totalizadores Gas y Vapor",
+    "Vapor _Vapor_L5 (KG)_Consolidado GasVapor": "Vapor_L5 (KG)_Consolidado GasVapor"
+  },
+  "sha256_decisiones": "441c807ab2af0957515b5245d2c00b2b27d5bbc4f9e0377099de740073355977"
+}
