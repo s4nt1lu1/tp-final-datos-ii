@@ -48,3 +48,6 @@ results/predicciones.csv
 # =============================================================================
 .DS_Store
 Thumbs.db
+
+# Documentación interna del grupo
+/docs/
