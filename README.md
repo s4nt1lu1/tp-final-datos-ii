@@ -101,6 +101,7 @@ Los Excel no se versionan. La limpieza horaria los comprueba contra los SHA-256 
 python -m src.auxiliar_functions --verificar-hashes   # Excel -> data/processed/dataset_trabajo.csv
 python -m src.preprocessing_pipeline                  # Fase 2: EDA, preprocesamiento y selección
 python -m src.train_model                             # Fase 3 -> results/modelado/ y results/experiment_logs.csv
+python -m src.auxiliar_functions --comparar-variantes # Diagnóstico en Validation -> results/comparacion_variantes/
 ```
 
 `python -m src.preprocessing_pipeline --completo` corre antes la limpieza horaria, así que

@@ -488,6 +488,8 @@ def ejecutar(cfg: Optional[ConfigModelado] = None, evaluar_test: bool = False,
         resultado_test, final, _ = evaluar_en_test(ganador["modelo"], conjunto, params, columnas,
                                                    X_tr, y_tr, X_val, y_val, X_te, y_te, corrida, cfg)
         registro = registrar_modelo(ganador, conjunto, params, columnas, final, resultado_test, d, X_te, corrida)
+    else:
+        resultado_test = restaurar_artefactos_registrados(d, salida, VERSION)
     resumen = guardar_resultados(salida, cfg, d, estudios, comparacion, tabla_baselines, resultado_test, corrida)
 
     print(pd.concat([comparacion.drop(columns="hiperparametros"), tabla_baselines]).round(1).to_string(index=False))
@@ -712,6 +714,58 @@ def registrar_modelo(ganador: pd.Series, conjunto: str, params: Dict[str, object
     return registro[version]
 
 
+def restaurar_artefactos_registrados(d: Dict[str, object], salida: Path = SALIDA,
+                                     version: str = VERSION) -> Optional[pd.DataFrame]:
+    """Restaura en un clon limpio los artefactos ignorados por Git de una versión ya registrada
+    (`predicciones_modelo_final.csv`, `evaluacion_test.csv` y `dataset_final.csv`) usando el .pkl
+    registrado y `results/experiment_logs.csv`, sin volver a evaluar Test."""
+    ruta_registro = CARPETA_MODELOS / "model_registry.json"
+    if not ruta_registro.is_file():
+        return None
+    registro = json.loads(ruta_registro.read_text(encoding="utf-8"))
+    if version not in registro:
+        return None
+    previo = registro[version]
+    salida = Path(salida)
+    salida.mkdir(parents=True, exist_ok=True)
+
+    ruta_pred = salida / ARCHIVO_PREDICCIONES
+    if not ruta_pred.is_file():
+        ruta_modelo = PROJECT_ROOT / previo["path"]
+        if ruta_modelo.is_file():
+            if "sha256" in previo and huella(ruta_modelo) != previo["sha256"]:
+                raise ValueError(f"El SHA-256 de {ruta_modelo.name} no coincide con model_registry.json.")
+            bundle = joblib.load(ruta_modelo)
+            if isinstance(bundle, dict) and "modelo" in bundle:
+                _guardar_predicciones(predicciones_historial(bundle["modelo"], previo["columnas"], d), salida)
+
+    ruta_eval = salida / "evaluacion_test.csv"
+    if not ruta_eval.is_file():
+        filas_eval = []
+        if RUTA_LOG.is_file() and "corrida_utc" in previo:
+            log = pd.read_csv(RUTA_LOG)
+            sub = log[(log["corrida_utc"] == previo["corrida_utc"]) & (log["particion"] == "test")]
+            for _, fila in sub.iterrows():
+                nombre = f"{fila['modelo']} (final)" if fila["tipo"] == "final" else str(fila["modelo"])
+                filas_eval.append({"modelo": nombre, "mae": float(fila["mae"]),
+                                   "rmse": float(fila["rmse"]), "r2": float(fila["r2"])})
+        if not filas_eval and "baselines_test" in previo and "metricas_test" in previo:
+            for nombre_b, mae_b in previo["baselines_test"].items():
+                filas_eval.append({"modelo": nombre_b, "mae": float(mae_b), "rmse": np.nan, "r2": np.nan})
+            m = previo["metricas_test"]
+            filas_eval.append({"modelo": f"{previo['modelo']} (final)", "mae": float(m["mae"]),
+                               "rmse": float(m["rmse"]), "r2": float(m["r2"])})
+        if filas_eval:
+            pd.DataFrame(filas_eval).to_csv(ruta_eval, index=False, encoding="utf-8", lineterminator="\n")
+
+    ruta_final_csv = pp.CARPETA_PREPROCESADO / "dataset_final.csv"
+    if not ruta_final_csv.is_file():
+        X_te = particion_test(d["historial"], d["candidatas"])[0]
+        exportar_datos_finales(d, previo["columnas"], X_te)
+
+    return pd.read_csv(ruta_eval) if ruta_eval.is_file() else None
+
+
 def regenerar_registro(version: str = VERSION, salida: Path = SALIDA, tolerancia_kw: float = 1e-6
                        ) -> Dict[str, object]:
     """Vuelve a ajustar con Train + Validation la configuración registrada, desde el código del
@@ -727,13 +781,13 @@ def regenerar_registro(version: str = VERSION, salida: Path = SALIDA, tolerancia
     if version not in registro:
         raise ValueError(f"{version} no está en el registro: primero hay que evaluarla con --evaluar-test.")
     previo = registro[version]
+    d = cargar_datos()
+    restaurar_artefactos_registrados(d, salida, version)
     ruta_referencia = Path(salida) / ARCHIVO_PREDICCIONES
     if not ruta_referencia.exists():
         raise FileNotFoundError(f"Falta {ruta_referencia}: sin esa referencia no se puede comprobar "
                                 "que el modelo regenerado sea el registrado.")
     referencia = pd.read_csv(ruta_referencia, index_col="fecha", parse_dates=True)
-
-    d = cargar_datos()
     modelo, conjunto, params = previo["modelo"], previo["conjunto"], dict(previo["hiperparametros"])
     columnas = columnas_de(d["subconjuntos"][conjunto], params.get("objetivo_y", "nivel"))
     if columnas != previo["columnas"]:
