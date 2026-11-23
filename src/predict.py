@@ -39,6 +39,9 @@ REGISTRY = RAIZ / "models" / "model_registry.json"
 SALIDA_DEFECTO = RAIZ / "results" / "predicciones.csv"
 CLAVES_BUNDLE = ("modelo", "columnas", "pipeline", "columnas_entrada", "cfg_seleccion",
                  "variables_creadas", "requeridas", "medianas_train", "df_mad_ee", "umbral_salto")
+# Sin el frío no se puede limpiar ni validar cada jornada: es la única medición insustituible.
+# Las demás que use el modelo, si faltan, las completa la imputación ajustada en Train.
+ESENCIALES = (af.COL_TARGET,)
 
 
 # ---------------------------------------------------------------------------
@@ -105,8 +108,12 @@ def _separar_hoja(columna):
     return nombre, hoja
 
 
+def _detalle(columnas):
+    return "; ".join(f"'{n}' en la hoja '{h}'" for n, h in map(_separar_hoja, columnas))
+
+
 def _validar_hojas(ruta, columnas):
-    """Comprueba, antes de cualquier cálculo pesado, que estén todas las hojas necesarias."""
+    """Comprueba, antes de cualquier cálculo pesado, que estén las hojas de las columnas esenciales."""
     try:
         presentes = {hoja.strip() for hoja in pd.ExcelFile(ruta).sheet_names}
     except Exception as error:
@@ -119,12 +126,18 @@ def _validar_hojas(ruta, columnas):
         )
 
 
-def _validar_columnas(df, columnas, ruta):
-    """Lista TODAS las columnas faltantes, indicando la hoja de cada una."""
-    faltan = [c for c in columnas if c not in df.columns]
+def _validar_columnas(df, requeridas, ruta):
+    """Corta si falta una columna esencial. Por las demás que use el modelo solo avisa, con su
+    hoja: el pipeline las imputa con lo aprendido en Train, como hizo con las metas, que faltan
+    todo el primer año del entrenamiento."""
+    esenciales = [c for c in ESENCIALES if c not in df.columns]
+    if esenciales:
+        raise ValueError(f"Faltan columnas esenciales en '{ruta.name}': {_detalle(esenciales)}")
+    faltan = [c for c in requeridas if c not in df.columns]
     if faltan:
-        detalle = "; ".join(f"'{n}' en la hoja '{h}'" for n, h in map(_separar_hoja, faltan))
-        raise ValueError(f"Faltan columnas en '{ruta.name}': {detalle}")
+        print(f"AVISO: '{ruta.name}' no trae {len(faltan)} mediciones que usa el modelo: "
+              f"{_detalle(faltan)}. Se completan con la imputación aprendida en Train; "
+              "la predicción puede perder precisión.", file=sys.stderr)
 
 
 # ---------------------------------------------------------------------------
@@ -138,7 +151,7 @@ def _leer_excel(filepath, requeridas):
     if ruta.suffix.lower() not in (".xlsx", ".xlsm"):
         raise ValueError(f"Se esperaba un archivo Excel (.xlsx), no '{ruta.suffix}'.")
 
-    _validar_hojas(ruta, requeridas)
+    _validar_hojas(ruta, ESENCIALES)
     tabla, *_ = af.unificar_archivos_excel([("entrada", ruta)])
     _validar_columnas(tabla, requeridas, ruta)
     return tabla
@@ -211,10 +224,11 @@ def load_and_preprocess(filepath, bundle, *, historial=None, desde=None):
     ruta = Path(filepath)
     df_diario, inicio = _jornadas_limpias(ruta, bundle, bundle["requeridas"], historial, desde)
 
-    # Mismas columnas de entrada que al entrenar. Las que no trae el Excel y el modelo no
-    # necesita quedan vacías y las completa la imputación con lo aprendido en Train.
+    # Mismas columnas de entrada que al entrenar. Las que no trae el Excel quedan vacías y las
+    # completa la imputación con lo aprendido en Train. Las que usa el modelo ya se avisaron.
     X_dia = df_diario.set_index("DIA").sort_index().apply(pd.to_numeric, errors="coerce")
-    ausentes = [c for c in bundle["columnas_entrada"] if c not in X_dia.columns]
+    ausentes = [c for c in bundle["columnas_entrada"]
+                if c not in X_dia.columns and c not in bundle["requeridas"]]
     X_dia = X_dia.reindex(columns=bundle["columnas_entrada"])
     if ausentes:
         print(f"AVISO: '{ruta.name}' no trae {len(ausentes)} columnas del entrenamiento que el modelo "

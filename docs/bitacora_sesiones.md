@@ -424,3 +424,44 @@ La sección 3.1 ahora calcula primero las predicciones de persistencia y de la m
 ### Reproducibilidad
 
 Regeneramos la limpieza horaria desde los tres Excel en un clon de GitHub con una instalación nueva de Python 3.12.14 y los 116 paquetes fijados. Ejecutamos todas las celdas de los dos notebooks en Jupyter. Revisamos seis gráficos de preprocesamiento y el gráfico de predicciones y residuos de modelado. Los cinco CSV de Fase 2 conservaron sus hashes. La ejecución de `python -m src.train_model` reprodujo la selección y las 56 filas de métricas de Validation al comparar sus valores sin las fechas de corrida. La evaluación final registrada corresponde al mismo modelo `v1.0.0`.
+
+
+---
+
+## Sesión 9 — 2026-11-23
+
+- **Autoría** · Lio
+- **Rama** · `task/revision`
+- **Fase** · Auditoría integral de reproducibilidad en clon limpio (Fases 0 a 4, `v2.0.0`)
+- **Archivos** · `requirements.txt`, `src/train_model.py`, `README.md`, `notebooks/seleccion.ipynb`, `notebooks/modelado.ipynb`, `docs/auditoria.md` y esta bitácora
+
+### 1. Objetivo de la Sesión
+
+Validar la condición eliminatoria de reproducibilidad y la trazabilidad completa de la entrega `v2.0.0` simulando en un directorio limpio la clonación desde GitHub, la verificación de los 14 hashes SHA-256 (`data/checksums.json` y `models/model_registry.json`), la ejecución de los cuatro módulos de `src/` siguiendo el `README.md` y la re-ejecución de extremo a extremo de las cuatro notebooks (`eda.ipynb`, `preprocesamiento.ipynb`, `seleccion.ipynb` y `modelado.ipynb`).
+
+### 2. Razonamiento Metodológico y Decisiones Tomadas
+
+- Como `.gitignore` excluye `results/*` (salvo `results/experiment_logs.csv`) y `data/processed/*.csv`, un clon limpio no trae en disco `results/modelado/predicciones_modelo_final.csv`, `results/modelado/evaluacion_test.csv`, `data/processed/dataset_final.csv` ni `results/comparacion_variantes/*.csv`.
+- Cuando `VERSION` (`v2.0.0`) ya se encuentra registrada en `models/model_registry.json`, el conjunto de Test no debe volver a evaluarse. Sin embargo, tanto `python -m src.train_model --regenerar-registro` como la sección 9 de `notebooks/modelado.ipynb` requerían que `predicciones_modelo_final.csv` y `evaluacion_test.csv` existieran previamente en `results/modelado/`.
+- Para resolverlo sin re-evaluar Test ni modificar los hashes registrados, se incorporó en `src/train_model.py` la función `restaurar_artefactos_registrados()`, que reconstruye `predicciones_modelo_final.csv` desde el bundle versionado en Git (`models/modelo_v2.0.0.pkl`, verificando antes su SHA-256 contra `model_registry.json`), reconstruye `evaluacion_test.csv` a partir de las filas con `particion == "test"` del `corrida_utc` registrado en `results/experiment_logs.csv`, y exporta `data/processed/dataset_final.csv` si falta en disco.
+- Asimismo, se agregaron guardas en `notebooks/seleccion.ipynb` (sección 1.5) y `notebooks/modelado.ipynb` (secciones 5.2 y 9) para generar automáticamente `results/comparacion_variantes/` mediante `af.comparar_variantes()` o restaurar `evaluacion_test.csv` cuando las notebooks se ejecutan sobre un clon limpio, y se documentó el comando `python -m src.auxiliar_functions --comparar-variantes` en la sección 3 de `README.md`.
+
+### 3. Hallazgos y Resultados Cuantitativos
+
+- **Verificación de hashes SHA-256:** Coincidencia exacta (`100 %`) en los 3 libros Excel crudos, en los 9 archivos de `data/processed/` y `data/reference/` registrados en `data/checksums.json` (`dataset_trabajo.csv`: `bd015abb...`, `29.296 × 421`, `1.172` días válidos; `tabla_dias_borrados.csv`: `6407891e...`, `18` días; `train.csv`: `650e978e...`; `validation.csv`: `3056e2e1...`; `test.csv`: `ebe046ac...`; `historial_completo.csv`: `b46f1a30...`; `dataset_final.csv`: `722849ad...`, `1.128 × 25`) y en los 2 modelos de `models/model_registry.json` (`modelo_v1.0.0.pkl`: `6cef9d08...`; `modelo_v2.0.0.pkl`: `a2b7da78...`).
+- **Reproducibilidad de Fase 2 y Fase 3 (`SEMILLA = 42`):**
+  - `python -m src.preprocessing_pipeline` reprodujo exactamente el flujo `419 -> 321 -> 269` predictoras, causalidad `OK` (`diferencia = 0,0`), `360` candidatas y la victoria de `forward` (`23` variables, MAE promedio en Validation `2.320,9 kW`: `2.300,5 kW` con Ridge y `2.341,2 kW` con Random Forest).
+  - `python -m src.train_model` reprodujo los 320 trials de Optuna y la tabla de Validation: ganador `Random Forest` (`forward`, 23 variables, `n_estimators=200`, `max_depth=11`, `min_samples_leaf=3`, `max_features=0.6`) con MAE Validation **2.297,60 kW**, RMSE **2.859,56 kW**, $R^2 = \mathbf{0,4336}$ y sesgo **+38,66 kW** (`+4,2 %` sobre Media móvil de 7 días de `2.398,3 kW`).
+  - `python -m src.train_model --regenerar-registro` verificó diferencia máxima de **`0,0e+00 kW`** respecto del modelo evaluado en Test (**2.836,72 kW** vs **3.013,76 kW** de Media móvil de 7 días y **3.367,84 kW** de Persistencia).
+  - `python -m src.predict "data/raw/Totalizadores Planta 2022_2023.xlsx"` ejecutado en frío sobre el clon limpio generó las `468` predicciones diarias en `results/predicciones.csv` con **`0,000000 kW`** de diferencia máxima en las `171` fechas de Test.
+
+### 4. Problemas Técnicos Encontrados y Solución Aplicada
+
+1. **`requirements.txt` (línea 1):** Se detectó un prefijo UTF-8 BOM (`\xef\xbb\xbfalembic==1.20.1`) al inicio del archivo. Se reescribió en UTF-8 sin BOM (`alembic==1.20.1`).
+2. **`src/train_model.py` (líneas 483–493 y 717–791):** `python -m src.train_model --regenerar-registro` lanzaba `FileNotFoundError` en un clon limpio por ausencia de `results/modelado/predicciones_modelo_final.csv`. Se implementó `restaurar_artefactos_registrados()` e invocación automática en `ejecutar()` y `regenerar_registro()`.
+3. **`notebooks/seleccion.ipynb` (celda 15) y `notebooks/modelado.ipynb` (celdas 21 y 32):** Lanzaban `FileNotFoundError` si no se había ejecutado previamente `python -m src.auxiliar_functions --comparar-variantes` o si faltaba `evaluacion_test.csv`. Se agregaron guardas automáticas en ambas notebooks y se re-ejecutaron las 4 notebooks completas (`120`, `66`, `43` y `36` celdas) con `0` errores.
+
+### 5. Estado al Cierre y Próximos Pasos
+
+- Los 4 scripts de `src/` y las 4 notebooks de `notebooks/` ejecutan de principio a fin en un clon limpio sin errores y conservando todos los hashes SHA-256 de `data/checksums.json` y `models/model_registry.json`.
+- El detalle línea por línea de la auditoría quedó registrado en `docs/auditoria.md`.
