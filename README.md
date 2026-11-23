@@ -100,7 +100,7 @@ Los Excel no se versionan. La limpieza horaria los comprueba contra los SHA-256 
 ```bash
 python -m src.auxiliar_functions --verificar-hashes   # Excel -> data/processed/dataset_trabajo.csv
 python -m src.preprocessing_pipeline                  # Fase 2: EDA, preprocesamiento y selección
-python -m src.train_model                             # Fase 3 -> results/modelado/ y results/experiment_logs.csv
+python -m src.train_model                             # Fase 3 -> results/experiment_logs.csv
 ```
 
 `python -m src.preprocessing_pipeline --completo` corre antes la limpieza horaria, así que
@@ -110,14 +110,16 @@ estimadores es `SEMILLA = 42` (`src/auxiliar_functions.py`).
 
 | Script | Qué hace |
 | --- | --- |
-| `src/auxiliar_functions.py` | Rutas, semilla y SHA-256 de los Excel. Limpieza horaria: une los tres libros, repara la secuencia horaria, calibra con el primer año los umbrales del cierre 23:59 y descarta días incompletos, totales imposibles y días sin reinicio del totalizador. `comparar_variantes()` (`--comparar-variantes`): variantes probadas solo en Validation (filtro de redundancia y objetivo relativo). |
+| `src/auxiliar_functions.py` | Rutas, semilla y SHA-256 de los Excel. Limpieza horaria: une los tres libros, repara la secuencia horaria, calibra con el primer año los umbrales del cierre 23:59 y descarta días incompletos, totales imposibles y días sin reinicio del totalizador. `comparar_variantes()`: variantes probadas solo en Validation (filtro de redundancia y objetivo relativo); la llaman las notebooks de selección y modelado. |
 | `src/preprocessing_pipeline.py` | Tres etapas. **EDA:** decisiones que dependen de la estructura de la planilla y no de `y` (metadatos, componentes y proxies del frío, columnas calculadas por diferencia, renombradas y copias). **Preprocesamiento:** cierre diario, objetivo D+1, división 70/15/15 y pasos `fit`/`transform` ajustados solo con Train (columnas no informativas, duplicadas, nulos, outliers e imputación); los CSV quedan sin escalar. **Selección:** candidatas (ventanas del frío, calendario, ciclo anual, binning, interacciones, ratios y eficiencia contra la meta) y cuatro métodos ajustados con Train. |
 | `src/train_model.py` | Dos baselines, Optuna para Ridge, Lasso, Random Forest, XGBoost y LightGBM con validación temporal en Train, elección por MAE de Validation, evaluación única en Test y registro del modelo. |
 | `src/predict.py` | Pronóstico de un Excel nuevo con el modelo del registro. |
 
-Los resultados de cada etapa quedan en `results/` (`eda/`, `preprocesamiento/`, `seleccion/`
-y `modelado/`). No se versionan: los regeneran estos comandos y las notebooks los muestran.
-Solo se versiona `results/experiment_logs.csv`.
+Las etapas no guardan reportes intermedios: cada función `ejecutar_*` devuelve sus tablas
+y las notebooks las muestran. Entre etapas solo pasan los CSV de `data/processed/`,
+verificados con los SHA-256 de `data/checksums.json`; las decisiones de la EDA y la
+selección se recalculan en memoria cuando hacen falta (la selección tarda alrededor de un
+minuto). En `results/` quedan solo `experiment_logs.csv` (versionado) y `predicciones.csv`.
 
 Las notebooks `notebooks/eda.ipynb`, `preprocesamiento.ipynb`, `seleccion.ipynb` y
 `modelado.ipynb` muestran cada decisión con sus números. `notebooks/v1/` guarda, como
@@ -137,9 +139,8 @@ junto a los dos baselines y registra la versión en `models/` (.pkl y
 `data/checksums.json`. `v2.0.0` ya está evaluada.
 
 `--regenerar-registro` reajusta la configuración registrada desde el código del commit
-actual, comprueba que predice exactamente lo mismo que el modelo evaluado
-(`results/modelado/predicciones_modelo_final.csv`, que escribe `--evaluar-test`) y
-actualiza el .pkl, su SHA-256 y el commit del registro, sin volver a leer Test.
+actual, comprueba que predice exactamente lo mismo que el .pkl registrado (verificado con
+su SHA-256) y actualiza el .pkl, su SHA-256 y el commit del registro, sin volver a leer Test.
 
 Cada corrida de `python -m src.train_model` agrega sus trials, candidatos y baselines a
 `results/experiment_logs.csv` (`--sin-log` lo evita).

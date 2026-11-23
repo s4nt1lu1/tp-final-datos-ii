@@ -3,7 +3,7 @@
 Parte del dataset horario que genera `src/auxiliar_functions.py`
 (`data/processed/dataset_trabajo.csv`) y tiene tres etapas, en este orden:
 
-Etapa 1. Decisiones estructurales sobre las columnas (EDA) -> `results/eda/`
+Etapa 1. Decisiones estructurales sobre las columnas (EDA)
     Decide, antes de cualquier ajuste estadístico, qué columnas no deben llegar al
     preprocesamiento y cuáles son la misma medición con otro nombre:
         1. metadatos        : identificadores, columnas sin encabezado y la hora del último dato.
@@ -15,9 +15,10 @@ Etapa 1. Decisiones estructurales sobre las columnas (EDA) -> `results/eda/`
         5. renombradas      : la misma medición con otro nombre según el Excel; se unen.
         6. copias           : columnas idénticas en toda la serie; se conserva una.
     Dependen de la estructura de la planilla y no de `y` ni de parámetros estimados, así que
-    pueden tomarse con la serie completa sin fuga de información.
+    pueden tomarse con la serie completa sin fuga de información. No se exportan: el
+    preprocesamiento las recalcula en memoria (`cargar_decisiones`, unos segundos).
 
-Etapa 2. Preprocesamiento ajustado con Train -> `data/processed/` y `results/preprocesamiento/`
+Etapa 2. Preprocesamiento ajustado con Train -> `data/processed/`
     Toma el cierre diario 23:59, arma el target D+1 y la división cronológica, y aplica
     pasos independientes sobre las predictoras:
         0. aplicar_decisiones_eda    : las decisiones de la etapa 1. No estima nada.
@@ -27,13 +28,18 @@ Etapa 2. Preprocesamiento ajustado con Train -> `data/processed/` y `results/pre
         4. outliers_univariados      : errores de medición -> NaN, extremos -> winsorización.
         5. imputar_nulos             : método elegido por columna con enmascaramiento en Train.
         6. (análisis) LOF            : días anómalos en el espacio multivariado.
-    Salida sin escalar: historial_completo.csv, train.csv, validation.csv y test.csv.
+    Salida sin escalar: historial_completo.csv, train.csv, validation.csv y test.csv, con
+    sus SHA-256 en `data/checksums.json`.
 
-Etapa 3. Variables creadas y selección -> `results/seleccion/`
+Etapa 3. Variables creadas y selección
     Candidatas: predictoras del preprocesamiento + rezagos, medias móviles y diferencias
     del frío + calendario + variables creadas (ciclo anual, binning, interacciones, ratios
     entre áreas y eficiencia contra la meta). Métodos ajustados solo con Train (Mutual
     Information, Ridge, Lasso y forward) y comparación de los subconjuntos en Validation.
+    No se exporta: `src/train_model.py` la recalcula en memoria (`calcular_seleccion`).
+
+Las tablas de cada decisión no se guardan en archivos: las funciones `ejecutar_*` las
+devuelven y las notebooks las muestran.
 
 Reglas contra la fuga de información (data leakage):
     * Todo `fit` recibe SOLO filas con fecha <= último día de Train.
@@ -57,7 +63,6 @@ import difflib
 import json
 import re
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
 from itertools import combinations
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
@@ -79,7 +84,7 @@ from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from src import auxiliar_functions as af
-from src.auxiliar_functions import DATA_DIR, PROJECT_ROOT, RESULTS_DIR, SEMILLA, huella
+from src.auxiliar_functions import DATA_DIR, PROJECT_ROOT, SEMILLA, huella
 
 COL_FECHA = af.DEFAULT_DATE_COL
 COL_FRIO = af.DEFAULT_TARGET_COL
@@ -92,8 +97,6 @@ NOMBRES_PASOS = ("aplicar_decisiones_eda", "descartar_no_informativas", "descart
 # ###########################################################################
 # ETAPA 1. DECISIONES ESTRUCTURALES SOBRE LAS COLUMNAS (EDA)
 # ###########################################################################
-CARPETA_EDA = RESULTS_DIR / "eda"
-RESUMEN_EDA = CARPETA_EDA / "resumen.json"
 CLAVE_ENTRADA = "data/processed/dataset_trabajo.csv"
 
 
@@ -462,24 +465,18 @@ def decidir_columnas(datos: Dict[str, object], cfg: ConfigEDA) -> Dict[str, obje
             "calidad_residuales": calidad, "renombradas": renombradas, "copias": copias}
 
 
-def ejecutar_eda(cfg: Optional[ConfigEDA] = None, salida: Path = CARPETA_EDA,
-                 datos: Optional[Dict[str, object]] = None) -> Dict[str, object]:
-    """Calcula las decisiones y exporta la tabla y el resumen que lee el preprocesamiento."""
+def ejecutar_eda(cfg: Optional[ConfigEDA] = None, datos: Optional[Dict[str, object]] = None,
+                 mostrar: bool = True) -> Dict[str, object]:
+    """Calcula las decisiones, la tabla con el motivo de cada columna y su resumen.
+    No escribe archivos: el preprocesamiento las recalcula con `cargar_decisiones`."""
     cfg = cfg or ConfigEDA()
     datos = datos or cargar_datos_eda()
     res = decidir_columnas(datos, cfg)
     tabla = res["tabla"]
 
-    salida = Path(salida)
-    salida.mkdir(parents=True, exist_ok=True)
-    ruta_tabla = salida / "decisiones_columnas.csv"
-    tabla.to_csv(ruta_tabla, index=False, encoding="utf-8", lineterminator="\n")
-
     identidad = {k: v for k, v in res["identidad"].items() if k not in ("coeficientes", "columnas")}
     identidad["coeficientes"] = res["identidad"]["coeficientes"]["coeficiente"].round(4).to_dict()
     resumen = {
-        "generado_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "script": "src/preprocessing_pipeline.py (etapa eda)",
         "config": asdict(cfg),
         "entrada": {"archivo": CLAVE_ENTRADA, "sha256": datos["sha256"],
                     "dias": int(len(datos["diario"])), "columnas": int(datos["diario"].shape[1])},
@@ -488,11 +485,9 @@ def ejecutar_eda(cfg: Optional[ConfigEDA] = None, salida: Path = CARPETA_EDA,
         "columnas_salida": int((tabla["decision"] == "conservar").sum()),
         "descartar": tabla.loc[tabla["decision"] == "descartar", "columna"].tolist(),
         "unificar": res["pares"],
-        "sha256_decisiones": huella(ruta_tabla),
     }
-    with open(salida / "resumen.json", "w", encoding="utf-8", newline="\n") as f:
-        json.dump(resumen, f, indent=2, ensure_ascii=False, default=str)
-        f.write("\n")
+    if not mostrar:
+        return {**res, "resumen": resumen, "datos": datos}
 
     print("=" * 78)
     print("EDA: DECISIONES ESTRUCTURALES SOBRE LAS COLUMNAS")
@@ -507,23 +502,14 @@ def ejecutar_eda(cfg: Optional[ConfigEDA] = None, salida: Path = CARPETA_EDA,
     return {**res, "resumen": resumen, "datos": datos}
 
 
-def cargar_decisiones(ruta: Path = RESUMEN_EDA,
-                      checksums_path: Path = af.DEFAULT_CHECKSUMS_JSON) -> Dict[str, object]:
-    """Lee las decisiones de la EDA y verifica que correspondan al dataset_trabajo.csv vigente."""
-    if not Path(ruta).exists():
-        raise FileNotFoundError(f"No existe {ruta}. Correr antes: python -m src.preprocessing_pipeline --etapas eda")
-    with open(ruta, encoding="utf-8") as f:
-        resumen = json.load(f)
-    with open(checksums_path, encoding="utf-8") as f:
-        registrado = af._sha_registrado(json.load(f), CLAVE_ENTRADA)
-    if resumen["entrada"]["sha256"] != registrado:
-        raise ValueError("Las decisiones de la EDA se tomaron con otra versión de dataset_trabajo.csv. "
-                         "Volver a correr: python -m src.preprocessing_pipeline --etapas eda")
-    ruta_tabla = Path(ruta).parent / "decisiones_columnas.csv"
-    if huella(ruta_tabla) != resumen["sha256_decisiones"]:
-        raise ValueError(f"{ruta_tabla.name} cambió después de generar el resumen de la EDA.")
-    resumen["tabla"] = pd.read_csv(ruta_tabla, keep_default_na=False)
-    return resumen
+def cargar_decisiones(checksums_path: Path = af.DEFAULT_CHECKSUMS_JSON) -> Dict[str, object]:
+    """Decisiones de la EDA sobre el dataset_trabajo.csv vigente (verifica su SHA-256):
+    el resumen de `ejecutar_eda` más la tabla con el motivo de cada columna.
+
+    Se recalculan en memoria en vez de leerse de un archivo: son deterministas, no
+    dependen de `y` y tardan unos segundos."""
+    eda = ejecutar_eda(datos=cargar_datos_eda(checksums_path=checksums_path), mostrar=False)
+    return {**eda["resumen"], "tabla": eda["tabla"]}
 
 
 # ###########################################################################
@@ -542,7 +528,7 @@ class Config:
 
     # 0. Las columnas que se excluyen o unifican por la estructura de la planilla
     #    (metadatos, componentes del frío, renombradas, copias...) las decide la
-    #    EDA y se leen de results/eda/resumen.json.
+    #    EDA (etapa 1) y se obtienen con cargar_decisiones().
 
     # 2. Duplicadas en Train: qué copia se conserva
     columnas_obligatorias: Tuple[str, ...] = (af.DEFAULT_TARGET_COL,)
@@ -757,7 +743,7 @@ class AplicarDecisionesEDA(PasoAuditable):
 
     No estima nada: las decisiones dependen de la estructura de la planilla (nombres, hojas,
     identidades entre medidores), no de los datos de Train. El reporte trae la categoría y el
-    motivo de cada columna, tomados de `results/eda/decisiones_columnas.csv`.
+    motivo de cada columna, tomados de la tabla de decisiones de la EDA.
     """
 
     def __init__(self, decisiones: Dict[str, object]):
@@ -1258,7 +1244,7 @@ def construir_pasos(cfg: Config, decisiones: Optional[Dict[str, object]] = None
     """Secuencia de pasos. Reordenar, quitar o agregar líneas libremente:
     cada paso solo necesita las columnas que le deja el anterior.
 
-    `decisiones` son las de la EDA; si no se pasan, se leen de results/eda/."""
+    `decisiones` son las de la EDA; si no se pasan, se calculan con `cargar_decisiones`."""
     decisiones = decisiones if decisiones is not None else cargar_decisiones()
     return [
         ("aplicar_decisiones_eda", AplicarDecisionesEDA(decisiones)),
@@ -1338,19 +1324,40 @@ def _particion(indice: pd.DatetimeIndex, y: pd.Series, cortes) -> pd.Series:
     return particion
 
 
+def registrar_huellas(rutas: Dict[str, Path],
+                      checksums_path: Path = af.DEFAULT_CHECKSUMS_JSON) -> Dict[str, str]:
+    """Agrega a data/checksums.json el SHA-256 de cada archivo (clave: ruta relativa a la raíz,
+    o absoluta si el archivo está fuera del proyecto)."""
+    huellas = {n: huella(r) for n, r in rutas.items()}
+    with open(checksums_path, encoding="utf-8") as f:
+        checksums = json.load(f)
+    for n, r in rutas.items():
+        ruta = Path(r).resolve()
+        clave = ruta.relative_to(PROJECT_ROOT) if ruta.is_relative_to(PROJECT_ROOT) else ruta
+        checksums[clave.as_posix()] = huellas[n]
+    with open(checksums_path, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(checksums, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    return huellas
+
+
 def ejecutar_preprocesamiento(
     cfg: Optional[Config] = None,
     omitir: Tuple[str, ...] = (),
     input_csv: Path = af.DEFAULT_INPUT_CSV,
     checksums_path: Path = af.DEFAULT_CHECKSUMS_JSON,
     salida_datos: Path = DATA_DIR / "processed",
-    salida_auditoria: Path = RESULTS_DIR / "preprocesamiento",
+    decisiones: Optional[Dict[str, object]] = None,
 ) -> Dict[str, object]:
+    """Ajusta el pipeline con Train, exporta los CSV sin escalar a `salida_datos` y registra
+    sus SHA-256 en checksums.json. Devuelve el pipeline (con el reporte de cada paso), los
+    datos, la verificación de causalidad, el impacto por paso, el LOF y un resumen."""
     cfg = cfg or Config()
     X, y, cortes, sha_entrada = cargar_datos_diarios(Path(input_csv), Path(checksums_path), cfg)
     fin_train = cortes["train"][1]
 
-    decisiones = cargar_decisiones(checksums_path=Path(checksums_path))
+    if decisiones is None:
+        decisiones = cargar_decisiones(checksums_path=Path(checksums_path))
     todos = construir_pasos(cfg, decisiones)
     pasos = [(n, p) for n, p in todos if n not in omitir]
     desconocidos = set(omitir) - {n for n, _ in todos}
@@ -1387,54 +1394,33 @@ def ejecutar_preprocesamiento(
     if lof is not None and cfg.tratamiento_lof == "excluir_train":
         excluidos = datos.index[(datos["particion"] == "train") & datos["anomalo_lof"]].tolist()
 
-    # ---------------- Exportación ----------------
-    salida_datos, salida_auditoria = Path(salida_datos), Path(salida_auditoria)
+    # ---------------- Exportación (solo los datos; los reportes quedan en `pipeline`) ----------------
+    salida_datos = Path(salida_datos)
     salida_datos.mkdir(parents=True, exist_ok=True)
-    salida_auditoria.mkdir(parents=True, exist_ok=True)
 
-    def guardar(df: pd.DataFrame, ruta: Path, index: bool = False) -> Path:
-        df.to_csv(ruta, index=index, encoding="utf-8", lineterminator="\n", date_format="%Y-%m-%d")
+    def guardar(df: pd.DataFrame, ruta: Path) -> Path:
+        df.to_csv(ruta, index=True, encoding="utf-8", lineterminator="\n", date_format="%Y-%m-%d")
         return ruta
 
-    exportados = {"historial_completo.csv": guardar(datos, salida_datos / "historial_completo.csv", True)}
+    exportados = {"historial_completo.csv": guardar(datos, salida_datos / "historial_completo.csv")}
     for nombre in ("train", "validation", "test"):
         parte = datos[datos["particion"] == nombre].drop(columns=["particion"])
         if nombre == "train":
             parte = parte.drop(index=excluidos)
-        exportados[f"{nombre}.csv"] = guardar(parte, salida_datos / f"{nombre}.csv", True)
-
-    # Los reportes por paso se numeran como los pasos (00 = decisiones de la EDA). Se borran
-    # los de una corrida anterior para que no queden reportes de pasos que ya no existen.
-    for viejo in salida_auditoria.glob("[0-9][0-9]_*.csv"):
-        viejo.unlink()
-    resumen_pasos = {}
-    for i, (nombre, paso) in enumerate(pipeline.steps):
-        guardar(paso.reporte_, salida_auditoria / f"{i:02d}_{nombre}.csv")
-        for tabla, df in paso.tablas_.items():
-            guardar(df, salida_auditoria / f"{i:02d}_{nombre}__{tabla}.csv")
-        resumen_pasos[nombre] = paso.resumen()
-    guardar(causalidad, salida_auditoria / "verificacion_causalidad.csv")
-    guardar(impacto, salida_auditoria / "impacto_por_paso.csv")
-    if lof is not None:
-        guardar(lof.sensibilidad_, salida_auditoria / "lof_sensibilidad.csv")
-    guardar(anomalias.assign(particion=particion), salida_auditoria / "lof_dias.csv", True)
+        exportados[f"{nombre}.csv"] = guardar(parte, salida_datos / f"{nombre}.csv")
+    huellas = registrar_huellas(exportados, Path(checksums_path))
 
     resumen = {
-        "generado_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "script": "src/preprocessing_pipeline.py",
         "semilla": SEMILLA,
         "config": asdict(cfg),
         "pasos_omitidos": list(omitir),
         "entrada": {"archivo": str(Path(input_csv).relative_to(PROJECT_ROOT).as_posix()),
                     "sha256": sha_entrada, "dias": len(X), "columnas": X.shape[1]},
-        "decisiones_eda": {"archivo": "results/eda/resumen.json",
-                           "generado_utc": decisiones["generado_utc"],
-                           "sha256_decisiones": decisiones["sha256_decisiones"],
-                           "columnas_descartadas": len(decisiones["descartar"]),
+        "decisiones_eda": {"columnas_descartadas": len(decisiones["descartar"]),
                            "columnas_unificadas": len(decisiones["unificar"])},
         "cortes": {p: [str(a.date()), str(b.date())] for p, (a, b) in cortes.items()},
         "fin_ajuste": str(fin_train.date()),
-        "pasos": resumen_pasos,
+        "pasos": {nombre: paso.resumen() for nombre, paso in pipeline.steps},
         "causalidad_ok": bool(causalidad["causal"].all()),
         "columnas_con_nulos_al_final": columnas_con_nulos,
         "lof": {
@@ -1447,15 +1433,12 @@ def ejecutar_preprocesamiento(
             "tratamiento": cfg.tratamiento_lof,
             "dias_excluidos_de_train": [str(d.date()) for d in excluidos],
         },
-        "salida": {"columnas_predictoras": X_proc.shape[1],
-                   "sha256": {n: huella(r) for n, r in exportados.items()}},
+        "salida": {"columnas_predictoras": X_proc.shape[1], "sha256": huellas},
     }
-    with open(salida_auditoria / "resumen.json", "w", encoding="utf-8", newline="\n") as f:
-        json.dump(resumen, f, indent=2, ensure_ascii=False, default=str)
-        f.write("\n")
 
     _imprimir_resumen(resumen, pipeline)
-    return {"datos": datos, "pipeline": pipeline, "lof": lof, "resumen": resumen}
+    return {"datos": datos, "pipeline": pipeline, "lof": lof, "anomalias": anomalias,
+            "causalidad": causalidad, "impacto": impacto, "resumen": resumen}
 
 
 def _imprimir_resumen(resumen: Dict[str, object], pipeline: Pipeline) -> None:
@@ -1497,7 +1480,7 @@ PREFIJOS_FAMILIA = (
     ("efic_", "eficiencia vs meta"),
 )
 CARPETA_PREPROCESADO = DATA_DIR / "processed"
-RESUMEN_PREPROCESADO = RESULTS_DIR / "preprocesamiento" / "resumen.json"
+CLAVE_HISTORIAL = "data/processed/historial_completo.csv"
 
 
 @dataclass
@@ -1586,7 +1569,7 @@ class ConfigSeleccion:
     # Filtro de redundancia (ajustado con Train). Las candidatas se ordenan por |Spearman| con y y
     # se descarta cada una que tenga |Spearman| >= umbral con otra ya conservada. None = sin filtro.
     # Desactivado: con 0.90 deja 265 de 360 candidatas pero empeora todos los modelos en Validation
-    # (results/comparacion_variantes/): quita ventanas del frío útiles y el ciclo anual.
+    # (comparar_variantes() de src/auxiliar_functions.py): quita ventanas del frío útiles y el ciclo anual.
     umbral_redundancia: Optional[float] = None
     proteger_de_redundancia: Tuple[str, ...] = (COL_FRIO,)  # siempre se conservan, y primero
 
@@ -1620,13 +1603,13 @@ class ConfigSeleccion:
 # 1. Candidatas
 # ===========================================================================
 def cargar_preprocesado(carpeta: Path = CARPETA_PREPROCESADO,
-                        resumen: Path = RESUMEN_PREPROCESADO) -> pd.DataFrame:
-    """Lee el historial preprocesado y verifica su SHA-256 contra el resumen de auditoría."""
-    ruta = carpeta / "historial_completo.csv"
-    with open(resumen, encoding="utf-8") as f:
-        esperado = json.load(f)["salida"]["sha256"]["historial_completo.csv"]
+                        checksums_path: Path = af.DEFAULT_CHECKSUMS_JSON) -> pd.DataFrame:
+    """Lee el historial preprocesado y verifica su SHA-256 contra data/checksums.json."""
+    ruta = Path(carpeta) / "historial_completo.csv"
+    with open(checksums_path, encoding="utf-8") as f:
+        esperado = af._sha_registrado(json.load(f), CLAVE_HISTORIAL)
     if huella(ruta) != esperado:
-        raise ValueError("historial_completo.csv no coincide con el SHA-256 del preprocesamiento. "
+        raise ValueError("historial_completo.csv no coincide con el SHA-256 registrado en checksums.json. "
                          "Volver a correr python -m src.preprocessing_pipeline.")
     return pd.read_csv(ruta, index_col=0, parse_dates=True).sort_index()
 
@@ -2158,11 +2141,15 @@ def seleccionar(X_tr: pd.DataFrame, y_tr: pd.Series, X_val: pd.DataFrame, y_val:
     return alpha, resultados, subconjuntos, comparacion
 
 
-def ejecutar_seleccion(cfg: Optional[ConfigSeleccion] = None, metodos: Optional[List[str]] = None,
-                       salida: Path = RESULTS_DIR / "seleccion") -> Dict[str, object]:
+def calcular_seleccion(historial: pd.DataFrame, cfg: Optional[ConfigSeleccion] = None,
+                       metodos: Optional[List[str]] = None) -> Dict[str, object]:
+    """Etapa 3 completa sobre `historial`, sin imprimir ni escribir archivos: candidatas,
+    filtro de redundancia, métodos, subconjuntos y comparación en Validation.
+
+    Es determinista (semilla fija), así que `src/train_model.py` la recalcula para obtener
+    los subconjuntos en vez de leerlos de un archivo."""
     cfg = cfg or ConfigSeleccion()
     metodos = metodos or list(METODOS)
-    historial = cargar_preprocesado()
     candidatas, creadas = construir_candidatas_y_ajuste(historial, cfg)
     datos = particiones(historial, candidatas)
     X_tr, y_tr, descartadas_tr = datos["train"]
@@ -2189,31 +2176,13 @@ def ejecutar_seleccion(cfg: Optional[ConfigSeleccion] = None, metodos: Optional[
     votos["n_metodos"] = votos.sum(axis=1)
     votos = votos.sort_values("n_metodos", ascending=False, kind="stable")
 
-    salida = Path(salida)
-    salida.mkdir(parents=True, exist_ok=True)
-
-    def guardar(df, nombre, index=False):
-        df.to_csv(salida / nombre, index=index, encoding="utf-8", lineterminator="\n")
-
-    for m, r in resultados.items():
-        guardar(r.tabla, f"{m}__ranking.csv")
-        if r.curva is not None:
-            guardar(r.curva, f"{m}__curva.csv")
-    guardar(votos.assign(familia=votos.index.map(familia_de)), "votos_por_variable.csv", index=True)
-    guardar(tabla_final, "comparacion_validation.csv")
-    guardar(redundancia, "filtro_redundancia.csv")
-    if creadas is not None:
-        guardar(creadas.reporte_, "variables_creadas.csv")
     por_familia = pd.Series([familia_de(c) for c in X_tr.columns]).value_counts()
     elegidas_por_familia = {m: pd.Series([familia_de(c) for c in r.columnas], dtype=object)
                             .value_counts().to_dict() for m, r in resultados.items()}
 
     resumen = {
-        "generado_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "script": "src/preprocessing_pipeline.py (etapa seleccion)",
         "semilla": SEMILLA,
         "config": asdict(cfg),
-        "entrada_sha256": huella(CARPETA_PREPROCESADO / "historial_completo.csv"),
         "filas": {"train": len(X_tr), "validation": len(X_val),
                   "train_descartadas_por_historia_incompleta": descartadas_tr,
                   "validation_descartadas_por_historia_incompleta": descartadas_val},
@@ -2232,25 +2201,30 @@ def ejecutar_seleccion(cfg: Optional[ConfigSeleccion] = None, metodos: Optional[
         "columnas_ganador": subconjuntos[ganador],
         "criterio": "Menor MAE promedio en Validation entre los estimadores; empate: menos columnas.",
     }
-    with open(salida / "resumen.json", "w", encoding="utf-8", newline="\n") as f:
-        json.dump(resumen, f, indent=2, ensure_ascii=False, default=str)
-        f.write("\n")
+    return {"resultados": resultados, "comparacion": tabla_final, "votos": votos,
+            "subconjuntos": subconjuntos, "ganador": ganador, "alpha": alpha,
+            "candidatas": candidatas, "creadas": creadas, "redundancia": redundancia,
+            "X_train": X_tr, "y_train": y_tr, "X_val": X_val, "y_val": y_val, "resumen": resumen}
 
+
+def ejecutar_seleccion(cfg: Optional[ConfigSeleccion] = None,
+                       metodos: Optional[List[str]] = None) -> Dict[str, object]:
+    """Etapa 3 sobre historial_completo.csv (SHA-256 verificado): calcula e imprime la selección."""
+    sel = calcular_seleccion(cargar_preprocesado(), cfg, metodos)
+    resumen = sel["resumen"]
     print("=" * 78)
     print("SELECCIÓN DE VARIABLES")
     print("=" * 78)
-    print(f"Candidatas: {n_candidatas} -> {X_tr.shape[1]} tras el filtro de redundancia | "
-          f"Train: {len(X_tr)} filas | Validation: {len(X_val)} filas")
-    print("  " + " | ".join(f"{f}: {n}" for f, n in por_familia.items()))
-    print(f"Alpha de Ridge (validación temporal interna): {alpha}")
-    for m, r in resultados.items():
+    print(f"Candidatas: {resumen['candidatas']} -> {resumen['candidatas_tras_filtro_redundancia']} tras el "
+          f"filtro de redundancia | Train: {len(sel['X_train'])} filas | Validation: {len(sel['X_val'])} filas")
+    print("  " + " | ".join(f"{f}: {n}" for f, n in resumen["candidatas_tras_filtro_por_familia"].items()))
+    print(f"Alpha de Ridge (validación temporal interna): {sel['alpha']}")
+    for m, r in sel["resultados"].items():
         print(f"  {m:<20}: {len(r.columnas):>3} variables")
-    print(tabla_final.round(1).to_string(index=False))
-    print(f"Ganador: {ganador}")
+    print(sel["comparacion"].round(1).to_string(index=False))
+    print(f"Ganador: {sel['ganador']}")
     print("=" * 78)
-    return {"resultados": resultados, "comparacion": tabla_final, "votos": votos,
-            "subconjuntos": subconjuntos, "ganador": ganador, "alpha": alpha,
-            "X_train": X_tr, "y_train": y_tr, "X_val": X_val, "y_val": y_val, "resumen": resumen}
+    return sel
 
 
 # ###########################################################################
@@ -2274,14 +2248,16 @@ def main() -> None:
     args = parser.parse_args()
     if args.completo:
         af.run_cleaning_pipeline()
+    decisiones = None
     if "eda" in args.etapas:
-        ejecutar_eda()
+        eda = ejecutar_eda()
+        decisiones = {**eda["resumen"], "tabla": eda["tabla"]}  # el preprocesamiento no las recalcula
     if "preprocesamiento" in args.etapas:
         cfg = Config(metodo_outliers=args.metodo_outliers,
                      tratamiento_outliers=args.tratamiento_outliers,
                      max_nulos_train=args.max_nulos_train,
                      tratamiento_lof=args.tratamiento_lof)
-        ejecutar_preprocesamiento(cfg, omitir=tuple(args.omitir))
+        ejecutar_preprocesamiento(cfg, omitir=tuple(args.omitir), decisiones=decisiones)
     if "seleccion" in args.etapas:
         ejecutar_seleccion(metodos=args.metodos)
 

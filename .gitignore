@@ -40,8 +40,8 @@ models/*_checkpoint*.pkl
 # =============================================================================
 # 5. RESULTADOS
 # =============================================================================
-# Los resultados de cada etapa los regeneran los scripts y se reportan en las
-# notebooks. Solo se versiona el registro de experimentos que pide la consigna.
+# predicciones.csv la regenera src/predict.py. Solo se versiona el registro de
+# experimentos que pide la consigna.
 results/*
 !results/experiment_logs.csv
 

@@ -14,13 +14,13 @@
    etapas y `src/predict.py`: la lectura del dataset horario, el cierre diario de las
    23:59, el objetivo D+1 y la división cronológica 70/15/15.
 3. `comparar_variantes()`: variantes probadas solo en Validation (filtro de redundancia de
-   la selección y qué aprende el modelo). No cambian el modelo registrado.
+   la selección y qué aprende el modelo). No cambian el modelo registrado. Se llama desde
+   las notebooks, que muestran sus tablas; no escribe archivos.
 
 Uso desde la raíz del proyecto:
     python -m src.auxiliar_functions                         # Excel -> dataset_trabajo.csv
     python -m src.auxiliar_functions --verificar-hashes      # y compara con data/checksums.json
     python -m src.auxiliar_functions --solo-verificar-crudos # solo el SHA-256 de los Excel
-    python -m src.auxiliar_functions --comparar-variantes    # results/comparacion_variantes/
 """
 
 from __future__ import annotations
@@ -1544,19 +1544,18 @@ def verificar_hashes_exportados(exported_paths, registro):
 # ===========================================================================
 # 3. Comparación de variantes (solo Validation)
 # ===========================================================================
-SALIDA_VARIANTES = RESULTS_DIR / "comparacion_variantes"
 FILTROS_REDUNDANCIA = (None, 0.90)
 
 
-def comparar_variantes(salida: Path = SALIDA_VARIANTES) -> None:
+def comparar_variantes() -> Dict[str, pd.DataFrame]:
     """Repite la selección y la búsqueda de Optuna con cada variante y mide solo en Validation.
 
     Variantes: filtro de redundancia de la selección (desactivado o 0,90) y qué aprende el
     modelo (nivel de y, y − frío de D, y − media de 7 cierres, y / media de 7 cierres).
-    Test no se lee, y no escribe en results/seleccion/, results/modelado/ ni en el log.
-    Salida en results/comparacion_variantes/: comparacion_mejoras.csv (ganador de cada
-    modelo en cada variante) y comparacion_por_objetivo.csv (mejor configuración de cada
-    par modelo–objetivo).
+    Test no se lee y no escribe archivos ni filas en el log. Tarda unos minutos.
+    Devuelve dos tablas:
+        "mejoras"      : ganador de cada modelo en cada variante de filtro.
+        "por_objetivo" : mejor configuración de cada par modelo–objetivo.
     """
     # Se importan acá: train_model y preprocessing_pipeline importan este módulo.
     import optuna
@@ -1566,8 +1565,6 @@ def comparar_variantes(salida: Path = SALIDA_VARIANTES) -> None:
     from src import train_model as tm
 
     optuna.logging.set_verbosity(optuna.logging.WARNING)
-    salida = Path(salida)
-    salida.mkdir(parents=True, exist_ok=True)
     historial = pp.cargar_preprocesado()
     filas_comp, filas_obj = [], []
 
@@ -1602,9 +1599,7 @@ def comparar_variantes(salida: Path = SALIDA_VARIANTES) -> None:
                               "sesgo_val": float(np.mean(pred - y_val))})
         print(f"[{etiqueta}] listo en {time.time() - inicio:.0f} s", flush=True)
 
-    pd.DataFrame(filas_comp).to_csv(salida / "comparacion_mejoras.csv", index=False, lineterminator="\n")
-    pd.DataFrame(filas_obj).to_csv(salida / "comparacion_por_objetivo.csv", index=False, lineterminator="\n")
-    print(f"Resultados en {salida}")
+    return {"mejoras": pd.DataFrame(filas_comp), "por_objetivo": pd.DataFrame(filas_obj)}
 
 
 def main() -> None:
@@ -1619,8 +1614,6 @@ def main() -> None:
                         help="Compara los CSV con data/checksums.json y conserva el registro.")
     parser.add_argument("--solo-verificar-crudos", action="store_true",
                         help="Solo verifica el SHA-256 de los Excel (o lo genera si no existe el registro).")
-    parser.add_argument("--comparar-variantes", action="store_true",
-                        help="Compara en Validation las variantes de selección y de objetivo.")
     args = parser.parse_args()
 
     if args.solo_verificar_crudos:
@@ -1630,9 +1623,6 @@ def main() -> None:
             verificar_checksums()
         else:
             generar_checksums_crudos()
-        return
-    if args.comparar_variantes:
-        comparar_variantes()
         return
 
     registro = None
