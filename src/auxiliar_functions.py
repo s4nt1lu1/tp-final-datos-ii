@@ -1547,11 +1547,12 @@ def verificar_hashes_exportados(exported_paths, registro):
 FILTROS_REDUNDANCIA = (None, 0.90)
 
 
-def comparar_variantes() -> Dict[str, pd.DataFrame]:
+def comparar_variantes(excluir_metas: bool = False) -> Dict[str, pd.DataFrame]:
     """Repite la selección y la búsqueda de Optuna con cada variante y mide solo en Validation.
 
     Variantes: filtro de redundancia de la selección (desactivado o 0,90) y qué aprende el
     modelo (nivel de y, y − frío de D, y − media de 7 cierres, y / media de 7 cierres).
+    `excluir_metas` se pasa a `ConfigSeleccion` (True en la versión 3).
     Test no se lee y no escribe archivos ni filas en el log. Tarda unos minutos.
     Devuelve dos tablas:
         "mejoras"      : ganador de cada modelo en cada variante de filtro.
@@ -1570,7 +1571,7 @@ def comparar_variantes() -> Dict[str, pd.DataFrame]:
 
     for filtro in FILTROS_REDUNDANCIA:
         inicio = time.time()
-        cfg_sel = pp.ConfigSeleccion(umbral_redundancia=filtro)
+        cfg_sel = pp.ConfigSeleccion(umbral_redundancia=filtro, excluir_metas=excluir_metas)
         candidatas = pp.construir_candidatas(historial, cfg_sel)
         d = pp.particiones(historial, candidatas)
         X_tr, y_tr, _ = d["train"]

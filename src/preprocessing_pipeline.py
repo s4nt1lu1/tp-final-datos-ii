@@ -1566,6 +1566,13 @@ class ConfigSeleccion:
     percentiles_ratios: Tuple[float, float] = (0.005, 0.995)
     patron_produccion: str = r"^H[lL] "
 
+    # Metas de Consolidado KPI (versión 3). Son valores mensuales que fija la planta y no existen
+    # antes de julio de 2021: la imputación completa ese año con la mediana del mismo mes en Train
+    # (43 % de los días de Train), así que en esos días solo codifican el mes. True quita de las
+    # candidatas las columnas "Meta ...", su indicador de imputación y la eficiencia contra la meta
+    # (divide por una meta). False reproduce la versión 2. Ver notebooks/v_3/seleccion.ipynb.
+    excluir_metas: bool = False
+
     # Filtro de redundancia (ajustado con Train). Las candidatas se ordenan por |Spearman| con y y
     # se descarta cada una que tenga |Spearman| >= umbral con otra ya conservada. None = sin filtro.
     # Desactivado: con 0.90 deja 265 de 360 candidatas pero empeora todos los modelos en Validation
@@ -1872,16 +1879,28 @@ def candidatas_directas(historial: pd.DataFrame, cfg: ConfigSeleccion) -> pd.Dat
     return pd.concat(partes, axis=1)
 
 
+PREFIJO_META = "Meta "
+
+
+def columnas_de_metas(columnas) -> List[str]:
+    """Metas de Consolidado KPI, su indicador de imputación y la eficiencia contra la meta."""
+    return [c for c in columnas if c.startswith(PREFIJO_META) or familia_de(c) == "eficiencia vs meta"]
+
+
 def construir_candidatas_y_ajuste(historial: pd.DataFrame, cfg: ConfigSeleccion
                                   ) -> Tuple[pd.DataFrame, Optional[VariablesCreadas]]:
     """Como `construir_candidatas`, y además devuelve el `VariablesCreadas` ajustado
-    (None si no hay variables creadas) para inspeccionar cortes, escalas y topes."""
-    directas = candidatas_directas(historial, cfg)
-    if not (cfg.binning or cfg.variables_interaccion or cfg.patrones_maquinaria
+    (None si no hay variables creadas) para inspeccionar cortes, escalas y topes.
+    Con `cfg.excluir_metas` quita las columnas de `columnas_de_metas`."""
+    candidatas = directas = candidatas_directas(historial, cfg)
+    creadas = None
+    if (cfg.binning or cfg.variables_interaccion or cfg.patrones_maquinaria
             or cfg.ratios or cfg.eficiencias):
-        return directas, None
-    creadas = VariablesCreadas(cfg).fit(directas.loc[:fin_de_ajuste(historial)])
-    return pd.concat([directas, creadas.transform(directas)], axis=1), creadas
+        creadas = VariablesCreadas(cfg).fit(directas.loc[:fin_de_ajuste(historial)])
+        candidatas = pd.concat([directas, creadas.transform(directas)], axis=1)
+    if cfg.excluir_metas:
+        candidatas = candidatas.drop(columns=columnas_de_metas(candidatas.columns))
+    return candidatas, creadas
 
 
 def construir_candidatas(historial: pd.DataFrame, cfg: ConfigSeleccion) -> pd.DataFrame:

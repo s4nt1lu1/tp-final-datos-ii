@@ -105,6 +105,7 @@ class ConfigModelado:
     gap: int = 1
     n_jobs_bloques: int = -1  # los bloques de la validación interna se ajustan en paralelo
     registrar_log: bool = True
+    etiqueta: str = "v2"  # versión en la columna `variante` de results/experiment_logs.csv
 
     def trials(self, modelo: str) -> int:
         return dict(self.n_trials).get(modelo, 30)
@@ -158,7 +159,8 @@ def cargar_datos(cfg_sel: Optional[pp.ConfigSeleccion] = None) -> Dict[str, obje
     candidatas = seleccion["candidatas"]
     datos = pp.particiones(historial, candidatas)
     return {"historial": historial, "candidatas": candidatas, "subconjuntos": seleccion["subconjuntos"],
-            "seleccion": seleccion["resumen"], "train": datos["train"], "validation": datos["validation"]}
+            "seleccion": seleccion["resumen"], "train": datos["train"], "validation": datos["validation"],
+            "cfg_seleccion": cfg_sel}
 
 
 def particion_test(historial: pd.DataFrame, candidatas: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
@@ -348,7 +350,7 @@ def optimizar(modelo: str, X_tr: pd.DataFrame, y_tr: pd.Series, subconjuntos: Di
         for k in ("mae_desvio", "rmse", "r2"):
             trial.set_user_attr(k, metricas[k])
         if corrida and cfg.registrar_log:
-            registrar(RUTA_LOG, "optuna", modelo, f"v2 · {conjunto}", params | {"trial": trial.number},
+            registrar(RUTA_LOG, "optuna", modelo, f"{cfg.etiqueta} · {conjunto}", params | {"trial": trial.number},
                       "train_cv", len(X_tr), evaluados,
                       {k: round(metricas[k], 6) for k in ("mae", "rmse", "r2")}, corrida)
         return metricas["mae"]
@@ -403,7 +405,7 @@ def evaluar_en_validation(estudios: Dict[str, optuna.Study], subconjuntos: Dict[
                       "mae_interno": estudio.best_value, **metricas,
                       "sesgo": float((pred - y_val).mean()), "hiperparametros": json.dumps(params)})
         if corrida and cfg.registrar_log:
-            registrar(RUTA_LOG, "candidato", modelo, f"v2 · {conjunto}", params, "validation",
+            registrar(RUTA_LOG, "candidato", modelo, f"{cfg.etiqueta} · {conjunto}", params, "validation",
                       len(X_tr), X_val.index, metricas, corrida)
     tabla = pd.DataFrame(filas).sort_values(["mae", "n_columnas"]).reset_index(drop=True)
     return tabla, ajustados, predicciones
@@ -423,9 +425,9 @@ def evaluar_en_test(modelo: str, conjunto: str, params: Dict[str, object], colum
                        pd.DataFrame([{"modelo": f"{modelo} (final)", **medir(y_te, pred)}])], ignore_index=True)
     if corrida and cfg.registrar_log:
         for _, fila in tabla.iloc[:2].iterrows():
-            registrar(RUTA_LOG, "baseline", fila["modelo"], "v2", {}, "test", 0, X_te.index,
+            registrar(RUTA_LOG, "baseline", fila["modelo"], cfg.etiqueta, {}, "test", 0, X_te.index,
                       {k: fila[k] for k in ("mae", "rmse", "r2")}, corrida)
-        registrar(RUTA_LOG, "final", modelo, f"v2 · {conjunto}", params, "test", len(X_tv), X_te.index,
+        registrar(RUTA_LOG, "final", modelo, f"{cfg.etiqueta} · {conjunto}", params, "test", len(X_tv), X_te.index,
                   medir(y_te, pred), corrida)
     return tabla, final, pred
 
@@ -444,7 +446,7 @@ def ejecutar(cfg: Optional[ConfigModelado] = None, evaluar_test: bool = False) -
     tabla_baselines = baselines(X_val, y_val)
     if cfg.registrar_log:
         for _, fila in tabla_baselines.iterrows():
-            registrar(RUTA_LOG, "baseline", fila["modelo"], "v2", {}, "validation", 0, X_val.index,
+            registrar(RUTA_LOG, "baseline", fila["modelo"], cfg.etiqueta, {}, "validation", 0, X_val.index,
                       {k: fila[k] for k in ("mae", "rmse", "r2")}, corrida)
 
     estudios = {}
@@ -618,7 +620,7 @@ def guardar_bundle(final, columnas: List[str], d: Dict[str, object], version: st
     Devuelve la ruta y el pipeline del preprocesamiento guardado."""
     historial = d["historial"]
     X_tr = d["train"][0]
-    cfg_sel = pp.ConfigSeleccion()
+    cfg_sel = d.get("cfg_seleccion") or pp.ConfigSeleccion()  # la misma con la que se seleccionó
     _, creadas = pp.construir_candidatas_y_ajuste(historial, cfg_sel)
     pipeline = ajustar_preprocesamiento(historial)
     predictoras = [c for c in historial.columns if c not in pp.COLUMNAS_NO_PREDICTORAS]
