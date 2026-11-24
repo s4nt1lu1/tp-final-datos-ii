@@ -4,19 +4,17 @@ Proyecto de Laboratorio de Datos II de Ingeniería en Inteligencia Artificial (U
 El objetivo es predecir al cierre de cada día el consumo de frío de una planta
 cervecera para el día calendario siguiente.
 
-## Entorno
+La versión entregada es `v2.0.0`. El modelo ya está entrenado y versionado en
+`models/modelo_v2.0.0.pkl`: para pronosticar un Excel nuevo no hace falta entrenar
+ni tener los datos de entrenamiento.
 
-Cloná el repositorio y ubicá la versión de entrega.
+## 1. Entorno
+
+Cloná el repositorio y creá un entorno aislado de Python 3.12 con las versiones fijadas.
 
 ```bash
 git clone https://github.com/s4nt1lu1/tp-final-datos-ii.git
 cd tp-final-datos-ii
-git switch --detach v1.0.0
-```
-
-Creá un entorno aislado de Python 3.12 e instalá las versiones fijadas.
-
-```bash
 conda create -n cervecera_env python=3.12
 conda activate cervecera_env
 python -m pip install uv
@@ -26,114 +24,135 @@ uv pip install -r requirements.txt
 Si ya tenés `uv`, también podés usar `uv venv --python 3.12` y luego
 `uv pip install -r requirements.txt`. Para activar ese entorno usá
 `.\.venv\Scripts\Activate.ps1` en PowerShell o `source .venv/bin/activate` en Linux/macOS.
-La semilla de los estimadores es `SEMILLA = 42`.
 
-## Datos de entrada
+## 2. Predecir con un Excel nuevo (Fase 4)
 
-Copiar los tres Excel provistos por la cátedra a `data/raw/`. Estos nombres
-corresponden a los libros efectivamente usados por el grupo.
+1. Copiá el Excel nuevo en cualquier carpeta, por ejemplo `data/raw/`.
+2. Desde la raíz del repositorio, con el entorno activado, ejecutá:
+
+```bash
+python -m src.predict "data/raw/Totalizadores Planta de Cerveza 2024_2025.xlsx"
+```
+
+El resultado queda en `results/predicciones.csv`, con una fila por día D:
+
+| fecha | prediccion_frio_kw |
+| --- | --- |
+| día D (AAAA-MM-DD) | consumo de frío estimado para D+1 (kW) |
+
+El script carga la versión más alta de `models/model_registry.json` (`v2.0.0`) y
+verifica el SHA-256 del .pkl. Después aplica la misma limpieza horaria, el mismo
+preprocesamiento y las mismas variables creadas que en el entrenamiento, todo ajustado
+con Train y guardado dentro del .pkl. No usa `data/processed/` ni los Excel de
+entrenamiento.
+
+Opciones:
+
+| Opción | Para qué |
+| --- | --- |
+| `--salida ruta.csv` | Guardar las predicciones en otro archivo. |
+| `--historial anterior.xlsx` | Aportar los días previos al primer día del Excel nuevo (por ejemplo, el Excel del período anterior). |
+| `--desde AAAA-MM-DD` | Exportar predicciones solo desde esa fecha. |
+| `--version v2.0.0` | Elegir una versión del registro (por defecto, la más alta). |
+
+**Contexto de los primeros días.** Las ventanas del frío usan hasta 28 días anteriores.
+Si el Excel nuevo empieza sin ese historial, las ventanas de los primeros días se
+completan con las medianas de Train y el script lo avisa. Con `--historial` y el Excel
+del período anterior, esos días se pronostican con su historia real:
+
+```bash
+python -m src.predict "data/raw/Totalizadores Planta de Cerveza 2024_2025.xlsx" --historial "data/raw/Totalizadores Planta 2022_2023.xlsx"
+```
+
+**Contrato con el archivo de entrada.** Las hojas y columnas se buscan por nombre:
+puede haber hojas y columnas de más, en cualquier orden. Si falta alguna de las que usa
+el modelo, el script termina con un mensaje que indica cuál y en qué hoja. Las columnas
+del entrenamiento que el modelo no usa pueden faltar: se completan con la imputación
+aprendida en Train. También avisa si faltan cierres o si descarta jornadas, y por qué.
+
+Mediciones mínimas de `v2.0.0` (cada hoja también debe tener `DIA` y `HORA`):
+
+| Hoja | Columnas de medición |
+| --- | --- |
+| Consolidado EE | `Frio (Kw)` |
+| Consolidado KPI | `EE Frio / Hl`, `EE Bodega / Hl`, `Meta EE Frio`, `Meta ET Cocina` |
+| Consolidado Produccion | `Hl Producido Bodega`, `Hl Cerveza Envasada` |
+| Consolidado Agua | `Agua Bodega (Hl)` |
+| Consolidado GasVapor | `Vapor Envasado (Kg)` |
+| Totalizadores Energia | `KW Trafo 9`, `KW Trafo 12`, `KW Planta de Agua` |
+| Totalizadores Produccion | `HL Mosto Sol` |
+| Totalizadores Aire | `Totalizador_Aire_Bodega` |
+| Totalizadores CO2 | `Totalizador_Filtracion` |
+| Totalizadores Glicol | `Tot  Trasiego` |
+
+## 3. Reproducir el entrenamiento (opcional)
+
+Solo hace falta para auditar o volver a generar el modelo. Copiá los tres Excel
+provistos por la cátedra a `data/raw/`:
 
 - `Totalizadores Planta 2020_2022.xlsx`
 - `Totalizadores Planta - 2021_2023.xlsx`
 - `Totalizadores Planta 2022_2023.xlsx`
 
-La limpieza horaria comprueba esos archivos contra `data/checksums.json`.
-El diagnóstico climático usa una copia fija de
-[Open-Meteo Historical Weather API](https://open-meteo.com/en/docs/historical-weather-api)
-en `data/reference/clima_tecate_openmeteo.csv`, para Tecate
-(32,5722° N, 116,6283° O, zona `America/Tijuana`). El diagnóstico y el pipeline
-pueden ejecutarse con esa copia. La disponibilidad de cada observación
-al cierre de D queda pendiente de verificar para incorporarla al modelo.
-
-## Ejecutar la Fase 2
-
-Desde la raíz, con el entorno activado y los tres Excel originales en
-`data/raw/`, ejecutá este comando.
+Los Excel no se versionan. La limpieza horaria los comprueba contra los SHA-256 de
+`data/checksums.json`. Cada etapa verifica el SHA-256 de la salida de la anterior.
 
 ```bash
-python -m src.preprocessing_pipeline --verificar-hashes
+python -m src.auxiliar_functions --verificar-hashes   # Excel -> data/processed/dataset_trabajo.csv
+python -m src.preprocessing_pipeline                  # Fase 2: EDA, preprocesamiento y selección
+python -m src.train_model                             # Fase 3 -> results/experiment_logs.csv
 ```
 
-El comando limpia los Excel, genera `dataset_trabajo.csv` y la tabla de
-descartes, y prepara los datos diarios con los parámetros ajustados en Train.
-Genera `dataset_final.csv`, `dataset_diario_base.csv`, `train.csv`,
-`validation.csv`, `test.csv` y `data_lineage.json` en `data/processed/`.
-Los CSV se guardan sin escalar. En este modo, el comando compara los siete
-CSV contra `data/checksums.json` y conserva ese registro.
+`python -m src.preprocessing_pipeline --completo` corre antes la limpieza horaria, así que
+deja todo listo hasta la selección en un solo comando. Con `--etapas` se corre una sola
+etapa (`eda`, `preprocesamiento` o `seleccion`). La semilla de todas las particiones y
+estimadores es `SEMILLA = 42` (`src/auxiliar_functions.py`).
 
-Abrí `notebooks/preprocesamiento.ipynb` con el mismo entorno para ver las
-decisiones y los controles paso a paso. Es el notebook que se entrega en la
-Fase 2. Los notebooks auxiliares registran el trabajo previo del grupo.
-`notebooks/eda.ipynb` contiene la exploración de los Excel.
-
-## Reutilizar la preparación diaria
-
-El resultado de `run_pipeline()` contiene el `preparador` ajustado. Su método
-`transform` recibe cierres diarios y su historial anterior. Para reproducir
-la ventana de 14 días y el arrastre de hasta tres días, incluir al menos
-16 días calendario de contexto previo al primer día que se quiera transformar.
-Las columnas finales y su orden figuran en el linaje. Se puede transformar el
-último cierre del historial aunque todavía no se conozca su etiqueta D+1.
-
-## Ejecutar la Fase 3
-
-Después de generar los CSV de Fase 2, ejecutá el modelado desde la raíz
-con una carpeta de salida nueva para la corrida.
-
-```bash
-python -m src.train_model --salida resultados_locales
-python -m src.train_model --salida resultados_locales --evaluar-test
-```
-
-El primer comando calcula los dos baselines, ajusta Ridge, Random Forest,
-XGBoost y LightGBM con Train, y elige por MAE de Validation. Guarda el log
-en `resultados_locales/results/experiment_logs.csv` y la elección en
-`resultados_locales/results/seleccion_modelado.json`. La notebook explica
-la búsqueda, los residuos y la importancia de las variables.
-
-El segundo comando usa esa elección, reentrena con Train + Validation y
-guarda las métricas de Test en `resultados_locales/results/evaluacion_final.json`.
-Los dos comandos usan la misma salida. Si esa carpeta ya contiene una
-evaluación final, elegí otra para una corrida completa.
-
-## Predecir con un Excel nuevo (Fase 4)
-
-Desde la raíz, con las dependencias instaladas y los archivos de `models/`
-de esta rama, ejecutá:
-
-```bash
-python -m src.predict "ruta/al/archivo_nuevo.xlsx" --salida "results/predicciones.csv"
-```
-
-El script carga el modelo y su preparación guardada, verifica el SHA-256
-del .pkl y emite una fila por fecha D. El valor de esa fila pronostica el
-consumo de D+1. Para este paso alcanzan el Excel nuevo y el modelo publicado
-con su registro. Las hojas y columnas se buscan por nombre.
-
-Para el Ridge publicado, estas son las mediciones mínimas. Cada una de las
-hojas correspondientes también debe tener las columnas `DIA` y `HORA`.
-
-| Hoja | Columnas de medición |
+| Script | Qué hace |
 | --- | --- |
-| Consolidado EE | `Frio (Kw)` |
-| Consolidado GasVapor | `ET Servicios (Mj)` |
-| Totalizadores Energia | `KW Secador Kaeser`, `KW Linea 3` |
-| Consolidado Agua | `Red Paste L4` |
-| Consolidado Produccion | `Hl Producido Bodega` |
+| `src/auxiliar_functions.py` | Rutas, semilla y SHA-256 de los Excel. Limpieza horaria: une los tres libros, repara la secuencia horaria, calibra con el primer año los umbrales del cierre 23:59 y descarta días incompletos, totales imposibles y días sin reinicio del totalizador. `comparar_variantes()`: variantes probadas solo en Validation (filtro de redundancia y objetivo relativo); la llaman las notebooks de selección y modelado. |
+| `src/preprocessing_pipeline.py` | Tres etapas. **EDA:** decisiones que dependen de la estructura de la planilla y no de `y` (metadatos, componentes y proxies del frío, columnas calculadas por diferencia, renombradas y copias). **Preprocesamiento:** cierre diario, objetivo D+1, división 70/15/15 y pasos `fit`/`transform` ajustados solo con Train (columnas no informativas, duplicadas, nulos, outliers e imputación); los CSV quedan sin escalar. **Selección:** candidatas (ventanas del frío, calendario, ciclo anual, binning, interacciones, ratios y eficiencia contra la meta) y cuatro métodos ajustados con Train. |
+| `src/train_model.py` | Dos baselines, Optuna para Ridge, Lasso, Random Forest, XGBoost y LightGBM con validación temporal en Train, elección por MAE de Validation, evaluación única en Test y registro del modelo. |
+| `src/predict.py` | Pronóstico de un Excel nuevo con el modelo del registro. |
 
-Las medias móviles usan el historial anterior a cada fecha. Si el Excel
-incluye los primeros días como contexto, usá `--desde AAAA-MM-DD` para
-exportar desde el día solicitado. Si el historial está en otro Excel, usá:
+Las etapas no guardan reportes intermedios: cada función `ejecutar_*` devuelve sus tablas
+y las notebooks las muestran. Entre etapas solo pasan los CSV de `data/processed/`,
+verificados con los SHA-256 de `data/checksums.json`; las decisiones de la EDA y la
+selección se recalculan en memoria cuando hacen falta (la selección tarda alrededor de un
+minuto). En `results/` quedan solo `experiment_logs.csv` (versionado) y `predicciones.csv`.
+
+Las notebooks `notebooks/eda.ipynb`, `preprocesamiento.ipynb`, `seleccion.ipynb` y
+`modelado.ipynb` muestran cada decisión con sus números. `notebooks/v1/` guarda, como
+registro, las notebooks de la versión 1, que se ejecutan desde el tag `v1.0.0`.
+
+### Modelo final y registro
 
 ```bash
-python -m src.predict "ruta/al/archivo_nuevo.xlsx" --historial "ruta/al/historial.xlsx"
+python -m src.train_model --evaluar-test         # una sola vez, con la elección congelada
+python -m src.train_model --regenerar-registro   # vuelve a generar el .pkl desde el commit actual
 ```
 
-El segundo Excel aporta las fechas anteriores a las del principal. Para el
-primer pronóstico conviene aportar al menos 16 días calendario de contexto.
-El comando avisa por la terminal si faltan cierres al comienzo o si se omiten
-fechas, e indica el motivo al descartar una jornada.
+`--evaluar-test` reentrena el ganador con Train + Validation, lo evalúa una vez en Test
+junto a los dos baselines y registra la versión en `models/` (.pkl y
+`model_registry.json` con hiperparámetros, métricas, ruta, SHA-256 y commit), además de
+`data/processed/dataset_final.csv` y `data_lineage.json` con sus SHA-256 en
+`data/checksums.json`. `v2.0.0` ya está evaluada.
 
-La etiqueta `v1.0.0` identifica la entrega auditada. Usá el .pkl y el
-registro de ese mismo commit. El registro indica el commit `b4f0002` de
-entrenamiento, desde el cual se reprodujo el binario byte por byte.
+`--regenerar-registro` reajusta la configuración registrada desde el código del commit
+actual, comprueba que predice exactamente lo mismo que el .pkl registrado (verificado con
+su SHA-256) y actualiza el .pkl, su SHA-256 y el commit del registro, sin volver a leer Test.
+
+Cada corrida de `python -m src.train_model` agrega sus trials, candidatos y baselines a
+`results/experiment_logs.csv` (`--sin-log` lo evita).
+
+## 4. Versiones
+
+| Versión | Modelo | Código | MAE Validation | MAE Test |
+| --- | --- | --- | ---: | ---: |
+| `v2.0.0` | Random Forest, 23 variables | tag `v2.0.0` | 2.297,6 | 2.836,7 |
+| `v1.0.0` | Ridge, 10 variables | tag `v1.0.0` | 2.126,7 | 2.796,9 |
+
+En Test, los baselines de `v2.0.0` dan 3.367,8 kW (persistencia) y 3.013,8 kW (media
+móvil de 7 días). El .pkl de `v1.0.0` sigue en `models/`, pero su código ya no está en
+esta rama: `python -m src.predict archivo.xlsx --version v1.0.0` indica que hay que hacer
+checkout del tag `v1.0.0`.

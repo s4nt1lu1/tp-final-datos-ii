@@ -38,9 +38,11 @@ models/*_checkpoint*.pkl
 !models/model_registry.json
 
 # =============================================================================
-# 5. RESULTADOS TEMPORALES
+# 5. RESULTADOS
 # =============================================================================
-results/predicciones.csv
+# predicciones.csv la regenera src/predict.py. Solo se versiona el registro de
+# experimentos que pide la consigna.
+results/*
 !results/experiment_logs.csv
 
 # =============================================================================

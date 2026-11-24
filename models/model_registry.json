@@ -32,5 +32,65 @@
       "rmse": 3660.122774,
       "r2": 0.58514
     }
+  },
+  "v2.0.0": {
+    "path": "models/modelo_v2.0.0.pkl",
+    "sha256": "a2b7da78dfd6586bb70bd5718a1ebf21e28bb12e61119e451962bc10599f5814",
+    "git_commit": "05054e641a4b6950de365791763262c48de026b4",
+    "cambios_sin_commitear_al_entrenar": false,
+    "pipeline": "src/auxiliar_functions.py, src/preprocessing_pipeline.py, src/train_model.py",
+    "modelo": "Random Forest",
+    "conjunto": "forward",
+    "hiperparametros": {
+      "n_estimators": 200,
+      "max_depth": 11,
+      "min_samples_leaf": 3,
+      "max_features": 0.6
+    },
+    "columnas": [
+      "frio_ewm_14",
+      "Frio (Kw)_Consolidado EE",
+      "Meta ET Cocina_Consolidado KPI",
+      "KW Trafo 9_Totalizadores Energia",
+      "frio_media_14",
+      "frio_diff_1",
+      "ratio_agua_bodega_por_hl",
+      "frio_media_10",
+      "anio_cos_1",
+      "Totalizador_Aire_Bodega_Totalizadores Aire",
+      "KW Trafo 12_Totalizadores Energia",
+      "frio_min_14",
+      "HL Mosto Sol_Totalizadores Produccion",
+      "dia_semana_cos",
+      "fin_de_semana",
+      "frio_max_7",
+      "Tot  Trasiego_Totalizadores Glicol",
+      "Vapor Envasado (Kg)_Consolidado GasVapor",
+      "Totalizador_Filtracion_Totalizadores CO2",
+      "int_frio_x_envasada",
+      "EE Bodega / Hl_Consolidado KPI",
+      "efic_frio_vs_meta",
+      "KW Planta de Agua_Totalizadores Energia"
+    ],
+    "semilla": 42,
+    "n_train_validation": 957,
+    "metricas_validation": {
+      "mae": 2297.595901,
+      "rmse": 2859.564602,
+      "r2": 0.433551
+    },
+    "metricas_test": {
+      "mae": 2836.720499,
+      "rmse": 3698.834713,
+      "r2": 0.576318
+    },
+    "baselines_test": {
+      "Persistencia": 3367.842105,
+      "Media móvil de 7 días": 3013.758563
+    },
+    "test_sha256": "ebe046ac697f33728f050ce251a4f32eaa2a98c475c89aa6873a7539a5dddb22",
+    "corrida_utc": "2026-11-21T23:41:25.321365+00:00",
+    "regenerado_utc": "2026-11-22T23:11:13+00:00",
+    "nota_regeneracion": "Reajustado desde git_commit con la configuración congelada; predice lo mismo que el modelo evaluado (diferencia máxima 0.0e+00 kW). Las métricas de Test son las de la evaluación única de corrida_utc."
   }
 }
